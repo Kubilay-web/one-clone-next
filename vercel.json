@@ -1,4 +1,13 @@
 {
+  "images": {
+    "remotePatterns": [
+      {
+        "protocol": "https",
+        "hostname": "utfs.io",
+        "pathname": "/a/*"
+      }
+    ]
+  },
   "crons": [
     {
       "path": "/api/clear-uploads",
