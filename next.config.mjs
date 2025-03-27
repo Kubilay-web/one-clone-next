@@ -14,13 +14,22 @@ const nextConfig = {
         pathname: `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/*`,
       },
     ],
-    unoptimized: true,
+    unoptimized: true, // Unoptimized for images
   },
   rewrites: () => {
     return [
       {
         source: "/hashtag/:tag",
         destination: "/search?q=%23:tag",
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: "/a/:appId/:slug*",
+        destination: "https://utfs.io/a/:appId/:slug*", // redirect to the new clean URL
+        permanent: true,
       },
     ];
   },
