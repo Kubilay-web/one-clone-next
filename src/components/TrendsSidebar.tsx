@@ -8,16 +8,19 @@ import { Suspense } from "react";
 import FollowButton from "./FollowButton";
 import UserAvatar from "./UserAvatar";
 import UserTooltip from "./UserTooltip";
-import { MongoClient } from "mongodb";
+import { MongoClient, Db } from "mongodb";
 
 // MongoDB client import
 const MONGODB_URI = process.env.DATABASE_URL || "mongodb://localhost:27017";
 const client = new MongoClient(MONGODB_URI);
 
 // Global connection variable
-let cachedClient = null;
-let cachedDb = null;
 
+// Global connection variable tipleri belirliyoruz
+let cachedClient: MongoClient | null = null; // cachedClient MongoClient veya null olabilir
+let cachedDb: Db | null = null; // cachedDb Db (veritabanı) veya null olabilir
+
+// MongoDB client bağlantısını almak için fonksiyon
 async function getMongoClient() {
   if (cachedClient && cachedDb) {
     return { client: cachedClient, db: cachedDb };
@@ -25,7 +28,7 @@ async function getMongoClient() {
 
   await client.connect();
   cachedClient = client;
-  cachedDb = client.db(); // Assuming default database
+  cachedDb = client.db(); // Varsayılan veritabanını alıyoruz
   return { client: cachedClient, db: cachedDb };
 }
 
