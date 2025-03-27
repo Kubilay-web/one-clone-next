@@ -11,10 +11,9 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "utfs.io",
-        pathname: "/a/*/*", // Medya yolu örneği: https://utfs.io/a/{appId}/{fileId}
+        pathname: `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/*`,
       },
     ],
-    unoptimized: true,
   },
   rewrites: () => {
     return [

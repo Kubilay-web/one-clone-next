@@ -117,10 +117,10 @@ interface MediaPreviewProps {
 }
 
 function MediaPreview({ media }: MediaPreviewProps) {
-  const baseUrl = "https://utfs.io/a"; // Sabit temel URL
+  const baseUrl = "https://sb52wuzhjx.ufs.sh/f"; // Sabit temel URL
 
   // Ortama göre URL oluşturma
-  const transformedUrl = `${baseUrl}/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/${media.id}`;
+  const transformedUrl = `${baseUrl}/${media.id}`;
 
   if (media.type === "IMAGE") {
     return (
