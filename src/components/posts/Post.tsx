@@ -22,7 +22,6 @@ interface PostProps {
 
 export default function Post({ post }: PostProps) {
   const { user } = useSession();
-
   const [showComments, setShowComments] = useState(false);
 
   return (
@@ -118,10 +117,17 @@ interface MediaPreviewProps {
 }
 
 function MediaPreview({ media }: MediaPreviewProps) {
+  const appId = process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID; // Uploadthing app ID'sini alıyoruz
+
+  // URL'yi dönüştürme
+  const transformedUrl = media.url.startsWith("http")
+    ? media.url
+    : `https://utfs.io/a/${appId}/${media.url}`;
+
   if (media.type === "IMAGE") {
     return (
       <Image
-        src={media.url}
+        src={transformedUrl} // Dönüştürülmüş URL'yi kullanıyoruz
         alt="Attachment"
         width={500}
         height={500}
@@ -135,7 +141,7 @@ function MediaPreview({ media }: MediaPreviewProps) {
     return (
       <div>
         <video
-          src={media.url}
+          src={transformedUrl} // Dönüştürülmüş URL'yi kullanıyoruz
           controls
           className="mx-auto size-fit max-h-[30rem] rounded-2xl"
         />
