@@ -8,7 +8,7 @@ import { Suspense } from "react";
 import FollowButton from "./FollowButton";
 import UserAvatar from "./UserAvatar";
 import UserTooltip from "./UserTooltip";
-import { MongoClient, Db, Document } from "mongodb";
+import { MongoClient, Db } from "mongodb";
 
 // MongoDB client import
 const MONGODB_URI = process.env.DATABASE_URL || "mongodb://localhost:27017";
@@ -18,7 +18,7 @@ const client = new MongoClient(MONGODB_URI);
 let cachedClient: MongoClient | null = null;
 let cachedDb: Db | null = null;
 
-// MongoDB client bağlantısını almak için fonksiyon
+// MongoDB client connection function
 async function getMongoClient() {
   if (cachedClient && cachedDb) {
     return { client: cachedClient, db: cachedDb };
@@ -26,8 +26,14 @@ async function getMongoClient() {
 
   await client.connect();
   cachedClient = client;
-  cachedDb = client.db(); // Varsayılan veritabanını alıyoruz
+  cachedDb = client.db(); // Get the default database
   return { client: cachedClient, db: cachedDb };
+}
+
+// Type for trending topics
+interface TrendingTopic {
+  hashtag: string;
+  count: number;
 }
 
 export default function TrendsSidebar() {
@@ -49,16 +55,16 @@ async function WhoToFollow() {
   const usersToFollow = await prisma.user.findMany({
     where: {
       NOT: {
-        id: user.id, // Kullanıcı kendisini takip edemez
+        id: user.id, // The user cannot follow themselves
       },
       followers: {
         none: {
-          followerId: user.id, // Kullanıcı takip etmediği kullanıcıları öneriyoruz
+          followerId: user.id, // Suggest users who the current user is not following
         },
       },
     },
     select: getUserDataSelect(user.id),
-    take: 5, // İlk 5 kullanıcı
+    take: 5, // Fetch 5 users
   });
 
   return (
@@ -97,8 +103,8 @@ async function WhoToFollow() {
   );
 }
 
-// Trending Topics için MongoDB aggregation
-async function getTrendingTopics() {
+// Trending Topics function with MongoDB aggregation
+async function getTrendingTopics(): Promise<TrendingTopic[]> {
   const { db } = await getMongoClient(); // Retrieve the cached or new db connection
   const posts = db.collection("posts");
 
@@ -127,10 +133,10 @@ async function getTrendingTopics() {
     ])
     .toArray();
 
-  // 'result' tipini belirlemek için dönüşümü doğru şekilde yapıyoruz
-  return result.map((row: { _id: string; count: number }) => ({
-    hashtag: row._id,
-    count: row.count,
+  // Explicitly map the result to match the TrendingTopic interface
+  return result.map((row) => ({
+    hashtag: row._id, // _id is the matched hashtag
+    count: row.count, // count is the number of occurrences
   }));
 }
 
@@ -141,7 +147,7 @@ async function TrendingTopics() {
     <div className="space-y-5 rounded-2xl bg-card p-5 shadow-sm">
       <div className="text-xl font-bold">Trending topics</div>
       {trendingTopics.map(({ hashtag, count }) => {
-        const title = hashtag.split("#")[1]; // "#" işaretini kaldırıyoruz
+        const title = hashtag.split("#")[1]; // Remove the "#" symbol
 
         return (
           <Link key={title} href={`/hashtag/${title}`} className="block">
