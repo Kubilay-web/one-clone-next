@@ -120,9 +120,7 @@ function MediaPreview({ media }: MediaPreviewProps) {
   const appId = process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID; // Uploadthing app ID'sini alıyoruz
 
   // URL'yi dönüştürme
-  const transformedUrl = media.url.startsWith("http")
-    ? media.url
-    : `https://utfs.io/a/${appId}/${media.url}`;
+  const transformedUrl = `https://utfs.io/a/${appId}/${media.url}`;
 
   if (media.type === "IMAGE") {
     return (
