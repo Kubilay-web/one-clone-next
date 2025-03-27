@@ -31,6 +31,7 @@ export default function Page() {
           src={signupImage}
           alt=""
           className="hidden w-1/2 object-cover md:block"
+          priority
         />
       </div>
     </main>

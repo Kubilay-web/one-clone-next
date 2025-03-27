@@ -32,6 +32,7 @@ export default function Page() {
           src={loginImage}
           alt=""
           className="hidden w-1/2 object-cover md:block"
+          priority
         />
       </div>
     </main>

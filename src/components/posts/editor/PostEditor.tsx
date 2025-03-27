@@ -209,6 +209,7 @@ function AttachmentPreview({
           alt="Attachment preview"
           width={500}
           height={500}
+          priority
           className="size-fit max-h-[30rem] rounded-2xl"
         />
       ) : (
