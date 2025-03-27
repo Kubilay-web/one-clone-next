@@ -8,17 +8,15 @@ import { Suspense } from "react";
 import FollowButton from "./FollowButton";
 import UserAvatar from "./UserAvatar";
 import UserTooltip from "./UserTooltip";
-import { MongoClient, Db } from "mongodb";
+import { MongoClient, Db, Document } from "mongodb";
 
 // MongoDB client import
 const MONGODB_URI = process.env.DATABASE_URL || "mongodb://localhost:27017";
 const client = new MongoClient(MONGODB_URI);
 
 // Global connection variable
-
-// Global connection variable tipleri belirliyoruz
-let cachedClient: MongoClient | null = null; // cachedClient MongoClient veya null olabilir
-let cachedDb: Db | null = null; // cachedDb Db (veritabanı) veya null olabilir
+let cachedClient: MongoClient | null = null;
+let cachedDb: Db | null = null;
 
 // MongoDB client bağlantısını almak için fonksiyon
 async function getMongoClient() {
@@ -129,6 +127,7 @@ async function getTrendingTopics() {
     ])
     .toArray();
 
+  // 'result' tipini belirlemek için dönüşümü doğru şekilde yapıyoruz
   return result.map((row: { _id: string; count: number }) => ({
     hashtag: row._id,
     count: row.count,
