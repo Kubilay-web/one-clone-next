@@ -1,0 +1,146 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String         @id @map("_id")  // MongoDB'de _id otomatik oluşturulur
+  username              String         @unique
+  displayName           String
+  email                 String?        @unique
+  passwordHash          String?
+  googleId              String?        @unique
+  avatarUrl             String?
+  bio                   String?
+  sessions              Session[]      @relation("UserSessions")
+  posts                 Post[]         @relation("UserPosts")
+  following             Follow[]       @relation("Following")
+  followers             Follow[]       @relation("Followers")
+  likes                 Like[]         @relation("UserLikes")
+  bookmarks             Bookmark[]     @relation("UserBookmarks")
+  comments              Comment[]      @relation("UserComments")
+  notificationsSent     Notification[] @relation("Issuer")  // Kullanıcının gönderdiği bildirimler
+  notificationsReceived Notification[] @relation("Recipient")  // Kullanıcının aldığı bildirimler
+
+  createdAt             DateTime       @default(now())
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @map("_id") // MongoDB'deki _id'yi haritalamak için @map("_id")
+  userId    String
+  expiresAt DateTime
+  user      User     @relation("UserSessions", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Post {
+  id        String     @id @default(cuid()) @map("_id") // MongoDB'deki _id'yi haritalamak için @map("_id")
+  content   String
+  userId    String
+  user      User       @relation("UserPosts", fields: [userId], references: [id])
+
+  createdAt DateTime   @default(now())
+
+  attachments    Media[]    @relation("PostMedia") // Post ile Media ilişkisi
+  comments  Comment[]  @relation("PostComments") // Post ile Comment ilişkisi
+  likes     Like[]     @relation("PostLikes") // Post ile Like ilişkisi
+  bookmarks Bookmark[] @relation("PostBookmarks") // Post ile Bookmark ilişkisi
+  notifications Notification[] @relation("PostNotifications") // Post ile bildirim ilişkisi
+
+  @@map("posts")
+}
+
+model Follow {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId // MongoDB için ObjectId kullanılır
+  followerId   String
+  follower     User   @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId  String
+  following    User   @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Media {
+  id       String    @id @default(cuid()) @map("_id")  // MongoDB'deki _id'yi haritalamak için @map("_id")
+  postId   String?
+  post     Post?     @relation("PostMedia", fields: [postId], references: [id], onDelete: SetNull)  // Post ile Media arasında ilişki
+  type     MediaType
+  url      String
+
+  createdAt DateTime @default(now())  // Medyanın oluşturulma zamanı
+
+  @@map("post_media")
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model Comment {
+  id        String   @id @default(cuid()) @map("_id") // MongoDB'ye uygun _id
+  content   String
+  userId    String
+  user      User     @relation("UserComments", fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation("PostComments", fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())  // Yorumun oluşturulma zamanı
+
+  @@map("comments")
+}
+
+model Like {
+  id      String   @id @default(cuid()) @map("_id")  // MongoDB'ye uygun _id
+  userId  String
+  user    User     @relation("UserLikes", fields: [userId], references: [id], onDelete: Cascade)
+  postId  String
+  post    Post     @relation("PostLikes", fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])  // Her kullanıcı bir postu yalnızca bir kez beğenebilir
+  @@map("likes")
+}
+
+model Bookmark {
+  id     String @id @default(cuid()) @map("_id")  // MongoDB'deki _id'yi haritalamak için @map("_id")
+  userId String
+  user   User   @relation("UserBookmarks", fields: [userId], references: [id], onDelete: Cascade)
+  postId String
+  post   Post   @relation("PostBookmarks", fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())  // Bookmark'un oluşturulma zamanı
+
+  @@unique([userId, postId])  // Her kullanıcı bir postu yalnızca bir kez kaydedebilir
+  @@map("bookmarks")
+}
+
+model Notification {
+  id          String           @id @default(cuid()) @map("_id")  // MongoDB'ye uygun _id ekliyoruz
+  recipientId String
+  recipient   User             @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  issuerId    String
+  issuer      User             @relation("Issuer", fields: [issuerId], references: [id], onDelete: Cascade)
+  postId      String?
+  post        Post?            @relation("PostNotifications", fields: [postId], references: [id], onDelete: Cascade)
+  type        NotificationType
+  read        Boolean          @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+enum NotificationType {
+  LIKE
+  FOLLOW
+  COMMENT
+}
