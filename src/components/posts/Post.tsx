@@ -120,7 +120,11 @@ function MediaPreview({ media }: MediaPreviewProps) {
   const appId = process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID; // Uploadthing app ID'sini alıyoruz
 
   // URL'yi dönüştürme
-  const transformedUrl = `https://utfs.io/a/${appId}/${media.url}`;
+  // İlk URL'den https://sb52wuzhjx.ufs.sh kısmını kaldırıyoruz.
+  const cleanedUrl = media.url.replace("https://sb52wuzhjx.ufs.sh", "");
+
+  // Dönüştürülmüş URL'yi oluşturuyoruz
+  const transformedUrl = `https://utfs.io/a/${appId}${cleanedUrl}`;
 
   if (media.type === "IMAGE") {
     return (
