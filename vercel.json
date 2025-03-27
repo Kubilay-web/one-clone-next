@@ -4,5 +4,14 @@
       "path": "/api/clear-uploads",
       "schedule": "0 2 * * *"
     }
-  ]
+  ],
+  "images": {
+    "remotePatterns": [
+      {
+        "protocol": "https",
+        "hostname": "utfs.io",
+        "pathname": "/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/*"
+      }
+    ]
+  }
 }
