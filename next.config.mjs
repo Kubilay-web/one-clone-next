@@ -1,4 +1,12 @@
 /** @type {import('next').NextConfig} */
+const uploadthingAppId = process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID;
+
+if (!uploadthingAppId) {
+  throw new Error(
+    "NEXT_PUBLIC_UPLOADTHING_APP_ID environment variable is not defined",
+  );
+}
+
 const nextConfig = {
   experimental: {
     staleTimes: {
@@ -11,7 +19,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "utfs.io",
-        pathname: `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/*`,
+        pathname: `/a/${uploadthingAppId}/*`, // burası artık sabit string
       },
     ],
   },
