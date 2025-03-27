@@ -120,8 +120,8 @@ function MediaPreview({ media }: MediaPreviewProps) {
   const appId = process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID; // Uploadthing app ID'sini alıyoruz
 
   // URL'yi dönüştürme
-  // İlk URL'den https://sb52wuzhjx.ufs.sh kısmını kaldırıyoruz.
-  const cleanedUrl = media.url.replace("https://sb52wuzhjx.ufs.sh", "");
+  // URL'den /a/sb52wuzhjx/ kısmını kaldırıyoruz
+  const cleanedUrl = media.url.replace("/a/sb52wuzhjx/", "/");
 
   // Dönüştürülmüş URL'yi oluşturuyoruz
   const transformedUrl = `https://utfs.io/a/${appId}${cleanedUrl}`;
