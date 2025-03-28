@@ -22,6 +22,7 @@ interface PostProps {
 
 export default function Post({ post }: PostProps) {
   const { user } = useSession();
+
   const [showComments, setShowComments] = useState(false);
 
   return (
@@ -117,15 +118,10 @@ interface MediaPreviewProps {
 }
 
 function MediaPreview({ media }: MediaPreviewProps) {
-  const baseUrl = "https://sb52wuzhjx.ufs.sh/f"; // Sabit temel URL
-
-  // Ortama göre URL oluşturma
-  const transformedUrl = `${baseUrl}/${media.id}`;
-
   if (media.type === "IMAGE") {
     return (
       <Image
-        src={transformedUrl} // Dönüştürülmüş URL'yi kullanıyoruz
+        src={media.url}
         alt="Attachment"
         width={500}
         height={500}
@@ -139,7 +135,7 @@ function MediaPreview({ media }: MediaPreviewProps) {
     return (
       <div>
         <video
-          src={transformedUrl} // Dönüştürülmüş URL'yi kullanıyoruz
+          src={media.url}
           controls
           className="mx-auto size-fit max-h-[30rem] rounded-2xl"
         />
