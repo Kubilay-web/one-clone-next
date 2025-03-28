@@ -21,12 +21,17 @@ export const fileRouter = {
       const oldAvatarUrl = metadata.user.avatarUrl;
 
       if (oldAvatarUrl) {
-        const key = oldAvatarUrl.split(`/f/`)[1];
+        const key = oldAvatarUrl.split(
+          `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
+        )[1];
 
         await new UTApi().deleteFiles(key);
       }
 
-      const newAvatarUrl = file.url.replace("/a/", `/f/`);
+      const newAvatarUrl = file.url.replace(
+        `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
+        "/f/",
+      );
 
       await Promise.all([
         prisma.user.update({
