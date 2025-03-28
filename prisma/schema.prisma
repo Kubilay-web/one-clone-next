@@ -14,7 +14,7 @@ model User {
   displayName           String
   email                 String?        @unique
   passwordHash          String?
-  googleId              String?        // @unique etiketini kaldırdık
+  googleId              String?        @unique
   avatarUrl             String?
   bio                   String?
   sessions              Session[]      @relation("UserSessions")
@@ -31,7 +31,6 @@ model User {
 
   @@map("users")
 }
-
 
 model Session {
   id        String   @id @map("_id") // MongoDB'deki _id'yi haritalamak için @map("_id")

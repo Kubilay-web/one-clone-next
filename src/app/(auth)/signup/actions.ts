@@ -24,6 +24,7 @@ export async function signUp(
     });
 
     const userId = generateIdFromEntropySize(10);
+    const googleId = `google_${generateIdFromEntropySize(16)}`; // Rastgele Google ID oluştur
 
     const existingUsername = await prisma.user.findFirst({
       where: {
@@ -59,6 +60,7 @@ export async function signUp(
       await tx.user.create({
         data: {
           id: userId,
+          googleId, // Google ID'yi veritabanına kaydet
           username,
           displayName: username,
           email,
