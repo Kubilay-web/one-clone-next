@@ -20,19 +20,21 @@ export const fileRouter = {
     .onUploadComplete(async ({ metadata, file }) => {
       const oldAvatarUrl = metadata.user.avatarUrl;
 
+      // Önceki avatar URL'sini kontrol et
       if (oldAvatarUrl) {
-        const key = oldAvatarUrl.split(
-          `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
-        )[1];
+        const key = oldAvatarUrl.split(`/a/`)[1]; // "/a/" kısmından sonrası alınır
 
+        // Eski avatar dosyasını sil
         await new UTApi().deleteFiles(key);
       }
 
+      // Yeni avatar URL'sini "/a/" yerine "/f/" olarak değiştiriyoruz
       const newAvatarUrl = file.url.replace(
-        `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
+        `/a/`, // "/a/" kısmını "/f/" ile değiştiriyoruz
         "/f/",
       );
 
+      // Veritabanında kullanıcı avatarını güncelle
       await Promise.all([
         prisma.user.update({
           where: { id: metadata.user.id },
@@ -50,6 +52,7 @@ export const fileRouter = {
 
       return { avatarUrl: newAvatarUrl };
     }),
+
   attachment: f({
     image: { maxFileSize: "4MB", maxFileCount: 5 },
     video: { maxFileSize: "64MB", maxFileCount: 5 },
@@ -62,9 +65,12 @@ export const fileRouter = {
       return {};
     })
     .onUploadComplete(async ({ file }) => {
+      // Yüklenen dosyanın URL'sindeki "/a/" kısmını "/f/" ile değiştiriyoruz
+      const newFileUrl = file.url.replace("/a/", `/f/`); // "/a/" kısmı "/f/" ile değiştirildi
+
       const media = await prisma.media.create({
         data: {
-          url: file.url.replace("/a/", `/f/`),
+          url: newFileUrl, // "/a/" yerine "/f/" kullanılıyor
           type: file.type.startsWith("image") ? "IMAGE" : "VIDEO",
         },
       });
