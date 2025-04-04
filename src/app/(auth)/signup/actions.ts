@@ -60,7 +60,7 @@ export async function signUp(
       await tx.user.create({
         data: {
           id: userId,
-          googleId, // Google ID'yi veritabanına kaydet
+          googleId,
           username,
           displayName: username,
           email,
