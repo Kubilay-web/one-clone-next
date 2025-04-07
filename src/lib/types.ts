@@ -131,3 +131,9 @@ export interface NotificationCountInfo {
 export interface MessageCountInfo {
   unreadCount: number;
 }
+
+export interface DashboardSidebarMenuInterface {
+  label: String;
+  icon: String;
+  link: String;
+}

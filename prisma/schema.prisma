@@ -152,3 +152,14 @@ enum NotificationType {
   FOLLOW
   COMMENT
 }
+
+
+model Category {
+  id        String   @id @default(cuid()) @map("_id") // MongoDB için _id'yi mapliyoruz
+  name      String
+  image     String
+  url       String
+  featured  Boolean  @default(false)
+  createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+  updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+}

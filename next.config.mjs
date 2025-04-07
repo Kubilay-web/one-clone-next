@@ -13,6 +13,10 @@ const nextConfig = {
         hostname: "sb52wuzhjx.ufs.sh",
         pathname: `/f/*`,
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
     ],
     unoptimized: true,
   },

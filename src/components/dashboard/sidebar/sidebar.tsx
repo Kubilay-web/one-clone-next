@@ -2,6 +2,8 @@ import { FC } from "react";
 import { validateRequest } from "@/auth";
 import Logo from "@/components/logo/logo";
 import UserInfo from "./user-info";
+import SidebarNavAdmin from "./nav-admin";
+import { adminDashboardSidebarOptions } from "@/constants/data";
 
 interface SidebarProps {
   isAdmin?: boolean;
@@ -16,6 +18,7 @@ const Sidebar: FC<SidebarProps> = async ({ isAdmin }) => {
       <Logo width="100%" height="180px" />
       <span className="mt-3"></span>
       {user && <UserInfo user={user} />}
+      {isAdmin && <SidebarNavAdmin menuLinks={adminDashboardSidebarOptions} />}
     </div>
   );
 };

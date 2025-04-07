@@ -14,8 +14,8 @@ export default async function Layout({
 
   return (
     <div className="h-full w-full">
-      <Sidebar />
-      <div className="ml-[300px] w-full">
+      <Sidebar isAdmin />
+      <div className="ml-[300px]">
         <Header />
         <div className="mt-[75px] w-full p-4">{children}</div>
       </div>
