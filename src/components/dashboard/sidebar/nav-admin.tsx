@@ -41,7 +41,7 @@ export default function SidebarNavAdmin({
                   })}
                 >
                   <Link
-                    href={link.link}
+                    href={link.link.toString()}
                     className="flex w-full items-center gap-2 rounded-md transition-all hover:bg-transparent"
                   >
                     {icon}
