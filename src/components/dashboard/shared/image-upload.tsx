@@ -11,7 +11,6 @@ interface ImageUploadProps {
   value: string[];
   type: "standard" | "profile" | "cover";
   dontShowPreview?: boolean;
-  cloudinary_key: string;
 }
 
 const ImageUpload: FC<ImageUploadProps> = ({
@@ -21,7 +20,6 @@ const ImageUpload: FC<ImageUploadProps> = ({
   value,
   type,
   dontShowPreview,
-  cloudinary_key,
 }) => {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -40,7 +38,7 @@ const ImageUpload: FC<ImageUploadProps> = ({
 
   if (type === "profile") {
     return (
-      <div className="relative inset-x-96 h-52 w-52 rounded-full border-2 border-white bg-gray-200 shadow-2xl">
+      <div className="relative h-52 w-52 rounded-full border-2 border-white bg-gray-200 shadow-2xl">
         {value.length > 0 && (
           <Image
             src={value[0]}
@@ -50,7 +48,7 @@ const ImageUpload: FC<ImageUploadProps> = ({
             className="absolute bottom-0 left-0 right-0 top-0 h-52 w-52 rounded-full object-cover"
           />
         )}
-        <CldUploadWidget uploadPreset={cloudinary_key} onSuccess={onUpload}>
+        <CldUploadWidget uploadPreset="cloudinary" onSuccess={onUpload}>
           {({ open }) => {
             const onClick = () => {
               open();
@@ -60,7 +58,7 @@ const ImageUpload: FC<ImageUploadProps> = ({
               <>
                 <button
                   type="button"
-                  className="from-blue-primary absolute bottom-6 right-0 z-20 flex h-14 w-14 items-center justify-center rounded-full border-none bg-gradient-to-t to-blue-300 text-[17px] font-medium text-white shadow-lg hover:shadow-md active:shadow-sm"
+                  className="absolute bottom-6 right-0 z-20 flex h-14 w-14 items-center justify-center rounded-full border-none bg-gradient-to-t from-blue-primary to-blue-300 text-[17px] font-medium text-white shadow-lg hover:shadow-md active:shadow-sm"
                   disabled={disabled}
                   onClick={onClick}
                 >

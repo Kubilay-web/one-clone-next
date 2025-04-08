@@ -1,12 +1,20 @@
 "use client";
 
-import { Category } from "@prisma/client";
+// React
 import { FC, useEffect } from "react";
+
+// Prisma model
+import { Category, SubCategory } from "@prisma/client";
+
+// Form handling utilities
 import * as z from "zod";
 import { useForm } from "react-hook-form";
-import { CategoryFormSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertDialog } from "@radix-ui/react-alert-dialog";
+
+import { SubCategoryFormSchema } from "@/lib/validation";
+
+// UI Components
+import { AlertDialog } from "@/components/ui/alert-dialog";
 import {
   Card,
   CardContent,
@@ -17,43 +25,65 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import ImageUpload from "../shared/image-upload";
-import { upsertCategory } from "@/queries/category";
 
+// Queries
+import { upsertSubCategory } from "@/queries/subCategory";
+
+// Utils
 import { v4 } from "uuid";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-interface CategoryDetailsProps {
-  data?: Category;
+interface SubCategoryDetailsProps {
+  data?: SubCategory;
+  categories: Category[];
 }
 
-const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
-  const form = useForm<z.infer<typeof CategoryFormSchema>>({
-    mode: "onChange",
-    resolver: zodResolver(CategoryFormSchema),
+const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
+  data,
+  categories,
+}) => {
+  // Initializing necessary hooks
+  const { toast } = useToast(); // Hook for displaying toast messages
+  const router = useRouter(); // Hook for routing
+
+  // Form hook for managing form state and validation
+  const form = useForm<z.infer<typeof SubCategoryFormSchema>>({
+    mode: "onChange", // Form validation mode
+    resolver: zodResolver(SubCategoryFormSchema), // Resolver for form validation
     defaultValues: {
+      // Setting default form values from data (if available)
       name: data?.name,
       image: data?.image ? [{ url: data?.image }] : [],
       url: data?.url,
       featured: data?.featured,
+      categoryId: data?.categoryId,
     },
   });
 
-  const { toast } = useToast();
-  const router = useRouter();
-
+  // Loading status based on form submission
   const isLoading = form.formState.isSubmitting;
 
+  const formData = form.watch();
+
+  // Reset form values when data changes
   useEffect(() => {
     if (data) {
       form.reset({
@@ -61,41 +91,47 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
         image: [{ url: data?.image }],
         url: data?.url,
         featured: data?.featured,
+        categoryId: data.categoryId,
       });
     }
   }, [data, form]);
 
-  const handleSubmit = async (values: z.infer<typeof CategoryFormSchema>) => {
+  // Submit handler for form submission
+  const handleSubmit = async (
+    values: z.infer<typeof SubCategoryFormSchema>,
+  ) => {
     try {
-      const response = await upsertCategory({
+      // Upserting category data
+      const response = await upsertSubCategory({
         id: data?.id ? data.id : v4(),
         name: values.name,
         image: values.image[0].url,
         url: values.url,
         featured: values.featured,
+        categoryId: values.categoryId,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
 
-      if (data?.id) {
-        toast({
-          description: "Category updated",
-        });
-      } else {
-        toast({
-          description: `${response?.name} is created`,
-        });
-      }
+      // Displaying success message
+      toast({
+        title: data?.id
+          ? "SubCategory has been updated."
+          : `Congratulations! '${response?.name}' is now created.`,
+      });
 
+      // Redirect or Refresh data
       if (data?.id) {
-        window.location.reload();
+        router.refresh();
       } else {
-        router.push("/dashboard");
+        router.push("/dashboard/admin/subCategories");
       }
     } catch (error: any) {
-      console.log(error);
+      // Handling form submission errors
       toast({
-        description: `Something went wrong.`,
+        variant: "destructive",
+        title: "Oops!",
+        description: error.toString(),
       });
     }
   };
@@ -104,11 +140,11 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
     <AlertDialog>
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Category Information</CardTitle>
+          <CardTitle>SubCategory Information</CardTitle>
           <CardDescription>
             {data?.id
-              ? `Update ${data?.name} category informtion.`
-              : "Let's create a category. You can edit category later from the category tab."}
+              ? `Update ${data?.name} SubCategory information.`
+              : " Lets create a subCategory. You can edit subCategory later from the subCategories table or the subCategory page."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -141,14 +177,13 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
                   </FormItem>
                 )}
               />
-
               <FormField
                 disabled={isLoading}
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <FormLabel>Category name</FormLabel>
+                    <FormLabel>SubCategory name</FormLabel>
                     <FormControl>
                       <Input placeholder="Name" {...field} />
                     </FormControl>
@@ -162,10 +197,43 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
                 name="url"
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <FormLabel>Category url</FormLabel>
+                    <FormLabel>SubCategory url</FormLabel>
                     <FormControl>
-                      <Input placeholder="/category-url" {...field} />
+                      <Input placeholder="/subCategory-url" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                disabled={isLoading}
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Category</FormLabel>
+                    <Select
+                      disabled={isLoading || categories.length == 0}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            defaultValue={field.value}
+                            placeholder="Select a category"
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -178,24 +246,26 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
                     <FormControl>
                       <Checkbox
                         checked={field.value}
+                        // @ts-ignore
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
                       <FormLabel>Featured</FormLabel>
                       <FormDescription>
-                        This Category will appear on the home page
+                        This SubCategory will appear on the home page
                       </FormDescription>
                     </div>
                   </FormItem>
                 )}
               />
+
               <Button type="submit" disabled={isLoading}>
                 {isLoading
                   ? "loading..."
                   : data?.id
-                    ? "Save category information"
-                    : "Create category"}
+                    ? "Save SubCategory information"
+                    : "Create SubCategory"}
               </Button>
             </form>
           </Form>
@@ -205,4 +275,4 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
   );
 };
 
-export default CategoryDetails;
+export default SubCategoryDetails;

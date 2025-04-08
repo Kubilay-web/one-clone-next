@@ -30,7 +30,6 @@ async function getMongoClient() {
   return { client: cachedClient, db: cachedDb };
 }
 
-// Type for trending topics
 interface TrendingTopic {
   hashtag: string;
   count: number;
@@ -105,7 +104,7 @@ async function WhoToFollow() {
 
 // Trending Topics function with MongoDB aggregation
 async function getTrendingTopics(): Promise<TrendingTopic[]> {
-  const { db } = await getMongoClient(); // Retrieve the cached or new db connection
+  const { db } = await getMongoClient();
   const posts = db.collection("posts");
 
   // MongoDB aggregation pipeline

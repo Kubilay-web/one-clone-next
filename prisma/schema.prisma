@@ -160,6 +160,33 @@ model Category {
   image     String
   url       String
   featured  Boolean  @default(false)
+
+
+ subCategories SubCategory[] @relation("CategoryToSubcategory")
+
+
   createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+
+   @@map("categories")
 }
+
+
+
+model SubCategory {
+  id        String   @id @default(cuid()) @map("_id") // MongoDB için _id'yi mapliyoruz
+  name      String
+  image     String
+  url       String
+  featured  Boolean  @default(false)
+
+  categoryId String 
+  category Category @relation("CategoryToSubcategory",fields: [categoryId],references: [id])
+
+  createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+  updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+
+  @@index([categoryId])
+  @@map("subcategories")
+}
+
