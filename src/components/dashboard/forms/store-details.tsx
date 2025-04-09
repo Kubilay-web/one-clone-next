@@ -66,7 +66,7 @@ const StoreDetails: FC<StoreDetailsProps> = ({ data }) => {
       logo: data?.logo ? [{ url: data?.logo }] : [],
       cover: data?.cover ? [{ url: data?.cover }] : [],
       url: data?.url,
-      featured: data?.featured,
+      featured: Boolean(data?.featured) || false,
       status: data?.status.toString(),
     },
   });
@@ -85,7 +85,7 @@ const StoreDetails: FC<StoreDetailsProps> = ({ data }) => {
         logo: [{ url: data?.logo }],
         cover: [{ url: data?.cover }],
         url: data?.url,
-        featured: data?.featured,
+        featured: Boolean(data?.featured) || false,
         status: data?.status,
       });
     }
