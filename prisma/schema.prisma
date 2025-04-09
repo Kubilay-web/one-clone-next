@@ -37,6 +37,8 @@ model User {
   createdAt             DateTime       @default(now())
   updatedAt             DateTime?       @updatedAt
 
+  stores Store[] @relation("UserStores")
+
   @@map("users")
 }
 
@@ -155,7 +157,7 @@ enum NotificationType {
 
 
 model Category {
-  id        String   @id @default(cuid()) @map("_id") // MongoDB için _id'yi mapliyoruz
+  id        String   @id @default(cuid()) @map("_id") 
   name      String
   image     String
   url       String
@@ -174,7 +176,7 @@ model Category {
 
 
 model SubCategory {
-  id        String   @id @default(cuid()) @map("_id") // MongoDB için _id'yi mapliyoruz
+  id        String   @id @default(cuid()) @map("_id") 
   name      String
   image     String
   url       String
@@ -189,4 +191,43 @@ model SubCategory {
   @@index([categoryId])
   @@map("subcategories")
 }
+
+
+enum StoreStatus{
+  PENDING
+  ACTIVE
+  BANNED
+  DISABLED
+}
+
+
+model Store {
+  id                    String   @id @default(cuid()) @map("_id")
+  name                  String
+  description           String  
+  email                 String   @unique
+  phone                 String
+  url                   String   @unique
+  logo                  String
+  cover                 String
+  status                StoreStatus @default(PENDING)
+  averageRating        Float    @default(0)
+  featured             Boolean  @default(false)
+  returnPolicy         String? 
+  defaultShippingService String?
+  defaultShippingFees  Float?
+  defaultDeliveryTimeMin  Int?
+  defaultDeliveryTimeMax  Int?
+
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt
+  userId String
+  user User @relation("UserStores",fields: [userId],references: [id])
+
+  @@index([userId])
+
+  @@map("store")
+
+}
+
 

@@ -1,22 +1,27 @@
 import React from "react";
 import { validateRequest } from "@/auth";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma";
 
-export default async function SellerPage() {
+export default async function SellerDashboardPage() {
   const { user } = await validateRequest();
-  console.log("user", user);
 
-  if (user?.role === "USER") {
-    redirect("/");
+  if (!user) {
+    redirect("/login");
   }
 
-  if (user?.role === "ADMIN") {
-    redirect("/dashboard/admin");
+  const stores = await prisma.store.findMany({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  if (stores.length === 0) {
+    redirect("/dashboard/seller/stores/new");
+    return;
   }
 
-  if (user?.role === "SELLER") {
-    redirect("/dashboard/seller");
-  }
+  redirect(`/dashboard/seller/stores/${stores[0].url}`);
 
   return <div>SellerPage</div>;
 }

@@ -1,18 +1,10 @@
-import { Db, MongoClient } from "mongodb";
+import { PrismaClient } from "@prisma/client";
 
-const MONGODB_URI = process.env.DATABASE_URL || "mongodb://localhost:27017";
-const client = new MongoClient(MONGODB_URI);
+// Initialize Prisma Client
+const prisma = new PrismaClient();
 
-let cachedClient: MongoClient | null = null;
-let cachedDb: Db | null = null;
+// Export directly for use
+export default prisma;
 
-export async function getMongoClient() {
-  if (cachedClient && cachedDb) {
-    return { client: cachedClient, db: cachedDb };
-  }
-
-  await client.connect();
-  cachedClient = client;
-  cachedDb = client.db(); // Varsayılan DB
-  return { client: cachedClient, db: cachedDb };
-}
+// If you want to use getPrismaClient, you can also export that:
+export const getPrismaClient = () => prisma;

@@ -1,3 +1,4 @@
+import { getAllSubCategories } from "@/queries/subCategory";
 import { Prisma } from "@prisma/client";
 
 export function getUserDataSelect(loggedInUserId: string) {
@@ -137,3 +138,7 @@ export interface DashboardSidebarMenuInterface {
   icon: String;
   link: String;
 }
+
+export type SubCategoryWithCategoryType = Prisma.PromiseReturnType<
+  typeof getAllSubCategories
+>[0];

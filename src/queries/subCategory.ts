@@ -85,3 +85,58 @@ export async function upsertSubCategory(
     throw error;
   }
 }
+
+// Tüm alt kategorileri alma fonksiyonu
+export const getAllSubCategories = async () => {
+  try {
+    const subCategories = await prisma.subCategory.findMany({
+      include: {
+        category: true,
+      },
+      orderBy: {
+        updatedAt: "desc", // Güncellenme tarihine göre sıralama
+      },
+    });
+
+    return subCategories;
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    throw error;
+  }
+};
+
+export const getSubCategory = async (subCategoryId: string) => {
+  if (!subCategoryId) throw new Error("Please provide subCategory ID.");
+  try {
+    const subCategory = await prisma.subCategory.findUnique({
+      where: {
+        id: subCategoryId,
+      },
+    });
+
+    return subCategory; // Kategorileri döndür
+  } catch (error) {
+    console.error("Error fetching get category:", error);
+    throw error; // Hata durumunda, hatayı fırlat
+  }
+};
+
+// Tüm alt kategorileri alma fonksiyonu
+export const deleteSubCategory = async (subCategoryId: string) => {
+  const { user } = await validateRequest();
+
+  if (!user) throw new Error("Unauthenticated.");
+
+  if (user?.role !== "ADMIN") {
+    throw new Error("Unauthorized access.");
+  }
+
+  if (!subCategoryId) throw new Error("Please provide category ID.");
+
+  const response = await prisma.subCategory.delete({
+    where: {
+      id: subCategoryId,
+    },
+  });
+  return response;
+};
