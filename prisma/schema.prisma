@@ -166,6 +166,7 @@ model Category {
 
  subCategories SubCategory[] @relation("CategoryToSubcategory")
 
+ products Product[] @relation("CategoryToProduct")
 
   createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
@@ -184,6 +185,8 @@ model SubCategory {
 
   categoryId String 
   category Category @relation("CategoryToSubcategory",fields: [categoryId],references: [id])
+
+  product Product[] @relation("SubCategoryToProduct") 
 
   createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
@@ -224,10 +227,115 @@ model Store {
   userId String
   user User @relation("UserStores",fields: [userId],references: [id])
 
+  products Product[] @relation("StoreToProduct")
+
   @@index([userId])
 
   @@map("store")
 
 }
 
+
+model Product{
+    id                    String   @id @default(cuid()) @map("_id")
+    name String 
+    description String
+    slug String @unique
+    brand String
+    rating Float @default(0)
+
+      createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+  updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+
+  storeId String
+  store Store @relation("StoreToProduct",fields: [storeId],references: [id])
+
+  variants ProductVariant[] @relation("ProductToProductVariant")
+
+    categoryId String
+  category Category @relation("CategoryToProduct",fields: [categoryId],references: [id])
+
+      subCategoryId String
+  subCategory SubCategory @relation("SubCategoryToProduct",fields: [subCategoryId],references: [id])
+
+  @@index([storeId])
+  @@index([categoryId])
+  @@index([subCategoryId])
+
+}
+
+
+model ProductVariant{
+   id                    String   @id @default(cuid()) @map("_id")
+   variantName String
+   variantDescription String
+   slug String @unique
+   isSale Boolean @default(false)
+   keywords String
+   sku String
+
+   productId String
+   product Product @relation("ProductToProductVariant",fields: [productId],references: [id])
+
+
+   sizes Size[] @relation("ProductVariantSizes")
+   images ProductVariantImage[] @relation("ProductVariantToVariantImage")
+    colors Color[] @relation("ProductVariantColors")
+
+   createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+  updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+
+   @@index([productId])
+
+}
+
+
+model Size{
+  id                    String   @id @default(cuid()) @map("_id")
+  size String
+  quantity Int
+  price Float
+  discount Float @default(0)
+
+  productVariantId String
+  productVariant ProductVariant @relation("ProductVariantSizes",fields: [productVariantId],references: [id]) 
+
+     createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+  updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+
+  @@index([productVariantId])
+
+}
+
+
+model ProductVariantImage{
+   id                    String   @id @default(cuid()) @map("_id")
+   url String
+   alt String @default("")
+
+   productVariantId String
+   productVariant ProductVariant @relation("ProductVariantToVariantImage",fields: [productVariantId],references: [id])
+
+        createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+  updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+
+   @@index([productVariantId])
+
+}
+
+
+model Color{
+  id                    String   @id @default(cuid()) @map("_id")
+  name String
+
+  productVariantId String
+   productVariant ProductVariant @relation("ProductVariantColors",fields: [productVariantId],references: [id])
+
+
+       createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+  updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+
+  @@index([productVariantId])
+
+}
 

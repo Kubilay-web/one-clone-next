@@ -1,5 +1,6 @@
 import prisma from "@/lib/db"; // If you exported directly from db.ts
 import StoreDetails from "@/components/dashboard/forms/store-details";
+import { redirect } from "next/navigation";
 
 export default async function SellerStoreSettingsPage({
   params,
@@ -14,9 +15,7 @@ export default async function SellerStoreSettingsPage({
     where: { url: params.storeUrl },
   });
 
-  if (!storeDetails) {
-    return <div>No store found with this URL</div>;
-  }
+  if (!storeDetails) redirect("/dashboard/seller/stores");
 
   return (
     <div>
