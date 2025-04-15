@@ -1,4 +1,5 @@
 import UserButton from "@/components/UserButton";
+import { updateVariantImage } from "@/migration-scripts/migrate-variantImage";
 import React from "react";
 
 export default function Header() {

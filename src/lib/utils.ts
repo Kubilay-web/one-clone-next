@@ -2,6 +2,8 @@ import { type ClassValue, clsx } from "clsx";
 import { formatDate, formatDistanceToNowStrict } from "date-fns";
 import { twMerge } from "tailwind-merge";
 import ColorThief from "colorthief";
+import { PrismaClient } from "@prisma/client";
+import prisma from "./db";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -27,12 +29,39 @@ export function formatNumber(n: number): string {
   }).format(n);
 }
 
-export function slugify(input: string): string {
+export function slugify(
+  input: string,
+  p0: { replacement: string; lower: boolean; trim: boolean },
+): string {
   return input
     .toLowerCase()
     .replace(/ /g, "-")
     .replace(/[^a-z0-9-]/g, "");
 }
+
+export const generateUniqueSlug = async (
+  baseSlug: string,
+  model: keyof PrismaClient,
+  field: string = "slug",
+  separator: string = "-",
+) => {
+  let slug = baseSlug;
+  let suffix = 1;
+
+  while (true) {
+    const exisitngRecord = await (prisma[model] as any).findFirst({
+      where: {
+        [field]: slug,
+      },
+    });
+    if (!exisitngRecord) {
+      break;
+    }
+    slug = `${slug}${separator}${suffix}`;
+    suffix += 1;
+  }
+  return slug;
+};
 
 // Helper function to grid grid classnames dependng on length
 export const getGridClassName = (length: number) => {

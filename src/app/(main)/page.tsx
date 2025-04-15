@@ -3,8 +3,10 @@ import TrendsSidebar from "@/components/TrendsSidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FollowingFeed from "./FollowingFeed";
 import ForYouFeed from "./ForYouFeed";
+import { updateVariantImage } from "@/migration-scripts/migrate-variantImage";
 
-export default function Home() {
+export default async function Home() {
+  await updateVariantImage();
   return (
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-5">

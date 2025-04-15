@@ -249,9 +249,9 @@ export const ProductFormSchema = z.object({
     .max(50, {
       message: "Product SKU cannot exceed 50 characters.",
     }),
-  weight: z.number().min(0.01, {
-    message: "Please provide a valid product weight.",
-  }),
+  // weight: z.number().min(0.01, {
+  //   message: "Please provide a valid product weight.",
+  // }),
   keywords: z
     .string({
       required_error: "Product keywords are mandatory.",
@@ -289,48 +289,48 @@ export const ProductFormSchema = z.object({
         message: "All size inputs must be filled correctly.",
       },
     ),
-  product_specs: z
-    .object({
-      name: z.string(),
-      value: z.string(),
-    })
-    .array()
-    .min(1, "Please provide at least one product spec.")
-    .refine(
-      (product_specs) =>
-        product_specs.every((s) => s.name.length > 0 && s.value.length > 0),
-      {
-        message: "All product specs inputs must be filled correctly.",
-      },
-    ),
-  variant_specs: z
-    .object({
-      name: z.string(),
-      value: z.string(),
-    })
-    .array()
-    .min(1, "Please provide at least one product variant spec.")
-    .refine(
-      (product_specs) =>
-        product_specs.every((s) => s.name.length > 0 && s.value.length > 0),
-      {
-        message: "All product variant specs inputs must be filled correctly.",
-      },
-    ),
-  questions: z
-    .object({
-      question: z.string(),
-      answer: z.string(),
-    })
-    .array()
-    .min(1, "Please provide at least one product question.")
-    .refine(
-      (questions) =>
-        questions.every((q) => q.question.length > 0 && q.answer.length > 0),
-      {
-        message: "All product question inputs must be filled correctly.",
-      },
-    ),
+  // product_specs: z
+  //   .object({
+  //     name: z.string(),
+  //     value: z.string(),
+  //   })
+  //   .array()
+  //   .min(1, "Please provide at least one product spec.")
+  //   .refine(
+  //     (product_specs) =>
+  //       product_specs.every((s) => s.name.length > 0 && s.value.length > 0),
+  //     {
+  //       message: "All product specs inputs must be filled correctly.",
+  //     },
+  //   ),
+  // variant_specs: z
+  //   .object({
+  //     name: z.string(),
+  //     value: z.string(),
+  //   })
+  //   .array()
+  //   .min(1, "Please provide at least one product variant spec.")
+  //   .refine(
+  //     (product_specs) =>
+  //       product_specs.every((s) => s.name.length > 0 && s.value.length > 0),
+  //     {
+  //       message: "All product variant specs inputs must be filled correctly.",
+  //     },
+  //   ),
+  // questions: z
+  //   .object({
+  //     question: z.string(),
+  //     answer: z.string(),
+  //   })
+  //   .array()
+  //   .min(1, "Please provide at least one product question.")
+  //   .refine(
+  //     (questions) =>
+  //       questions.every((q) => q.question.length > 0 && q.answer.length > 0),
+  //     {
+  //       message: "All product question inputs must be filled correctly.",
+  //     },
+  //   ),
   isSale: z.boolean().default(false),
   saleEndDate: z.string().optional(),
   freeShippingForAllCountries: z.boolean().default(false),

@@ -134,3 +134,21 @@ export const deleteCategory = async (categoryId: string) => {
   });
   return response;
 };
+
+export const getAllSubCategoriesForCategory = async (categoryId: string) => {
+  try {
+    const subCategories = await prisma.subCategory.findMany({
+      where: {
+        categoryId,
+      },
+      orderBy: {
+        updatedAt: "desc", // Güncellenme tarihine göre sıralama
+      },
+    });
+
+    return subCategories; // Kategorileri döndür
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    throw error; // Hata durumunda, hatayı fırlat
+  }
+};
