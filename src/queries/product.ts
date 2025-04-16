@@ -64,6 +64,18 @@ export async function upsertProduct(
       description: product.description,
       slug: productSlug,
       brand: product.brand,
+      specs: {
+        create: product.product_specs.map((spec) => ({
+          name: spec.name,
+          value: spec.value,
+        })),
+      },
+      questions: {
+        create: product.questions.map((question) => ({
+          question: question.question,
+          answer: question.answer,
+        })),
+      },
       store: { connect: { id: store.id } },
       category: { connect: { id: product.categoryId } },
       subCategory: { connect: { id: product.subCategoryId } },
@@ -76,8 +88,15 @@ export async function upsertProduct(
       variantDescription: product.variantDescription,
       slug: variantSlug,
       isSale: product.isSale,
+      saleEndDate: product.isSale ? product.saleEndDate : "",
       sku: product.sku,
       keywords: product.keywords.join(","),
+      specs: {
+        create: product.variant_specs.map((spec) => ({
+          name: spec.name,
+          value: spec.value,
+        })),
+      },
       images: {
         create: product.images.map((image) => ({
           url: image.url,

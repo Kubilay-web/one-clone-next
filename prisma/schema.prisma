@@ -239,7 +239,7 @@ model Store {
 model Product{
     id                    String   @id @default(cuid()) @map("_id")
     name String 
-    description String
+    description String 
     slug String @unique
     brand String
     rating Float @default(0)
@@ -251,6 +251,8 @@ model Product{
   store Store @relation("StoreToProduct",fields: [storeId],references: [id])
 
   variants ProductVariant[] @relation("ProductToProductVariant")
+  specs Spec[] @relation("ProductSpec")
+  questions Question[] @relation("ProductQuestion")
 
     categoryId String
   category Category @relation("CategoryToProduct",fields: [categoryId],references: [id])
@@ -268,7 +270,7 @@ model Product{
 model ProductVariant{
    id                    String   @id @default(cuid()) @map("_id")
    variantName String
-   variantDescription String
+   variantDescription String?
    variantImage String
    slug String @unique
    isSale Boolean @default(false)
@@ -283,6 +285,8 @@ model ProductVariant{
    sizes Size[] @relation("ProductVariantSizes")
    images ProductVariantImage[] @relation("ProductVariantToVariantImage")
     colors Color[] @relation("ProductVariantColors")
+
+    specs Spec[] @relation("ProductVariantSpec")
 
    createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
@@ -339,5 +343,36 @@ model Color{
 
   @@index([productVariantId])
 
+}
+
+
+model Spec{
+  id                    String   @id @default(cuid()) @map("_id")
+  name String
+  value String
+  productId String?
+  product Product? @relation("ProductSpec",fields: [productId],references: [id],onDelete:Cascade)
+
+  variantId String?
+  variant ProductVariant? @relation("ProductVariantSpec",fields: [variantId],references: [id],onDelete:Cascade)
+
+  createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+  updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+
+@@index([productId])
+@@index([variantId])
+}
+
+
+
+model Question{
+  id                    String   @id @default(cuid()) @map("_id")
+  question String
+  answer String
+  productId String
+  product Product @relation("ProductQuestion",fields: [productId],references: [id],onDelete:Cascade)
+
+  createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+  updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
 }
 
