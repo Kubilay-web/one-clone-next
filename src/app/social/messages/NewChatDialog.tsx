@@ -14,8 +14,7 @@ import { Check, Loader2, SearchIcon, X } from "lucide-react";
 import { useState } from "react";
 import { UserResponse } from "stream-chat";
 import { DefaultStreamChatGenerics, useChatContext } from "stream-chat-react";
-import { useSession } from "../SessionProvider";
-
+import { useSession } from "@/app/(main)/SessionProvider";
 interface NewChatDialogProps {
   onOpenChange: (open: boolean) => void;
   onChatCreated: () => void;

@@ -9,7 +9,7 @@ import {
   ChannelPreviewUIComponentProps,
   useChatContext,
 } from "stream-chat-react";
-import { useSession } from "../SessionProvider";
+import { useSession } from "@/app/(main)/SessionProvider";
 import NewChatDialog from "./NewChatDialog";
 
 interface ChatSidebarProps {
