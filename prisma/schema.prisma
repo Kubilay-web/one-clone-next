@@ -216,11 +216,14 @@ model Store {
   status                StoreStatus @default(PENDING)
   averageRating        Float    @default(0)
   featured             Boolean  @default(false)
-  returnPolicy         String? 
-  defaultShippingService String?
-  defaultShippingFees  Float?
-  defaultDeliveryTimeMin  Int?
-  defaultDeliveryTimeMax  Int?
+  returnPolicy         String @default("Return in 30 days.")
+  defaultShippingService String @default("International Delivery")
+  defaultShippingFeePerItem Float @default(0)
+  defaultShippingFeeForAdditionalItem Float @default(0)
+  defaultShippingFeePerKg Float @default(0)
+  defaultShippingFeeFixed Float @default(0)
+  defaultDeliveryTimeMin  Int @default(7)
+  defaultDeliveryTimeMax  Int @default(31)
 
   createdAt DateTime @default(now()) 
   updatedAt DateTime @updatedAt
@@ -228,6 +231,8 @@ model Store {
   user User @relation("UserStores",fields: [userId],references: [id])
 
   products Product[] @relation("StoreToProduct")
+
+  shippingRates ShippingRate[] @relation("StoreShippingRates")
 
   @@index([userId])
 
@@ -374,5 +379,47 @@ model Question{
 
   createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+
+  @@index([productId])
+}
+
+
+model Country{
+   id                    String   @id @default(cuid()) @map("_id")
+   name String @unique
+   code String @unique
+
+   shippingRates ShippingRate[] @relation("CountryShippingRates")
+
+  createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+  updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+}
+
+
+model ShippingRate{
+   id                    String   @id @default(cuid()) @map("_id")
+
+  shippingService String 
+  shippingFeePerItem Float 
+  shippingFeeForAdditionalItem Float 
+  shippingFeePerKg Float 
+  shippingFeeFixed Float 
+  deliveryTimeMin  Int 
+  deliveryTimeMax  Int
+  returnPolicy String 
+
+  countryId String
+  country Country @relation("CountryShippingRates",fields: [countryId],references: [id])
+
+  storeId String
+  store Store @relation("StoreShippingRates",fields: [storeId],references: [id])
+
+
+  createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+  updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+
+  @@index([countryId])
+  @@index([storeId])
+
 }
 

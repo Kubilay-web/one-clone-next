@@ -2,7 +2,11 @@
 
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
-import { User } from "@prisma/client";
+import {
+  CountryWithShippingRatesType,
+  StoreDefaultShippingType,
+} from "@/lib/types";
+import { ShippingRate, User } from "@prisma/client";
 
 export interface IStore {
   id: string; // Her mağazanın benzersiz bir id'si var, 'string' türünde
@@ -18,7 +22,6 @@ export interface IStore {
   featured: boolean; // Mağaza öne çıkarılmış mı, 'boolean' türünde
   returnPolicy?: string; // İade politikası, opsiyonel bir 'string'
   defaultShippingService?: string; // Varsayılan kargo servisi, opsiyonel bir 'string'
-  defaultShippingFees?: number; // Varsayılan kargo ücreti, opsiyonel bir 'number'
   defaultDeliveryTimeMin?: number; // Varsayılan teslimat süresi (minimum), opsiyonel bir 'number'
   defaultDeliveryTimeMax?: number; // Varsayılan teslimat süresi (maksimum), opsiyonel bir 'number'
   createdAt: Date; // Oluşturulma tarihi, 'Date' türünde
@@ -95,7 +98,6 @@ export async function upsertStore(store: IStore): Promise<IStore | null> {
         featured: store.featured,
         returnPolicy: store.returnPolicy,
         defaultShippingService: store.defaultShippingService,
-        defaultShippingFees: store.defaultShippingFees,
         defaultDeliveryTimeMin: store.defaultDeliveryTimeMin,
         defaultDeliveryTimeMax: store.defaultDeliveryTimeMax,
         updatedAt: new Date(), // Güncellenme tarihini ayarla
@@ -123,3 +125,196 @@ export async function upsertStore(store: IStore): Promise<IStore | null> {
     throw error; // Hata fırlat
   }
 }
+
+export const getStoreDefaultShippingDetails = async (storeUrl: string) => {
+  try {
+    if (!storeUrl) throw new Error("Store URL is required");
+
+    const store = await prisma.store.findUnique({
+      where: {
+        url: storeUrl,
+      },
+      select: {
+        defaultShippingService: true,
+        defaultShippingFeePerItem: true,
+        defaultShippingFeeForAdditionalItem: true,
+        defaultShippingFeePerKg: true,
+        defaultShippingFeeFixed: true,
+        defaultDeliveryTimeMin: true,
+        defaultDeliveryTimeMax: true,
+        returnPolicy: true,
+      },
+    });
+
+    if (!store) throw new Error("Store not found");
+
+    return store;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const updateStoreDefaultShippingDetails = async (
+  storeUrl: string,
+  details: StoreDefaultShippingType,
+) => {
+  try {
+    const { user } = await validateRequest();
+    if (!user) throw new Error("Unauthenticated."); // Kullanıcı doğrulanmamışsa hata fırlat
+
+    // 2. Kullanıcının rolünü kontrol et
+    if (user.role !== "SELLER") {
+      throw new Error(
+        "Unauthorized Access: Seller Privileges Required for Entry.",
+      ); // Eğer kullanıcı satıcı değilse, izin verilmiyor
+    }
+
+    if (!storeUrl) throw new Error("Store URL is required.");
+
+    if (!details) {
+      throw new Error("No shipping details provided to update.");
+    }
+
+    const check_ownership = await prisma.store.findUnique({
+      where: {
+        url: storeUrl,
+        userId: user.id,
+      },
+    });
+
+    if (!check_ownership)
+      throw new Error("Make sure you have the permissions update this store.");
+
+    const updatedStore = await prisma.store.update({
+      where: {
+        url: storeUrl,
+        userId: user.id,
+      },
+      data: details,
+    });
+
+    return updatedStore;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getStoreShippingRates = async (storeUrl: string) => {
+  try {
+    const { user } = await validateRequest();
+    if (!user) throw new Error("Unauthenticated.");
+
+    if (user.role !== "SELLER") {
+      throw new Error(
+        "Unauthorized Access: Seller Privileges Required for Entry.",
+      );
+    }
+
+    if (!storeUrl) throw new Error("Store URL is required.");
+
+    const store = await prisma.store.findUnique({
+      where: {
+        url: storeUrl,
+        userId: user.id,
+      },
+    });
+
+    if (!store) {
+      throw new Error(
+        "Make sure you have the permissions to access this store.",
+      );
+    }
+
+    const [countries, shippingRates] = await Promise.all([
+      prisma.country.findMany({
+        orderBy: {
+          name: "asc",
+        },
+      }),
+      prisma.shippingRate.findMany({
+        where: {
+          storeId: store.id,
+        },
+      }),
+    ]);
+
+    const rateMap = new Map();
+    shippingRates.forEach((rate) => {
+      rateMap.set(rate.countryId, rate);
+    });
+
+    const result = countries.map((country) => ({
+      countryId: country.id,
+      countryName: country.name,
+      shippingRate: rateMap.get(country.id) || null,
+    }));
+
+    return result;
+  } catch (error) {
+    console.error("Error retrieving store shipping rates:", error);
+    throw error;
+  }
+};
+
+export const upsertShippingRate = async (
+  storeUrl: string,
+  shippingRate: ShippingRate,
+) => {
+  try {
+    // 1. Kullanıcıyı doğrula
+    const { user } = await validateRequest();
+    if (!user) throw new Error("Unauthenticated.");
+
+    // 2. Kullanıcının rolünü kontrol et
+    if (user.role !== "SELLER") {
+      throw new Error(
+        "Unauthorized Access: Seller Privileges Required for Entry.",
+      );
+    }
+
+    // 3. Mağaza sahipliğini kontrol et
+    const store = await prisma.store.findUnique({
+      where: {
+        url: storeUrl,
+        userId: user.id,
+      },
+    });
+
+    if (!store) {
+      throw new Error(
+        "Make sure you have the permissions to update this store.",
+      );
+    }
+
+    // 4. Gönderi verilerini kontrol et
+    if (!shippingRate) throw new Error("Please provide shipping rate data.");
+    if (!shippingRate.countryId)
+      throw new Error("Please provide a valid country ID.");
+
+    // 5. Geçersiz alanları ayıkla (id, createdAt, updatedAt)
+    const { id, createdAt, updatedAt, ...cleanedRate } = shippingRate;
+
+    // 6. Upsert işlemi
+    const shippingRateDetails = await prisma.shippingRate.upsert({
+      where: {
+        id: id, // id create ve where içinde kullanılabilir
+      },
+      update: {
+        ...cleanedRate,
+        storeId: store.id,
+      },
+      create: {
+        ...cleanedRate,
+        id, // sadece create içinde kullanılır
+        storeId: store.id,
+      },
+    });
+
+    return shippingRateDetails;
+  } catch (error) {
+    console.error("Error upserting shipping rate:", error);
+    throw error;
+  }
+};

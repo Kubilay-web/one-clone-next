@@ -1,6 +1,7 @@
 import { getAllStoreProducts } from "@/queries/product";
+import { getStoreDefaultShippingDetails } from "@/queries/store";
 import { getAllSubCategories } from "@/queries/subCategory";
-import { Prisma } from "@prisma/client";
+import { Prisma, ShippingRate } from "@prisma/client";
 
 export function getUserDataSelect(loggedInUserId: string) {
   return {
@@ -208,3 +209,13 @@ export interface ProductWithVariantType {
 export type StoreProductType = Prisma.PromiseReturnType<
   typeof getAllStoreProducts
 >[0];
+
+export type StoreDefaultShippingType = Prisma.PromiseReturnType<
+  typeof getStoreDefaultShippingDetails
+>;
+
+export type CountryWithShippingRatesType = {
+  countryId: string;
+  countryName: string;
+  shippingRate: ShippingRate;
+};
