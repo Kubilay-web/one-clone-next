@@ -2,6 +2,7 @@ import { validateRequest } from "@/auth";
 import { redirect } from "next/navigation";
 
 import SessionProvider from "./SessionProvider";
+import Header from "@/components/store/layout/header/header";
 
 export default async function Layout({
   children,
@@ -15,9 +16,8 @@ export default async function Layout({
   return (
     <SessionProvider value={session}>
       <div>
-        <div>header</div>
+        <Header />
         <div>{children}</div>
-        <div>footer</div>
       </div>
     </SessionProvider>
   );

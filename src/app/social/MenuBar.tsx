@@ -49,7 +49,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
         title="Bookmarks"
         asChild
       >
-        <Link href="/bookmarks">
+        <Link href="/social/bookmarks">
           <Bookmark />
           <span className="hidden lg:inline">Bookmarks</span>
         </Link>

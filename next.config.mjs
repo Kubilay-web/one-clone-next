@@ -24,7 +24,7 @@ const nextConfig = {
     return [
       {
         source: "/hashtag/:tag",
-        destination: "/search?q=%23:tag",
+        destination: "/social/search?q=%23:tag",
       },
     ];
   },

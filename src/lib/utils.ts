@@ -4,6 +4,8 @@ import { twMerge } from "tailwind-merge";
 import ColorThief from "colorthief";
 import { PrismaClient } from "@prisma/client";
 import prisma from "./db";
+import { Country } from "./types";
+import countries from "@/data/countries.json";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -107,3 +109,44 @@ export const getDominantColors = (imgUrl: string): Promise<string[]> => {
     };
   });
 };
+
+// the helper function to get the user country
+// Define the default country
+const DEFAULT_COUNTRY: Country = {
+  name: "United States",
+  code: "US",
+  city: "",
+  region: "",
+};
+
+// utils.ts
+interface IPInfoResponse {
+  country: string;
+  city: string;
+  region: string;
+}
+export async function getUserCountry(req: Request): Promise<Country> {
+  let userCountry: Country = DEFAULT_COUNTRY;
+
+  try {
+    const response = await fetch(
+      `https://ipinfo.io/?token=${process.env.IPINFO_TOKEN}`,
+    );
+    if (response.ok) {
+      const data = await response.json();
+
+      console.log(data);
+
+      userCountry = {
+        name:
+          countries.find((c) => c.code === data.country)?.name || data.country,
+        code: data.country,
+        city: data.city,
+        region: data.region,
+      };
+    }
+  } catch (error) {
+    console.log("Failed to fetch IP info", error);
+  }
+  return userCountry;
+}
