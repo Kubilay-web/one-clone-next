@@ -135,8 +135,6 @@ export async function getUserCountry(req: Request): Promise<Country> {
     if (response.ok) {
       const data = await response.json();
 
-      console.log(data);
-
       userCountry = {
         name:
           countries.find((c) => c.code === data.country)?.name || data.country,

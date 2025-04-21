@@ -265,9 +265,13 @@ model Product{
       subCategoryId String
   subCategory SubCategory @relation("SubCategoryToProduct",fields: [subCategoryId],references: [id])
 
+   offerTagId String?
+  offerTag   OfferTag? @relation("OfferTagToProduct", fields: [offerTagId], references: [id])
+
   @@index([storeId])
   @@index([categoryId])
   @@index([subCategoryId])
+    @@index([offerTagId])
 
 }
 
@@ -422,4 +426,20 @@ model ShippingRate{
   @@index([storeId])
 
 }
+
+
+
+model OfferTag {
+ id                    String   @id @default(cuid()) @map("_id")
+  name String
+  url  String  @unique
+
+  products Product[] @relation("OfferTagToProduct")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+
+
 

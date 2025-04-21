@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 
 import SessionProvider from "./SessionProvider";
 import Header from "@/components/store/layout/header/header";
+import CategoriesHeader from "@/components/store/layout/categories-header/categories-header";
+import Footer from "@/components/store/layout/footer/footer";
 
 export default async function Layout({
   children,
@@ -17,7 +19,9 @@ export default async function Layout({
     <SessionProvider value={session}>
       <div>
         <Header />
+        <CategoriesHeader />
         <div>{children}</div>
+        <Footer />
       </div>
     </SessionProvider>
   );

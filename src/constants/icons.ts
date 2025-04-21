@@ -66,6 +66,11 @@ export const icons = [
     path: InventoryIcon,
   },
   {
+    label: "OfferTags",
+    value: "inventory",
+    path: InventoryIcon,
+  },
+  {
     label: "Coupon",
     value: "coupon",
     path: CouponIcon,

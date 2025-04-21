@@ -2,6 +2,7 @@ import { getAllStoreProducts } from "@/queries/product";
 import { getStoreDefaultShippingDetails } from "@/queries/store";
 import { getAllSubCategories } from "@/queries/subCategory";
 import { Prisma, ShippingRate } from "@prisma/client";
+import countries from "@/data/countries.json";
 
 export function getUserDataSelect(loggedInUserId: string) {
   return {
@@ -226,3 +227,5 @@ export interface Country {
   city: string;
   region: string;
 }
+
+export type SelectMenuOption = (typeof countries)[number];

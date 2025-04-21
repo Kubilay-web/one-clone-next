@@ -3,8 +3,25 @@ import UserMenu from "./user-menu/user-menu";
 import Cart from "./cart";
 import DownloadApp from "./download-app";
 import Search from "./search/search";
+import { cookies } from "next/headers";
+import { Country } from "@prisma/client";
+import CountryLanguageCurrencySelector from "./country-lang-curr-selector";
 
 export default function Header() {
+  const cookieStore = cookies();
+  const userCountryCookie = cookieStore.get("userCountry");
+
+  let userCountry: Country = {
+    name: "",
+    city: "",
+    code: "",
+    region: "",
+  };
+
+  if (userCountryCookie) {
+    userCountry = JSON.parse(userCountryCookie.value) as Country;
+  }
+
   return (
     <div className="bg-gradient-to-r from-slate-500 to-slate-800">
       <div className="h-full w-full px-4 text-white lg:flex lg:px-12">
@@ -24,6 +41,7 @@ export default function Header() {
           <div className="lg:flex">
             <DownloadApp />
           </div>
+          <CountryLanguageCurrencySelector userCountry={userCountry} />
           <UserMenu />
           <Cart />
         </div>
