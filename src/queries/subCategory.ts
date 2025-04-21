@@ -1,7 +1,7 @@
 "use server";
 
 import { validateRequest } from "@/auth";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, SubCategory } from "@prisma/client";
 
 // Prisma client
 const prisma = new PrismaClient();
@@ -139,4 +139,34 @@ export const deleteSubCategory = async (subCategoryId: string) => {
     },
   });
   return response;
+};
+
+export const getSubcategories = async (
+  limit: number | null,
+  random: boolean = false,
+): Promise<SubCategory[]> => {
+  try {
+    if (random) {
+      const rawResult = await prisma.subCategory.aggregateRaw({
+        pipeline: [{ $sample: { size: limit || 10 } }],
+      });
+
+      // TypeScript cast hatasını çözmek için önce `unknown` yap, sonra `SubCategory[]`
+      const subcategories = rawResult as unknown as SubCategory[];
+
+      return subcategories;
+    } else {
+      const subcategories = await prisma.subCategory.findMany({
+        take: limit || undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      return subcategories;
+    }
+  } catch (error) {
+    console.error("Error fetching subcategories:", error);
+    throw error;
+  }
 };

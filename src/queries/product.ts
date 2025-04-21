@@ -5,7 +5,7 @@ import { ProductWithVariantType } from "@/lib/types";
 
 import slugify from "slugify";
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, ProductVariant, Size } from "@prisma/client";
 import { generateUniqueSlug } from "@/lib/utils";
 
 // Prisma client
@@ -221,4 +221,230 @@ export const deleteProduct = async (productId: string) => {
     where: { id: productId },
   });
   return response;
+};
+
+export const getProducts = async (
+  filters: any = {},
+  sortBy = "",
+  page: number = 1,
+  pageSize: number = 10,
+) => {
+  const currentPage = page;
+  const limit = pageSize;
+  const skip = (currentPage - 1) * limit;
+
+  const whereClause: any = {
+    AND: [],
+  };
+
+  // Store filter
+  if (filters.store) {
+    const store = await prisma.store.findUnique({
+      where: { url: filters.store },
+      select: { id: true },
+    });
+    if (store) whereClause.AND.push({ storeId: store.id });
+  }
+
+  // Exclude product
+  if (filters.productId) {
+    whereClause.AND.push({ id: { not: filters.productId } });
+  }
+
+  // Category filter
+  if (filters.category) {
+    const category = await prisma.category.findUnique({
+      where: { url: filters.category },
+      select: { id: true },
+    });
+    if (category) whereClause.AND.push({ categoryId: category.id });
+  }
+
+  // Subcategory filter
+  if (filters.subCategory) {
+    const subCategory = await prisma.subCategory.findUnique({
+      where: { url: filters.subCategory },
+      select: { id: true },
+    });
+    if (subCategory) whereClause.AND.push({ subCategoryId: subCategory.id });
+  }
+
+  // Size filter
+  if (filters.size && Array.isArray(filters.size)) {
+    whereClause.AND.push({
+      variants: {
+        some: {
+          sizes: {
+            some: {
+              size: { in: filters.size },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  // Offer filter
+  if (filters.offer) {
+    const offer = await prisma.offerTag.findUnique({
+      where: { url: filters.offer },
+      select: { id: true },
+    });
+    if (offer) whereClause.AND.push({ offerTagId: offer.id });
+  }
+
+  // Search filter
+  if (filters.search) {
+    whereClause.AND.push({
+      OR: [
+        { name: { contains: filters.search, mode: "insensitive" } },
+        { description: { contains: filters.search, mode: "insensitive" } },
+        {
+          variants: {
+            some: {
+              OR: [
+                {
+                  variantName: {
+                    contains: filters.search,
+                    mode: "insensitive",
+                  },
+                },
+                {
+                  variantDescription: {
+                    contains: filters.search,
+                    mode: "insensitive",
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ],
+    });
+  }
+
+  // Price filter
+  if (filters.minPrice || filters.maxPrice) {
+    whereClause.AND.push({
+      variants: {
+        some: {
+          sizes: {
+            some: {
+              price: {
+                gte: filters.minPrice ?? 0,
+                lte: filters.maxPrice ?? Number.MAX_SAFE_INTEGER,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  // Color filter
+  if (filters.color && Array.isArray(filters.color)) {
+    whereClause.AND.push({
+      variants: {
+        some: {
+          colors: {
+            some: {
+              name: { in: filters.color },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  // Sort options
+  let orderBy: any = {};
+  switch (sortBy) {
+    case "most-popular":
+      orderBy = { views: "desc" };
+      break;
+    case "new-arrivals":
+      orderBy = { createdAt: "desc" };
+      break;
+    case "top-rated":
+      orderBy = { rating: "desc" };
+      break;
+    default:
+      orderBy = { createdAt: "desc" };
+  }
+
+  // Fetch filtered products
+  const products = await prisma.product.findMany({
+    where: whereClause,
+    orderBy,
+    take: limit,
+    skip,
+    include: {
+      variants: {
+        include: {
+          sizes: true,
+          colors: true,
+          images: true,
+        },
+      },
+    },
+  });
+
+  // Sorting by price if needed
+  const getMinPrice = (product: any) =>
+    Math.min(
+      ...product.variants.flatMap(
+        (variant: ProductVariant & { sizes: Size[] }) =>
+          variant.sizes.map(
+            (size) => size.price * (1 - (size.discount ?? 0) / 100),
+          ),
+      ),
+      Infinity,
+    );
+
+  products.sort((a, b) => {
+    const priceA = getMinPrice(a);
+    const priceB = getMinPrice(b);
+    if (sortBy === "price-low-to-high") return priceA - priceB;
+    if (sortBy === "price-high-to-low") return priceB - priceA;
+    return 0;
+  });
+
+  // Transform for UI
+  const productsWithFilteredVariants = products.map((product) => {
+    const variants = product.variants.map((variant) => ({
+      variantId: variant.id,
+      variantSlug: variant.slug,
+      variantName: variant.variantName,
+      images: variant.images,
+      sizes: variant.sizes,
+    }));
+
+    const variantImages = product.variants.map((variant) => ({
+      url: `/product/${product.slug}/${variant.slug}`,
+      image: variant.variantImage || variant.images[0]?.url,
+    }));
+
+    return {
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      rating: product.rating,
+      sales: product.sales,
+      numReviews: product.numReviews,
+      variants,
+      variantImages,
+    };
+  });
+
+  // Optional: total count with same filters
+  const totalCount = await prisma.product.count({ where: whereClause });
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  return {
+    products: productsWithFilteredVariants,
+    totalPages,
+    currentPage,
+    pageSize,
+    totalCount,
+  };
 };

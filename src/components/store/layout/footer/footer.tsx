@@ -1,10 +1,10 @@
-// import { getSubcategories } from "@/queries/subCategory";
+import { getSubcategories } from "@/queries/subCategory";
 import Contact from "./contact";
 import Links from "./links";
 import Newsletter from "./newsletter";
 
 export default async function Footer() {
-  //   const subs = await getSubcategories(7, true);
+  const subs = await getSubcategories(7, true);
   return (
     <div className="w-full bg-white">
       <Newsletter />
@@ -12,7 +12,7 @@ export default async function Footer() {
         <div className="p-5">
           <div className="grid md:grid-cols-2 md:gap-x-5">
             <Contact />
-            {/* <Links subs={subs} /> */}
+            <Links subs={subs} />
           </div>
         </div>
       </div>

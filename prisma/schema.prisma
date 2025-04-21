@@ -248,6 +248,7 @@ model Product{
     slug String @unique
     brand String
     rating Float @default(0)
+    sales Int @default(0)
 
       createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
@@ -286,6 +287,7 @@ model ProductVariant{
    saleEndDate String?
    keywords String
    sku String
+   sales Int @default(0)
 
    productId String
    product Product @relation("ProductToProductVariant",fields: [productId],references: [id])
@@ -331,7 +333,7 @@ model ProductVariantImage{
    productVariantId String
    productVariant ProductVariant @relation("ProductVariantToVariantImage",fields: [productVariantId],references: [id])
 
-        createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+  createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
 
    @@index([productVariantId])

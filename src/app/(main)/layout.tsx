@@ -21,6 +21,7 @@ export default async function Layout({
         <Header />
         <CategoriesHeader />
         <div>{children}</div>
+        <div className="h-96"></div>
         <Footer />
       </div>
     </SessionProvider>
