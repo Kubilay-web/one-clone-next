@@ -22,11 +22,11 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { Check, ChevronDown, Loader2, Truck, X } from "lucide-react";
-import {
-  approveTransfer,
-  cancelTransfer,
-  completeTransfer,
-} from "@/actions/stock-transfer";
+// import {
+//   approveTransfer,
+//   cancelTransfer,
+//   completeTransfer,
+// } from "@/actions/stock-transfer";
 
 type Transfer = {
   id: string;
@@ -56,17 +56,17 @@ export function TransferActions({ transfer, userId }: TransferActionsProps) {
     try {
       let result;
 
-      switch (actionType) {
-        case "approve":
-          result = await approveTransfer(transfer.id);
-          break;
-        case "complete":
-          result = await completeTransfer(transfer.id);
-          break;
-        case "cancel":
-          result = await cancelTransfer(transfer.id);
-          break;
-      }
+      // switch (actionType) {
+      //   case "approve":
+      //     result = await approveTransfer(transfer.id);
+      //     break;
+      //   case "complete":
+      //     result = await completeTransfer(transfer.id);
+      //     break;
+      //   case "cancel":
+      //     result = await cancelTransfer(transfer.id);
+      //     break;
+      // }
 
       if (result.success) {
         const messages = {

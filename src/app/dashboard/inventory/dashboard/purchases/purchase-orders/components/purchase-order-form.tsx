@@ -36,9 +36,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { SearchableSelect } from "@/components/ui/searchable-select";
+// import { SearchableSelect } from "@/components/ui/searchable-select";
 import { toast } from "sonner";
-import { createPurchaseOrder } from "@/actions/purchase-orders";
+// import { createPurchaseOrder } from "@/actions/purchase-orders";
 
 // Define types based on your Prisma schema
 type Supplier = {
@@ -75,7 +75,7 @@ const formSchema = z.object({
           .number()
           .min(0.01, "Unit price must be greater than 0"),
         taxRate: z.coerce.number().min(0, "Tax rate cannot be negative"),
-      })
+      }),
     )
     .min(1, "At least one item is required"),
 });
@@ -146,11 +146,11 @@ export function PurchaseOrderForm({
 
   const orderSubtotal = lineTotals.reduce(
     (sum, line) => sum + line.subtotal,
-    0
+    0,
   );
   const orderTaxAmount = lineTotals.reduce(
     (sum, line) => sum + line.taxAmount,
-    0
+    0,
   );
   const orderTotal = lineTotals.reduce((sum, line) => sum + line.total, 0);
 
@@ -174,7 +174,7 @@ export function PurchaseOrderForm({
     if (currentLines.length > 1) {
       form.setValue(
         "lines",
-        currentLines.filter((_, i) => i !== index)
+        currentLines.filter((_, i) => i !== index),
       );
     }
   };
@@ -231,19 +231,19 @@ export function PurchaseOrderForm({
       const total = lines.reduce((sum, line) => sum + line.total, 0);
 
       // Create the purchase order
-      const result = await createPurchaseOrder({
-        poNumber: data.poNumber,
-        date: data.date,
-        supplierId: data.supplierId,
-        deliveryLocationId: data.deliveryLocationId,
-        expectedDeliveryDate: data.expectedDeliveryDate ?? new Date(),
-        paymentTerms: data.paymentTerms ?? "",
-        notes: data.notes ?? "",
-        subtotal,
-        taxAmount,
-        total,
-        lines,
-      });
+      // const result = await createPurchaseOrder({
+      //   poNumber: data.poNumber,
+      //   date: data.date,
+      //   supplierId: data.supplierId,
+      //   deliveryLocationId: data.deliveryLocationId,
+      //   expectedDeliveryDate: data.expectedDeliveryDate ?? new Date(),
+      //   paymentTerms: data.paymentTerms ?? "",
+      //   notes: data.notes ?? "",
+      //   subtotal,
+      //   taxAmount,
+      //   total,
+      //   lines,
+      // });
       toast.success("Purchase Order Created Successfully");
 
       // Redirect to the purchase order detail page
@@ -260,7 +260,7 @@ export function PurchaseOrderForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardContent className="pt-6">
               <div className="space-y-4">
@@ -323,14 +323,14 @@ export function PurchaseOrderForm({
                     <FormItem>
                       <FormLabel>Supplier</FormLabel>
                       <FormControl>
-                        <SearchableSelect
+                        {/* <SearchableSelect
                           options={supplierOptions}
                           value={field.value}
                           onValueChange={field.onChange}
                           placeholder="Search and select a supplier"
                           emptyMessage="No suppliers found"
                           clearable
-                        />
+                        /> */}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -344,14 +344,14 @@ export function PurchaseOrderForm({
                     <FormItem>
                       <FormLabel>Delivery Location</FormLabel>
                       <FormControl>
-                        <SearchableSelect
+                        {/* <SearchableSelect
                           options={locationOptions}
                           value={field.value}
                           onValueChange={field.onChange}
                           placeholder="Search and select a location"
                           emptyMessage="No locations found"
                           clearable
-                        />
+                        /> */}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -439,9 +439,9 @@ export function PurchaseOrderForm({
         </div>
 
         <div>
-          <h3 className="text-lg font-medium mb-4">Order Items</h3>
+          <h3 className="mb-4 text-lg font-medium">Order Items</h3>
 
-          <div className="border rounded-md overflow-hidden mb-4">
+          <div className="mb-4 overflow-hidden rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -461,16 +461,16 @@ export function PurchaseOrderForm({
                         control={form.control}
                         name={`lines.${index}.itemId`}
                         render={({ field }) => (
-                          <FormItem className="space-y-0 mb-0">
+                          <FormItem className="mb-0 space-y-0">
                             <FormControl>
-                              <SearchableSelect
+                              {/* <SearchableSelect
                                 options={itemOptions}
                                 value={field.value}
                                 onValueChange={field.onChange}
                                 placeholder="Search and select an item"
                                 emptyMessage="No items found"
                                 clearable
-                              />
+                              /> */}
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -482,7 +482,7 @@ export function PurchaseOrderForm({
                         control={form.control}
                         name={`lines.${index}.quantity`}
                         render={({ field }) => (
-                          <FormItem className="space-y-0 mb-0">
+                          <FormItem className="mb-0 space-y-0">
                             <FormControl>
                               <Input type="number" min="1" {...field} />
                             </FormControl>
@@ -496,7 +496,7 @@ export function PurchaseOrderForm({
                         control={form.control}
                         name={`lines.${index}.unitPrice`}
                         render={({ field }) => (
-                          <FormItem className="space-y-0 mb-0">
+                          <FormItem className="mb-0 space-y-0">
                             <FormControl>
                               <Input
                                 type="number"
@@ -515,7 +515,7 @@ export function PurchaseOrderForm({
                         control={form.control}
                         name={`lines.${index}.taxRate`}
                         render={({ field }) => (
-                          <FormItem className="space-y-0 mb-0">
+                          <FormItem className="mb-0 space-y-0">
                             <FormControl>
                               <Input
                                 type="number"
@@ -557,11 +557,11 @@ export function PurchaseOrderForm({
             onClick={addLine}
             className="mb-6"
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             Add Item
           </Button>
 
-          <div className="flex flex-col gap-2 ml-auto w-full md:w-1/3">
+          <div className="ml-auto flex w-full flex-col gap-2 md:w-1/3">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Subtotal:</span>
               <span>{formatCurrency(orderSubtotal)}</span>
@@ -574,7 +574,7 @@ export function PurchaseOrderForm({
 
             <Separator />
 
-            <div className="flex justify-between font-medium text-lg">
+            <div className="flex justify-between text-lg font-medium">
               <span>Total:</span>
               <span>{formatCurrency(orderTotal)}</span>
             </div>

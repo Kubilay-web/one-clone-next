@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -30,8 +30,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 
-import { usePurchaseOrderItems } from "@/hooks/usePurchaseOrderQueries";
-import { createGoodsReceipt } from "@/actions/goods-receipt";
+// import { usePurchaseOrderItems } from "@/hooks/usePurchaseOrderQueries";
+// import { createGoodsReceipt } from "@/actions/goods-receipt";
 
 // Define types based on your Prisma schema
 type PurchaseOrderLine = {
@@ -77,7 +77,7 @@ const formSchema = z.object({
       itemId: z.string(),
       receivedQuantity: z.number().min(0),
       notes: z.string().optional(),
-    })
+    }),
   ),
   notes: z.string().optional(),
   locationId: z.string(),
@@ -92,8 +92,8 @@ export function ReceiveInventoryModal({
 }: ReceiveInventoryModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const { data: session } = useSession();
-  const { lines = [], isLoading } = usePurchaseOrderItems(purchaseOrderId);
+  // const { data: session } = useSession();
+  // const { lines = [], isLoading } = usePurchaseOrderItems(purchaseOrderId);
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -120,31 +120,31 @@ export function ReceiveInventoryModal({
   });
 
   // Update form values when lines change
-  useState(() => {
-    if (lines.length > 0) {
-      setValue(
-        "lines",
-        lines.map((line) => ({
-          purchaseOrderLineId: line.id,
-          itemId: line.itemId,
-          receivedQuantity: 0,
-          notes: "",
-        }))
-      );
-    }
-  });
+  // useState(() => {
+  //   if (lines.length > 0) {
+  //     setValue(
+  //       "lines",
+  //       lines.map((line) => ({
+  //         purchaseOrderLineId: line.id,
+  //         itemId: line.itemId,
+  //         receivedQuantity: 0,
+  //         notes: "",
+  //       }))
+  //     );
+  //   }
+  // });
 
   const onSubmit = async (data: ReceiptFormValues) => {
-    if (!session?.user?.id) {
-      toast.error("User not authenticated");
-      return;
-    }
+    // if (!session?.user?.id) {
+    //   toast.error("User not authenticated");
+    //   return;
+    // }
     setIsSubmitting(true);
 
     try {
       // Filter out lines with zero received quantity
       const filteredLines = data.lines.filter(
-        (line) => line.receivedQuantity > 0
+        (line) => line.receivedQuantity > 0,
       );
 
       if (filteredLines.length === 0) {
@@ -153,21 +153,21 @@ export function ReceiveInventoryModal({
         return;
       }
 
-      const result = await createGoodsReceipt({
-        purchaseOrderId,
-        locationId: data.locationId,
-        notes: data.notes || "",
-        receivedById: session.user.id,
-        lines: filteredLines,
-      });
+      // const result = await createGoodsReceipt({
+      //   purchaseOrderId,
+      //   locationId: data.locationId,
+      //   notes: data.notes || "",
+      //   receivedById: session.user.id,
+      //   lines: filteredLines,
+      // });
 
-      if (result.success) {
-        toast.success("Inventory received successfully");
-        router.refresh();
-        onClose();
-      } else {
-        toast.error(result.error || "Failed to receive inventory");
-      }
+      // if (result.success) {
+      //   toast.success("Inventory received successfully");
+      //   router.refresh();
+      //   onClose();
+      // } else {
+      //   toast.error(result.error || "Failed to receive inventory");
+      // }
     } catch (error) {
       console.error("Error receiving inventory:", error);
       toast.error("An unexpected error occurred");
@@ -178,7 +178,7 @@ export function ReceiveInventoryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Receive Inventory</DialogTitle>
           <DialogDescription>
@@ -188,7 +188,7 @@ export function ReceiveInventoryModal({
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4 py-4">
-            <div className="border rounded-md overflow-hidden">
+            <div className="overflow-hidden rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -201,7 +201,7 @@ export function ReceiveInventoryModal({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {lines.length > 0 ? (
+                  {/* {lines.length > 0 ? (
                     lines.map((line, index) => (
                       <TableRow key={line.id}>
                         <TableCell>
@@ -256,7 +256,7 @@ export function ReceiveInventoryModal({
                         No items found for this purchase order
                       </TableCell>
                     </TableRow>
-                  )}
+                  )} */}
                 </TableBody>
               </Table>
             </div>
