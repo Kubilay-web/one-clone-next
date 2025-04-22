@@ -9,9 +9,9 @@ export default async function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen w-full">
-      <Sidebar session={undefined} />
+      {/* <Sidebar session={undefined} /> */}
       <div className="md:ml-[220px] lg:ml-[280px]">
-        <Navbar session={undefined} />
+        {/* <Navbar session={undefined} /> */}
         <div className="p-4">{children}</div>
       </div>
     </div>

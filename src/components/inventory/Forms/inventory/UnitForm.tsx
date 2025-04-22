@@ -1,8 +1,8 @@
 "use client";
 
-import { createUnit } from "@/actions/units";
+// import { createUnit } from "@/actions/units";
 
-import TextInput from "@/components/FormInputs/TextInput";
+// import TextInput from "@/components/FormInputs/TextInput";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -54,13 +54,13 @@ export function UnitForm({ orgId }: { orgId: string }) {
     data.orgId = orgId;
     console.log(data);
     try {
-      const res = await createUnit(data);
-      console.log(res);
-      if (res.status !== 200) {
-        setLoading(false);
-        toast.error(res.error);
-        return;
-      }
+      // const res = await createUnit(data);
+      // console.log(res);
+      // if (res.status !== 200) {
+      //   setLoading(false);
+      //   toast.error(res.error);
+      //   return;
+      // }
       setLoading(false);
       toast.success("Unit created Successfully");
       window.location.reload();
@@ -86,16 +86,16 @@ export function UnitForm({ orgId }: { orgId: string }) {
         <DialogHeader>
           <DialogTitle></DialogTitle>
         </DialogHeader>
-        <Card className="w-full ">
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>Create New Unit</CardTitle>
           </CardHeader>
           <CardFooter className="flex flex-col gap-4">
             <form
               onSubmit={handleSubmit(saveUnit)}
-              className="flex flex-col w-full gap-2"
+              className="flex w-full flex-col gap-2"
             >
-              <TextInput
+              {/* <TextInput
                 register={register}
                 errors={errors}
                 label="Unit Title"
@@ -106,11 +106,11 @@ export function UnitForm({ orgId }: { orgId: string }) {
                 errors={errors}
                 label="Unit Symbol"
                 name="symbol"
-              />
+              /> */}
 
               {loading ? (
                 <Button disabled>
-                  <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Please wait...
                 </Button>
               ) : (

@@ -1,4 +1,4 @@
-import { getNormalDate } from "@/lib/getNormalDate";
+// import { getNormalDate } from "@/lib/getNormalDate";
 import React from "react";
 const getPastDays = (isoString: string): number => {
   const createdDate = new Date(isoString);
@@ -53,7 +53,7 @@ export default function DateColumn({
   accessorKey: any;
 }) {
   const createdAt = row.getValue(`${accessorKey}`);
-  const date = getNormalDate(createdAt);
+  // const date = getNormalDate(createdAt);
   const originalDate = new Date(createdAt);
 
   const day = originalDate.getDate();
@@ -61,5 +61,5 @@ export default function DateColumn({
   const year = originalDate.getFullYear();
   const time = timeAgo(createdAt);
   const pastDays = getPastDays(createdAt);
-  return <div className="hidden md:block">{date}</div>;
+  return <div className="hidden md:block">{/* {date} */} date</div>;
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import { createTax } from "@/actions/tax";
-import { createUnit } from "@/actions/units";
+// import { createTax } from "@/actions/tax";
+// import { createUnit } from "@/actions/units";
 
-import TextInput from "@/components/FormInputs/TextInput";
+// import TextInput from "@/components/FormInputs/TextInput";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -55,13 +55,13 @@ export function TaxRateForm({ orgId }: { orgId: string }) {
     data.orgId = orgId;
     console.log(data);
     try {
-      const res = await createTax(data);
-      console.log(res);
-      if (res.status !== 200) {
-        setLoading(false);
-        toast.error(res.error);
-        return;
-      }
+      // const res = await createTax(data);
+      // console.log(res);
+      // if (res.status !== 200) {
+      //   setLoading(false);
+      //   toast.error(res.error);
+      //   return;
+      // }
       setLoading(false);
       toast.success("Tax created Successfully");
       window.location.reload();
@@ -87,33 +87,33 @@ export function TaxRateForm({ orgId }: { orgId: string }) {
         <DialogHeader>
           <DialogTitle></DialogTitle>
         </DialogHeader>
-        <Card className="w-full ">
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>Create New Tax</CardTitle>
           </CardHeader>
           <CardFooter className="flex flex-col gap-4">
             <form
               onSubmit={handleSubmit(saveUnit)}
-              className="flex flex-col w-full gap-2"
+              className="flex w-full flex-col gap-2"
             >
-              <TextInput
+              {/* <TextInput
                 register={register}
                 errors={errors}
                 label="Tax Title"
                 name="name"
-              />
-              <TextInput
+              /> */}
+              {/* <TextInput
                 register={register}
                 errors={errors}
                 label="Rate(%)"
                 name="rate"
                 unit="%"
                 toolTipText="This Value must be in percentage"
-              />
+              /> */}
 
               {loading ? (
                 <Button disabled>
-                  <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Please wait...
                 </Button>
               ) : (

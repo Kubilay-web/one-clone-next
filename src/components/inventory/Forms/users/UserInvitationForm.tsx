@@ -1,7 +1,7 @@
 "use client";
 
-import { sendInvite } from "@/actions/users";
-import FormSelectInput from "@/components/FormInputs/FormSelectInput";
+// import { sendInvite } from "@/actions/users";
+// import FormSelectInput from "@/components/FormInputs/FormSelectInput";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -68,14 +68,14 @@ export function UserInvitationForm({
     };
     console.log(data);
     try {
-      const res = await sendInvite(data);
-      console.log(res);
-      if (res.status !== 200) {
-        setLoading(false);
-        toast.error(res.error);
-        setErr(res.error ?? "");
-        return;
-      }
+      // const res = await sendInvite(data);
+      // console.log(res);
+      // if (res.status !== 200) {
+      //   setLoading(false);
+      //   toast.error(res.error);
+      //   setErr(res.error ?? "");
+      //   return;
+      // }
       setLoading(false);
       toast.success("Invite Sent Successfully");
     } catch (error) {
@@ -99,22 +99,22 @@ export function UserInvitationForm({
         <DialogHeader>
           <DialogTitle></DialogTitle>
         </DialogHeader>
-        <Card className="w-full ">
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>Invite New User</CardTitle>
           </CardHeader>
           <CardFooter className="flex flex-col gap-4">
-            <div className="flex flex-col w-full gap-2">
+            <div className="flex w-full flex-col gap-2">
               <Input
-                className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6 text-sm"
+                className="block w-full rounded-md border-0 py-2 text-sm text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
                 type="email"
                 placeholder="example-user@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && sendInvitation()}
               />
-              {err && <p className="text-red-500 -mt-1">{err}</p>}
-              <FormSelectInput
+              {err && <p className="-mt-1 text-red-500">{err}</p>}
+              {/* <FormSelectInput
                 label="User Location"
                 options={locations}
                 option={selectedLocation}
@@ -125,10 +125,10 @@ export function UserInvitationForm({
                 options={roles}
                 option={selectedRole}
                 setOption={setSelectedRole}
-              />
+              /> */}
               {loading ? (
                 <Button disabled>
-                  <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Please wait...
                 </Button>
               ) : (

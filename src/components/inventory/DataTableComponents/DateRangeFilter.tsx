@@ -1,5 +1,5 @@
 "use client";
-import { filterByDateRange } from "@/lib/dateFilters";
+// import { filterByDateRange } from "@/lib/dateFilters";
 import React from "react";
 import { addDays, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -34,8 +34,8 @@ export default function DateRangeFilter({
     setIsSearch(false);
     const startDate = selectedDate.from;
     const endDate = selectedDate.to;
-    const filteredData = filterByDateRange(data, startDate, endDate);
-    onFilter(filteredData);
+    // const filteredData = filterByDateRange(data, startDate, endDate);
+    // onFilter(filteredData);
   };
   return (
     <div className={cn("grid gap-2", className)}>
@@ -46,7 +46,7 @@ export default function DateRangeFilter({
             variant={"outline"}
             className={cn(
               "w-[300px] justify-start text-left font-normal",
-              !date && "text-muted-foreground"
+              !date && "text-muted-foreground",
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />

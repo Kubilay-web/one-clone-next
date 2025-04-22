@@ -38,7 +38,7 @@ export default function WaitList() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-950 to-blue-900 flex flex-col items-center justify-center px-4 py-20 relative overflow-hidden">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-blue-950 to-blue-900 px-4 py-20">
       {/* Grid Background */}
       <div
         className="absolute inset-0"
@@ -54,45 +54,43 @@ export default function WaitList() {
       />
 
       {/* Glowing Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500 rounded-full opacity-20 blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500 rounded-full opacity-20 blur-3xl" />
+      <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-blue-500 opacity-20 blur-3xl" />
+      <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-purple-500 opacity-20 blur-3xl" />
 
       {/* Main Content */}
-      <div className="max-w-3xl mx-auto text-center space-y-8 relative z-10">
+      <div className="relative z-10 mx-auto max-w-3xl space-y-8 text-center">
         {/* Headline with Gradient Effect */}
         <div className="relative">
-          <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-200 via-gray-100 to-gray-300 mb-6 animate-gradient">
+          <h1 className="animate-gradient mb-6 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-300 bg-clip-text text-5xl font-bold text-transparent md:text-6xl">
             Join Our Product
             <br />
             Launch Waitlist
           </h1>
-          <div className="absolute inset-0 text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-200 via-gray-100 to-gray-300 blur-lg opacity-50">
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-300 bg-clip-text text-5xl font-bold text-transparent opacity-50 blur-lg md:text-6xl">
             Join Our Product
             <br />
             Launch Waitlist
           </div>
         </div>
 
-        <p className="text-xl md:text-2xl text-gray-400 mb-12 leading-relaxed">
+        <p className="mb-12 text-xl leading-relaxed text-gray-400 md:text-2xl">
           Be part of something truly extraordinary. Join thousands of others
           already gaining early access to our revolutionary new product.
         </p>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-12">
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <div className="flex-grow max-w-md">
+        <form onSubmit={handleSubmit(onSubmit)} className="mb-12 space-y-4">
+          <div className="flex flex-col justify-center gap-4 md:flex-row">
+            <div className="max-w-md flex-grow">
               <input
                 {...register("email")}
                 type="email"
                 placeholder="Enter your email"
-                className={`w-full px-6 py-4 rounded-lg bg-blue-800/20 backdrop-blur-sm text-white 
-                  placeholder-gray-400 border ${errors.email ? "border-red-500" : "border-blue-700/50"}
-                  focus:outline-none focus:border-blue-500 transition-colors`}
+                className={`w-full rounded-lg border bg-blue-800/20 px-6 py-4 text-white placeholder-gray-400 backdrop-blur-sm ${errors.email ? "border-red-500" : "border-blue-700/50"} transition-colors focus:border-blue-500 focus:outline-none`}
                 disabled={isSubmitting || isSubmitSuccessful}
               />
               {errors.email && (
-                <div className="text-red-500 text-sm text-left mt-2">
+                <div className="mt-2 text-left text-sm text-red-500">
                   {errors.email.message}
                 </div>
               )}
@@ -101,13 +99,11 @@ export default function WaitList() {
             <button
               type="submit"
               disabled={isSubmitting || isSubmitSuccessful}
-              className={`px-8 py-4 bg-black text-white rounded-lg font-semibold transition-all
-                ${isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:bg-gray-900"}
-                ${isSubmitSuccessful ? "bg-green-600 hover:bg-green-600" : ""}`}
+              className={`rounded-lg bg-black px-8 py-4 font-semibold text-white transition-all ${isSubmitting ? "cursor-not-allowed opacity-70" : "hover:bg-gray-900"} ${isSubmitSuccessful ? "bg-green-600 hover:bg-green-600" : ""}`}
             >
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   Submitting...
                 </span>
               ) : isSubmitSuccessful ? (
@@ -121,25 +117,25 @@ export default function WaitList() {
 
         {/* Success Message */}
         {isSubmitSuccessful && (
-          <div className="text-green-400 text-lg animate-fade-in">
-            We'll notify you when we launch!
+          <div className="animate-fade-in text-lg text-green-400">
+            We will notify you when we launch!
           </div>
         )}
 
         {/* Waitlist Counter */}
-        <div className="flex items-center justify-center gap-2 mb-12">
+        <div className="mb-12 flex items-center justify-center gap-2">
           <div className="flex -space-x-2">
-            <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold ring-2 ring-blue-900">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-600 font-semibold text-white ring-2 ring-blue-900">
               JD
             </div>
-            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold ring-2 ring-blue-900">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-semibold text-white ring-2 ring-blue-900">
               AS
             </div>
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold ring-2 ring-blue-900">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500 font-semibold text-white ring-2 ring-blue-900">
               MK
             </div>
           </div>
-          <span className="text-gray-400 ml-4">
+          <span className="ml-4 text-gray-400">
             100+ people on the waitlist
           </span>
         </div>
@@ -148,33 +144,33 @@ export default function WaitList() {
         <div className="flex justify-center gap-6">
           <a
             href="#"
-            className="text-gray-400 hover:text-gray-300 transition-colors"
+            className="text-gray-400 transition-colors hover:text-gray-300"
           >
-            <X className="w-6 h-6" />
+            <X className="h-6 w-6" />
           </a>
           <a
             href="#"
-            className="text-gray-400 hover:text-gray-300 transition-colors"
+            className="text-gray-400 transition-colors hover:text-gray-300"
           >
-            <Instagram className="w-6 h-6" />
+            <Instagram className="h-6 w-6" />
           </a>
           <a
             href="#"
-            className="text-gray-400 hover:text-gray-300 transition-colors"
+            className="text-gray-400 transition-colors hover:text-gray-300"
           >
-            <MessageSquare className="w-6 h-6" />
+            <MessageSquare className="h-6 w-6" />
           </a>
           <a
             href="#"
-            className="text-gray-400 hover:text-gray-300 transition-colors"
+            className="text-gray-400 transition-colors hover:text-gray-300"
           >
-            <Facebook className="w-6 h-6" />
+            <Facebook className="h-6 w-6" />
           </a>
           <a
             href="#"
-            className="text-gray-400 hover:text-gray-300 transition-colors"
+            className="text-gray-400 transition-colors hover:text-gray-300"
           >
-            <Linkedin className="w-6 h-6" />
+            <Linkedin className="h-6 w-6" />
           </a>
         </div>
       </div>

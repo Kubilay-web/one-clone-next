@@ -1,6 +1,6 @@
 "use client";
 
-import { UploadButton } from "@/lib/uploadthing";
+// import { UploadButton } from "@/lib/uploadthing";
 import { X } from "lucide-react";
 import Image from "next/image";
 
@@ -31,12 +31,12 @@ export default function MultipleImageInput({
     <div className="space-y-4">
       <div className="grid gap-4">
         {imageUrls.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {imageUrls.map((imageUrl: string, i: number) => (
-              <div key={i} className="relative group">
+              <div key={i} className="group relative">
                 <Image
                   alt={`Product image ${i + 1}`}
-                  className="aspect-square w-full h-24 rounded-md object-contain border"
+                  className="aspect-square h-24 w-full rounded-md border object-contain"
                   height="96"
                   src={imageUrl || "/placeholder.svg"}
                   width="96"
@@ -44,7 +44,7 @@ export default function MultipleImageInput({
                 <button
                   type="button"
                   onClick={() => handleRemove(i)}
-                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute right-1 top-1 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
                   aria-label="Remove image"
                 >
                   <X className="h-4 w-4" />
@@ -54,7 +54,7 @@ export default function MultipleImageInput({
           </div>
         )}
 
-        <UploadButton
+        {/* <UploadButton
           className="w-full"
           endpoint={endpoint}
           onClientUploadComplete={(res) => {
@@ -63,7 +63,7 @@ export default function MultipleImageInput({
           onUploadError={(error: Error) => {
             alert(`ERROR! ${error.message}`);
           }}
-        />
+        /> */}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UploadButton } from "@/lib/uploadthing";
+// import { UploadButton } from "@/lib/uploadthing";
 // import { UploadButton } from "@/lib/uploadthing";
 import Image from "next/image";
 import React from "react";
@@ -29,7 +29,7 @@ export default function ImageInput({
             src={imageUrl}
             width="300"
           />
-          <UploadButton
+          {/* <UploadButton
             className="col-span-full"
             endpoint={endpoint}
             onClientUploadComplete={(res) => {
@@ -42,7 +42,7 @@ export default function ImageInput({
               // Do something with the error.
               alert(`ERROR! ${error.message}`);
             }}
-          />
+          /> */}
         </div>
       </CardContent>
     </Card>

@@ -8,10 +8,10 @@ import { User as PrismaUser } from "@prisma/client";
 
 import TextInput from "../FormInputs/TextInput";
 import FormFooter from "./FormFooter";
-import { updateUserPassword } from "@/actions/users";
+// import { updateUserPassword } from "@/actions/users";
 import PasswordInput from "../FormInputs/PasswordInput";
 import { Lock, LockOpen } from "lucide-react";
-import { signOut } from "next-auth/react";
+// import { signOut } from "next-auth/react";
 import toast from "react-hot-toast";
 
 export type PasswordProps = {
@@ -49,19 +49,19 @@ export default function ChangePasswordForm({
     setLoading(true);
     try {
       if (editingId) {
-        const res = await updateUserPassword(editingId, data);
-        if (res?.status === 403) {
-          setPassErr(res?.error as string);
-          setLoading(false);
-          return;
-        }
-        if (res?.status === 200) {
-          setLoading(false);
-          toast.success("Password Updated Successfully!");
-          reset();
-          await signOut();
-          router.push("/login");
-        }
+        // const res = await updateUserPassword(editingId, data);
+        // if (res?.status === 403) {
+        //   setPassErr(res?.error as string);
+        //   setLoading(false);
+        //   return;
+        // }
+        // if (res?.status === 200) {
+        //   setLoading(false);
+        //   toast.success("Password Updated Successfully!");
+        //   reset();
+        //   await signOut();
+        //   router.push("/login");
+        // }
       }
     } catch (error) {
       setLoading(false);
@@ -74,7 +74,7 @@ export default function ChangePasswordForm({
     <form className="" onSubmit={handleSubmit(onSubmit)}>
       <h2 className="">Change Password</h2>
       <div className="grid grid-cols-12 gap-6 py-8">
-        <div className="lg:col-span-8 col-span-full space-y-3">
+        <div className="col-span-full space-y-3 lg:col-span-8">
           <Card>
             <CardContent>
               <div className="grid gap-6 pt-6">
@@ -95,7 +95,7 @@ export default function ChangePasswordForm({
                     icon={Lock}
                     placeholder="password"
                   />
-                  {passErr && <p className="text-red-500 text-xs">{passErr}</p>}
+                  {passErr && <p className="text-xs text-red-500">{passErr}</p>}
                 </div>
               </div>
               <FormFooter

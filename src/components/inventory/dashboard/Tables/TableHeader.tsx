@@ -6,11 +6,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Check, CloudUpload, Loader2, PlusCircle, X } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
-import { RiFileExcel2Line } from "react-icons/ri";
-import {
-  Options,
-  SelectValue,
-} from "react-tailwindcss-select/dist/components/type";
+// import { RiFileExcel2Line } from "react-icons/ri";
+// import {
+//   Options,
+//   SelectValue,
+// } from "react-tailwindcss-select/dist/components/type";
 import {
   Dialog,
   DialogClose,
@@ -21,12 +21,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { formatBytes } from "@/lib/formatBytes";
-import { generateSlug } from "@/lib/generateSlug";
-// import { createBulkCategories } from "@/actions/categories";
-import toast from "react-hot-toast";
-import exportDataToExcel from "@/lib/exportDataToExcel";
-import { FaFileExcel } from "react-icons/fa";
+// import { formatBytes } from "@/lib/formatBytes";
+// import { generateSlug } from "@/lib/generateSlug";
+// // import { createBulkCategories } from "@/actions/categories";
+// import toast from "react-hot-toast";
+// import exportDataToExcel from "@/lib/exportDataToExcel";
+// import { FaFileExcel } from "react-icons/fa";
 
 type TableHeaderProps = {
   title: string;
@@ -44,8 +44,8 @@ export default function TableHeader({
   model,
   showImport = true,
 }: TableHeaderProps) {
-  const [status, setStatus] = useState<SelectValue>(null);
-  const [date, setDate] = useState<SelectValue>(null);
+  // const [status, setStatus] = useState<SelectValue>(null);
+  // const [date, setDate] = useState<SelectValue>(null);
   const [excelFile, setExcelFile] = useState<File | null>(null);
   const [jsonData, setJsonData] = useState("");
   const [preview, setPreview] = useState(false);
@@ -66,22 +66,22 @@ export default function TableHeader({
     excelDownload = "/Products.xlsx";
   }
   console.log(excelFile);
-  const options: Options = [
-    { value: "true", label: "Active" },
-    { value: "false", label: "Disabled" },
-  ];
-  const dateOptions: Options = [
-    { value: "lastMonth", label: "Last Month" },
-    { value: "thisMonth", label: "This Month" },
-  ];
-  const handleStatusChange = (item: SelectValue) => {
-    console.log("value:", item);
-    setStatus(item);
-  };
-  const handleDateChange = (item: SelectValue) => {
-    console.log("value:", item);
-    setDate(item);
-  };
+  // const options: Options = [
+  //   { value: "true", label: "Active" },
+  //   { value: "false", label: "Disabled" },
+  // ];
+  // const dateOptions: Options = [
+  //   { value: "lastMonth", label: "Last Month" },
+  //   { value: "thisMonth", label: "This Month" },
+  // ];
+  // const handleStatusChange = (item: SelectValue) => {
+  //   console.log("value:", item);
+  //   setStatus(item);
+  // };
+  // const handleDateChange = (item: SelectValue) => {
+  //   console.log("value:", item);
+  //   setDate(item);
+  // };
 
   function previewData() {
     setPreview(true);
@@ -125,7 +125,7 @@ export default function TableHeader({
               const categories = json.map((item: any) => {
                 return {
                   title: item.Title,
-                  slug: generateSlug(item.Title),
+                  // slug: generateSlug(item.Title),
                   description: item.Description,
                   imageUrl: item.Image,
                   mainCategoryId: item.mainCategoryId,
@@ -141,7 +141,7 @@ export default function TableHeader({
           } catch (error) {
             setUploadSuccess(false);
             setLoading(false);
-            toast.error("Something went wrong, Please Try again 😢");
+            // toast.error("Something went wrong, Please Try again 😢");
             console.log(error);
           }
         }
@@ -154,12 +154,12 @@ export default function TableHeader({
     const today = new Date();
     const filename = `Exported ${title} ${today.toDateString()}`;
     // console.log(filename);
-    exportDataToExcel(data, filename);
+    // exportDataToExcel(data, filename);
   }
   return (
-    <div className=" mb-1">
-      <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-600 py-3">
-        <h2 className="scroll-m-20  text-2xl font-semibold tracking-tight first:mt-0">
+    <div className="mb-1">
+      <div className="flex items-center justify-between border-b border-gray-200 py-3 dark:border-gray-600">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight first:mt-0">
           {title}({data.length})
         </h2>
         <div className="ml-auto flex items-center gap-2">
@@ -169,7 +169,7 @@ export default function TableHeader({
             variant="outline"
             className="h-8 gap-1"
           >
-            <FaFileExcel className="h-3.5 w-3.5" />
+            {/* <FaFileExcel className="h-3.5 w-3.5" /> */}
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
               Export
             </span>
@@ -184,7 +184,7 @@ export default function TableHeader({
                   variant="outline"
                   className="h-8 gap-1"
                 >
-                  <RiFileExcel2Line className="h-3.5 w-3.5" />
+                  {/* <RiFileExcel2Line className="h-3.5 w-3.5" /> */}
                   <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                     Import
                   </span>
@@ -200,14 +200,14 @@ export default function TableHeader({
                       Named Correctly
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="h-60 w-full rounded-md border flex items-center justify-center">
+                  <div className="flex h-60 w-full items-center justify-center rounded-md border">
                     <Button disabled className="items-center">
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Syncing Data Please wait ...
                     </Button>
                   </div>
                   {!loading && (
-                    <DialogFooter className="justify-between ">
+                    <DialogFooter className="justify-between">
                       {preview ? (
                         <Button
                           onClick={() => setPreview(false)}
@@ -243,16 +243,16 @@ export default function TableHeader({
                           Data Columns Required
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="h-72 w-full rounded-md border flex items-center justify-center flex-col">
-                        <div className="flex items-center justify-center w-24 h-24 bg-green-100 rounded-full">
+                      <div className="flex h-72 w-full flex-col items-center justify-center rounded-md border">
+                        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
                           <Check />
                         </div>
-                        <h2 className="text-xs pt-2 px-8 text-center">
+                        <h2 className="px-8 pt-2 text-center text-xs">
                           Data Synced Successfully. You can close the Window
                         </h2>
                       </div>
 
-                      <DialogFooter className="justify-between ">
+                      <DialogFooter className="justify-between">
                         <DialogClose asChild>
                           <Button
                             onClick={() => window.location.reload()}
@@ -288,15 +288,15 @@ export default function TableHeader({
                             </Link>
                           </Button>
 
-                          <div className="flex items-center justify-center w-full">
+                          <div className="flex w-full items-center justify-center">
                             <label
                               htmlFor="dropzone-file"
-                              className="flex lg:flex-col flex-row  items-center justify-center w-full h-16 lg:h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                              className="dark:hover:bg-bray-800 flex h-16 w-full cursor-pointer flex-row items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600 lg:h-36 lg:flex-col"
                             >
-                              <div className="flex flex-row lg:flex-col items-center justify-center pt-5 pb-6 gap-4 lg:gap-0">
-                                <CloudUpload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
+                              <div className="flex flex-row items-center justify-center gap-4 pb-6 pt-5 lg:flex-col lg:gap-0">
+                                <CloudUpload className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400" />
 
-                                <p className="lg:mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                <p className="text-sm text-gray-500 dark:text-gray-400 lg:mb-2">
                                   <span className="font-semibold">
                                     Click to upload
                                   </span>{" "}
@@ -316,36 +316,36 @@ export default function TableHeader({
                                 className="hidden"
                                 onChange={(e) =>
                                   setExcelFile(
-                                    e.target.files ? e.target.files[0] : null
+                                    e.target.files ? e.target.files[0] : null,
                                   )
                                 }
                               />
                             </label>
                           </div>
                           {excelFile && (
-                            <div className="flex items-center shadow-lg rounded-md lg:py-3 py-2 px-6 bg-slate-100 dark:bg-slate-800 justify-between">
+                            <div className="flex items-center justify-between rounded-md bg-slate-100 px-6 py-2 shadow-lg dark:bg-slate-800 lg:py-3">
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 lg:w-14 lg:h-14 p-2 lg:p-4 bg-slate-300 dark:bg-slate-500 rounded flex items-center justify-center flex-shrink-0">
-                                  <RiFileExcel2Line className="h-4 w-4" />
+                                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-slate-300 p-2 dark:bg-slate-500 lg:h-14 lg:w-14 lg:p-4">
+                                  {/* <RiFileExcel2Line className="h-4 w-4" /> */}
                                 </div>
                                 <div className="">
                                   <p className="text-sm font-semibold">
                                     {excelFile.name}
                                   </p>
                                   <span className="text-xs">
-                                    {formatBytes(excelFile.size)}
+                                    {/* {formatBytes(excelFile.size)} */}
                                   </span>
                                 </div>
                               </div>
                               <button onClick={() => setExcelFile(null)}>
-                                <X className="text-slate-600 w-5 h-5" />
+                                <X className="h-5 w-5 text-slate-600" />
                               </button>
                             </div>
                           )}
                         </div>
                       )}
 
-                      <DialogFooter className="justify-between ">
+                      <DialogFooter className="justify-between">
                         {preview ? (
                           <Button
                             onClick={() => setPreview(false)}

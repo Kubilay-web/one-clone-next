@@ -1,8 +1,14 @@
-import RoleForm from "@/components/Forms/RoleForm";
-import { getAuthenticatedUser } from "@/config/useAuth";
+// import RoleForm from "@/components/Forms/RoleForm";
+// import { getAuthenticatedUser } from "@/config/useAuth";
 
-export default async function page() {
-  const user = await getAuthenticatedUser();
-  const orgId = user.orgId;
-  return <RoleForm orgId={orgId} />;
+// export default async function page() {
+//   const user = await getAuthenticatedUser();
+//   const orgId = user.orgId;
+//   return <RoleForm orgId={orgId} />;
+// }
+
+import React from "react";
+
+export default function page() {
+  return <div>new</div>;
 }

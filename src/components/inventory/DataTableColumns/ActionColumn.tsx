@@ -23,10 +23,10 @@ import {
 import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
-import { deleteUser } from "@/actions/users";
-import { deleteUnit } from "@/actions/units";
-import { deleteBrand } from "@/actions/brands";
-import { deleteCategory } from "@/actions/categories";
+// import { deleteUser } from "@/actions/users";
+// import { deleteUnit } from "@/actions/units";
+// import { deleteBrand } from "@/actions/brands";
+// import { deleteCategory } from "@/actions/categories";
 
 type ActionColumnProps = {
   row: any;
@@ -41,38 +41,38 @@ export default function ActionColumn({
   id = "",
 }: ActionColumnProps) {
   const isActive = row.isActive;
-  async function handleDelete() {
-    try {
-      if (model === "unit") {
-        const res = await deleteUnit(id);
-        if (res?.ok) {
-          window.location.reload();
-          toast.success(`${model} Deleted Successfully`);
-        }
-      } else if (model === "user") {
-        const res = await deleteUser(id);
-        if (res?.ok) {
-          window.location.reload();
-          toast.success(`${model} Deleted Successfully`);
-        }
-      } else if (model === "brand") {
-        const res = await deleteBrand(id);
-        if (res?.ok) {
-          window.location.reload();
-          toast.success(`${model} Deleted Successfully`);
-        }
-      } else if (model === "category") {
-        const res = await deleteCategory(id);
-        if (res?.ok) {
-          window.location.reload();
-          toast.success(`${model} Deleted Successfully`);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Category Couldn't be deleted");
-    }
-  }
+  // async function handleDelete() {
+  //   try {
+  //     if (model === "unit") {
+  //       const res = await deleteUnit(id);
+  //       if (res?.ok) {
+  //         window.location.reload();
+  //         toast.success(`${model} Deleted Successfully`);
+  //       }
+  //     } else if (model === "user") {
+  //       const res = await deleteUser(id);
+  //       if (res?.ok) {
+  //         window.location.reload();
+  //         toast.success(`${model} Deleted Successfully`);
+  //       }
+  //     } else if (model === "brand") {
+  //       const res = await deleteBrand(id);
+  //       if (res?.ok) {
+  //         window.location.reload();
+  //         toast.success(`${model} Deleted Successfully`);
+  //       }
+  //     } else if (model === "category") {
+  //       const res = await deleteCategory(id);
+  //       if (res?.ok) {
+  //         window.location.reload();
+  //         toast.success(`${model} Deleted Successfully`);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error("Category Couldn't be deleted");
+  //   }
+  // }
   return (
     <div className="flex items-center">
       <AlertDialog>
@@ -80,9 +80,9 @@ export default function ActionColumn({
           <Button
             variant={"ghost"}
             size={"icon"}
-            className="text-red-600 hover:text-red-700 transition-all duration-500 cursor-pointer "
+            className="cursor-pointer text-red-600 transition-all duration-500 hover:text-red-700"
           >
-            <Trash className="w-4 h-4  mr-2 flex-shrink-0" />
+            <Trash className="mr-2 h-4 w-4 flex-shrink-0" />
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
@@ -95,9 +95,9 @@ export default function ActionColumn({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <Button variant={"destructive"} onClick={() => handleDelete()}>
+            {/* <Button variant={"destructive"} onClick={() => handleDelete()}>
               Permanently Delete
-            </Button>
+            </Button> */}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -106,10 +106,10 @@ export default function ActionColumn({
           variant={"ghost"}
           size={"icon"}
           asChild
-          className="text-green-600 hover:text-green-700 transition-all duration-500 cursor-pointer "
+          className="cursor-pointer text-green-600 transition-all duration-500 hover:text-green-700"
         >
           <Link href={editEndpoint}>
-            <Pencil className="w-4 h-4 " />
+            <Pencil className="h-4 w-4" />
           </Link>
         </Button>
       )}

@@ -1,4 +1,4 @@
-import { MetricCard } from "@/components/metric-card";
+// import { MetricCard } from "@/components/metric-card";
 import {
   Card,
   CardContent,
@@ -157,12 +157,12 @@ const bigCards = [
 export default function DashboardMain() {
   return (
     <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-muted-foreground">
-              Here's your statistics overview.
+              Heres your statistics overview.
             </p>
           </div>
           <div className="flex items-center space-x-4">
@@ -186,7 +186,7 @@ export default function DashboardMain() {
         <div className="grid grid-cols-12 gap-6">
           {/* Big Cards - 4 cards in a row */}
           {bigCards.map((card, index) => (
-            <Card key={index} className="col-span-3 relative overflow-hidden">
+            <Card key={index} className="relative col-span-3 overflow-hidden">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   {card.title}
@@ -202,7 +202,7 @@ export default function DashboardMain() {
                   <ArrowRight className="mr-1 h-4 w-4" />
                 </div>
               </CardContent>
-              <div className="absolute right-0 bottom-0 opacity-5">
+              <div className="absolute bottom-0 right-0 opacity-5">
                 <card.icon className="h-24 w-24 text-primary" />
               </div>
             </Card>
@@ -255,8 +255,7 @@ export default function DashboardMain() {
                       </TableCell>
                       <TableCell>
                         <div
-                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                          ${
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                             activity.status === "Completed"
                               ? "bg-green-100 text-green-800"
                               : activity.status === "Pending"

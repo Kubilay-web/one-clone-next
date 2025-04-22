@@ -1,4 +1,4 @@
-import { UploadButton } from "@/lib/uploadthing";
+// import { UploadButton } from "@/lib/uploadthing";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
@@ -24,13 +24,13 @@ export default function ImageUploadButton({
     <div
       className={cn(
         "flex items-center gap-2",
-        display === "horizontal" ? "flex-row" : "flex-col"
+        display === "horizontal" ? "flex-row" : "flex-col",
       )}
     >
       <div
         className={cn(
           "relative overflow-hidden rounded-md",
-          size == "sm" ? "h-10 w-10" : "h-20 w-20"
+          size == "sm" ? "h-10 w-10" : "h-20 w-20",
         )}
       >
         <Image
@@ -41,7 +41,7 @@ export default function ImageUploadButton({
           sizes="96px"
         />
       </div>
-      <UploadButton
+      {/* <UploadButton
         className="w-full text-sm"
         endpoint={endpoint}
         onClientUploadComplete={(res) => {
@@ -54,7 +54,7 @@ export default function ImageUploadButton({
           // Do something with the error.
           alert(`ERROR! ${error.message}`);
         }}
-      />
+      /> */}
     </div>
   );
 }
