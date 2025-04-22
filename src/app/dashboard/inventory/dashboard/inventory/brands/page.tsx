@@ -1,33 +1,33 @@
-import DataTable from "@/components/DataTableComponents/DataTable";
-import { columns } from "./columns";
-
-import ModalTableHeader from "@/components/dashboard/Tables/ModalTableHeader";
-import { getAuthenticatedUser } from "@/config/useAuth";
-import { UnitForm } from "@/components/Forms/inventory/UnitForm";
-import { getOrgUnits } from "@/actions/units";
-import { BrandForm } from "@/components/Forms/inventory/BrandForm";
-import { getOrgBrands } from "@/actions/brands";
+import DataTable from "../../../../../../components/inventory/DataTableComponents/DataTable";
+// import { columns } from "./columns";
+import ModalTableHeader from "../../../../../../components/inventory/dashboard/Tables/ModalTableHeader";
+// import { getAuthenticatedUser } from "@/config/useAuth";
+import { UnitForm } from "../../../../../../components/inventory/Forms/inventory/UnitForm";
+// import { getOrgUnits } from "@/actions/units";
+import { BrandForm } from "../../../../../../components/inventory/Forms/inventory/BrandForm";
+// import { getOrgBrands } from "@/actions/brands";
 import { Suspense } from "react";
-import { TableLoading } from "@/components/ui/data-table";
+import { TableLoading } from "../../../../../../components/inventory/ui/data-table";
+import { validateRequest } from "@/auth";
 export default async function page() {
-  const user = await getAuthenticatedUser();
+  // const user = await validateRequest();
 
-  const orgId = user.orgId;
-  const orgName = user?.orgName ?? "";
-  const brands = (await getOrgBrands(orgId)) || [];
+  // const orgId = user.orgId;
+  // const orgName = user?.orgName ?? "";
+  // const brands = (await getOrgBrands(orgId)) || [];
 
   return (
     <div className="p-8">
       <Suspense fallback={<TableLoading title="Vehicle Inventory" />}>
-        <ModalTableHeader
+        {/* <ModalTableHeader
           title="Brands"
           linkTitle="Add Brand"
           href="#"
           data={brands}
           model="brand"
           modalForm={<BrandForm orgId={orgId} />}
-        />
-        <DataTable columns={columns} data={brands} />
+        /> */}
+        {/* <DataTable columns={columns} data={brands} /> */}
       </Suspense>
     </div>
   );
