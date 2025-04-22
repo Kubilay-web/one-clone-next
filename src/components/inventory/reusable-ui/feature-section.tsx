@@ -1,5 +1,6 @@
 import React from "react";
 import { LucideIcon } from "lucide-react";
+import Image from "next/image";
 
 interface FeaturePoint {
   icon: LucideIcon;
@@ -68,10 +69,9 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({
   return (
     <div className="">
       <div className={`${style.background} ${className}`}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 shadow my-8 rounded-md">
+        <div className="mx-auto my-8 max-w-6xl rounded-md px-4 py-12 shadow sm:px-6 lg:px-8 lg:py-16">
           <div
-            className={`grid lg:grid-cols-2 gap-8 lg:gap-16 items-center
-          ${imagePosition === "right" ? "" : "lg:grid-flow-col-dense"}`}
+            className={`grid items-center gap-8 lg:grid-cols-2 lg:gap-16 ${imagePosition === "right" ? "" : "lg:grid-flow-col-dense"}`}
           >
             {/* Content Section */}
             <div
@@ -81,10 +81,10 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({
             >
               <div className="space-y-6">
                 {/* Title Section */}
-                <div className=" flex items-center space-x-3">
+                <div className="flex items-center space-x-3">
                   {icon && (
                     <div
-                      className={`inline-flex p-3 rounded-lg ${style.iconBackground} ${style.iconColor}`}
+                      className={`inline-flex rounded-lg p-3 ${style.iconBackground} ${style.iconColor}`}
                     >
                       {icon}
                     </div>
@@ -114,13 +114,10 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({
                         <div className="space-y-1">
                           <div className="flex items-center space-x-3">
                             <div
-                              className={`
-                        p-2 rounded-lg shrink-0
-                        ${style.featureIcon.background}
-                      `}
+                              className={`shrink-0 rounded-lg p-2 ${style.featureIcon.background} `}
                             >
                               <Icon
-                                className={`w-5 h-5 ${style.featureIcon.color}`}
+                                className={`h-5 w-5 ${style.featureIcon.color}`}
                               />
                             </div>
                             <h3
@@ -143,29 +140,23 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({
 
             {/* Image Section */}
             <div
-              className={`
-            relative mx-auto w-full max-w-xl lg:max-w-none
-            ${imagePosition === "right" ? "lg:order-2" : "lg:order-1"}
-          `}
+              className={`relative mx-auto w-full max-w-xl lg:max-w-none ${imagePosition === "right" ? "lg:order-2" : "lg:order-1"} `}
             >
               <div className="relative w-full">
                 {/* Background Gradient */}
                 <div className="absolute -inset-4">
-                  <div className="w-full h-full mx-auto opacity-30 blur-lg filter">
+                  <div className="mx-auto h-full w-full opacity-30 blur-lg filter">
                     <div
-                      className={`
-                    w-full h-full rounded-full
-                    ${theme === "light" ? "bg-purple-200" : "bg-purple-900"}
-                  `}
+                      className={`h-full w-full rounded-full ${theme === "light" ? "bg-purple-200" : "bg-purple-900"} `}
                     />
                   </div>
                 </div>
 
                 {/* Image */}
-                <img
+                <Image
                   src={imageSrc}
                   alt={imageAlt}
-                  className="relative rounded-lg shadow-lg w-full"
+                  className="relative w-full rounded-lg shadow-lg"
                 />
               </div>
             </div>
