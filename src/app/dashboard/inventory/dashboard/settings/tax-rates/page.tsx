@@ -1,3 +1,5 @@
+"use client";
+
 // import DataTable from "@/components/DataTableComponents/DataTable";
 // import { columns } from "./columns";
 
