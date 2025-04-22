@@ -1,28 +1,28 @@
-import { getTransfers } from "@/actions/stock-transfer";
+// import { getTransfers } from "@/actions/stock-transfer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/lib/utils";
+// import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
 export default async function TransferList({ orgId }: { orgId: string }) {
-  const transfers = await getTransfers(orgId);
+  // const transfers = await getTransfers(orgId);
 
-  if (transfers.length === 0) {
-    return (
-      <div className="text-center p-12 border rounded-lg">
-        <h3 className="text-lg font-medium mb-2">No transfers found</h3>
-        <p className="text-muted-foreground mb-4">
-          You haven't created any stock transfers yet
-        </p>
-        <Link href="/inventory">
-          <Button>Go to Inventory</Button>
-        </Link>
-      </div>
-    );
-  }
+  // if (transfers.length === 0) {
+  //   return (
+  //     <div className="rounded-lg border p-12 text-center">
+  //       <h3 className="mb-2 text-lg font-medium">No transfers found</h3>
+  //       <p className="mb-4 text-muted-foreground">
+  //         You havent created any stock transfers yet
+  //       </p>
+  //       <Link href="/inventory">
+  //         <Button>Go to Inventory</Button>
+  //       </Link>
+  //     </div>
+  //   );
+  // }
 
   return (
-    <div className="border rounded-lg overflow-hidden">
+    <div className="overflow-hidden rounded-lg border">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -37,7 +37,7 @@ export default async function TransferList({ orgId }: { orgId: string }) {
             </tr>
           </thead>
           <tbody className="divide-y">
-            {transfers.map((transfer) => (
+            {/* {transfers.map((transfer) => (
               <tr key={transfer.id} className="hover:bg-muted/50">
                 <td className="px-4 py-3">
                   <Link
@@ -47,9 +47,9 @@ export default async function TransferList({ orgId }: { orgId: string }) {
                     {transfer.transferNumber}
                   </Link>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">
+                 <td className="px-4 py-3 text-muted-foreground">
                   {formatDate(transfer.date)}
-                </td>
+                </td> 
                 <td className="px-4 py-3">{transfer.fromLocation.name}</td>
                 <td className="px-4 py-3">{transfer.toLocation.name}</td>
                 <td className="px-4 py-3">
@@ -67,7 +67,7 @@ export default async function TransferList({ orgId }: { orgId: string }) {
                   </Link>
                 </td>
               </tr>
-            ))}
+            ))} */}
           </tbody>
         </table>
       </div>

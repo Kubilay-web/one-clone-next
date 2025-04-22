@@ -27,7 +27,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { updateItemSupplier } from "@/actions/item-suppliers";
+// import { updateItemSupplier } from "@/actions/item-suppliers";
 import { toast } from "sonner";
 
 // Define the types based on your Prisma schema
@@ -113,7 +113,7 @@ export function ItemSupplierForm({
         notes: data.notes === "" ? null : data.notes,
       };
 
-      await updateItemSupplier(itemSupplier.id, formattedData);
+      // await updateItemSupplier(itemSupplier.id, formattedData);
       toast.success("Updated Item Supplier Successfully");
       router.refresh();
     } catch (error) {

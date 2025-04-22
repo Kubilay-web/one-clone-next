@@ -1,19 +1,20 @@
 // app/products/page.tsx
 import { Suspense } from "react";
 
-import { TableLoading } from "@/components/ui/data-table";
-import ItemListing from "@/components/dashboard/items/item-listing";
-import { getAuthenticatedUser } from "@/config/useAuth";
+// import { TableLoading } from "@/components/ui/data-table";
+// import ItemListing from "@/components/dashboard/items/item-listing";
+// import { getAuthenticatedUser } from "@/config/useAuth";
 
 export default async function ProductsPage() {
-  const user = await getAuthenticatedUser();
+  // const user = await getAuthenticatedUser();
 
-  const orgId = user.orgId;
+  // const orgId = user.orgId;
   return (
     <div className="container py-8">
-      <Suspense fallback={<TableLoading title="Vehicle Inventory" />}>
+      {/* <Suspense fallback={<TableLoading title="Vehicle Inventory" />}>
         <ItemListing orgId={orgId} title="Inventory Items" />
-      </Suspense>
+      </Suspense> */}
+      dsfsdf
     </div>
   );
 }

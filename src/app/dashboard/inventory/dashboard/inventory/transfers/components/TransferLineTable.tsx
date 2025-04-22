@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Package } from "lucide-react";
-import { getTransferLineTableItems } from "@/actions/stock-transfer";
+// import { getTransferLineTableItems } from "@/actions/stock-transfer";
 
 interface TransferLineTableProps {
   transferId: string;
@@ -17,20 +17,20 @@ interface TransferLineTableProps {
 export async function TransferLineTable({
   transferId,
 }: TransferLineTableProps) {
-  const lines = await getTransferLineTableItems(transferId);
+  // const lines = await getTransferLineTableItems(transferId);
 
-  if (lines.length === 0) {
-    return (
-      <div className="text-center p-6 border rounded-lg">
-        <p className="text-muted-foreground">
-          No items found for this transfer
-        </p>
-      </div>
-    );
-  }
+  // if (lines.length === 0) {
+  //   return (
+  //     <div className="text-center p-6 border rounded-lg">
+  //       <p className="text-muted-foreground">
+  //         No items found for this transfer
+  //       </p>
+  //     </div>
+  //   );
+  // }
 
   return (
-    <div className="border rounded-md overflow-hidden">
+    <div className="overflow-hidden rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
@@ -40,7 +40,7 @@ export async function TransferLineTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {lines.map((line) => (
+          {/* {lines.map((line) => (
             <TableRow key={line.id}>
               <TableCell>
                 <div className="flex items-center gap-3">
@@ -60,7 +60,7 @@ export async function TransferLineTable({
               </TableCell>
               <TableCell>{line.notes || "-"}</TableCell>
             </TableRow>
-          ))}
+          ))} */}
         </TableBody>
       </Table>
     </div>

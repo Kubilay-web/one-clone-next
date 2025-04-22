@@ -1,19 +1,19 @@
-import DataTable from "@/components/DataTableComponents/DataTable";
-import { columns } from "./columns";
+// import DataTable from "@/components/DataTableComponents/DataTable";
+// import { columns } from "./columns";
 
-import ModalTableHeader from "@/components/dashboard/Tables/ModalTableHeader";
-import { getAuthenticatedUser } from "@/config/useAuth";
-import { UnitForm } from "@/components/Forms/inventory/UnitForm";
-import { getOrgUnits } from "@/actions/units";
+// import ModalTableHeader from "@/components/dashboard/Tables/ModalTableHeader";
+// import { getAuthenticatedUser } from "@/config/useAuth";
+// import { UnitForm } from "@/components/Forms/inventory/UnitForm";
+// import { getOrgUnits } from "@/actions/units";
 export default async function page() {
-  const user = await getAuthenticatedUser();
+  // const user = await getAuthenticatedUser();
 
-  const orgId = user.orgId;
-  const units = (await getOrgUnits(orgId)) || [];
+  // const orgId = user.orgId;
+  // const units = (await getOrgUnits(orgId)) || [];
 
   return (
     <div className="p-8">
-      <ModalTableHeader
+      {/* <ModalTableHeader
         title="Units"
         linkTitle="Add Unit"
         href="#"
@@ -21,7 +21,7 @@ export default async function page() {
         model="unit"
         modalForm={<UnitForm orgId={orgId} />}
       />
-      <DataTable columns={columns} data={units} />
+      <DataTable columns={columns} data={units} /> */}
     </div>
   );
 }

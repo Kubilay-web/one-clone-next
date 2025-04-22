@@ -1,20 +1,20 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { getAuthenticatedUser } from "@/config/useAuth";
+// import { getAuthenticatedUser } from "@/config/useAuth";
 import TransferList from "./components/TransferList";
 import TransferListSkeleton from "./components/TransferSkeleton";
 import { Plus } from "lucide-react";
 
 export default async function TransfersPage() {
-  const user = await getAuthenticatedUser();
-  if (!user?.orgId) {
-    return <div>Not authenticated</div>;
-  }
+  // const user = await getAuthenticatedUser();
+  // if (!user?.orgId) {
+  //   return <div>Not authenticated</div>;
+  // }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="container mx-auto space-y-6 py-6">
+      <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Stock Transfers</h1>
         <div className="flex gap-2">
           <Link href="/dashboard/inventory/stock">
@@ -30,7 +30,7 @@ export default async function TransfersPage() {
       </div>
 
       <Suspense fallback={<TransferListSkeleton />}>
-        <TransferList orgId={user.orgId} />
+        {/* <TransferList orgId={user.orgId} /> */}
       </Suspense>
     </div>
   );

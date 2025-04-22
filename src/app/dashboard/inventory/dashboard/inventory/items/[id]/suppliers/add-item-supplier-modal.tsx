@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { addItemSuppliers } from "@/actions/item-suppliers";
+// import { addItemSuppliers } from "@/actions/item-suppliers";
 import { toast } from "sonner";
 
 type Supplier = {
@@ -44,7 +44,7 @@ export function AddItemSuppliersModal({
 
   // Filter suppliers based on search query
   const filteredSuppliers = suppliers.filter((supplier) =>
-    supplier.name.toLowerCase().includes(searchQuery.toLowerCase())
+    supplier.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Reset selections when modal opens
@@ -60,7 +60,7 @@ export function AddItemSuppliersModal({
     setSelectedSuppliers((prev) =>
       prev.includes(supplierId)
         ? prev.filter((id) => id !== supplierId)
-        : [...prev, supplierId]
+        : [...prev, supplierId],
     );
   };
 
@@ -70,7 +70,7 @@ export function AddItemSuppliersModal({
 
     setIsSubmitting(true);
     try {
-      await addItemSuppliers(itemId, selectedSuppliers);
+      // await addItemSuppliers(itemId, selectedSuppliers);
       toast.success("New Item Suppliers Added");
       setOpen(false);
       router.refresh(); // Refresh the page to show new suppliers
@@ -106,7 +106,7 @@ export function AddItemSuppliersModal({
           />
         </div>
 
-        <ScrollArea className="h-[300px] mt-2 rounded-md border p-2">
+        <ScrollArea className="mt-2 h-[300px] rounded-md border p-2">
           {filteredSuppliers.length > 0 ? (
             <div className="space-y-2">
               {filteredSuppliers.map((supplier) => {
@@ -115,12 +115,12 @@ export function AddItemSuppliersModal({
                 return (
                   <div
                     key={supplier.id}
-                    className={`flex items-center space-x-2 p-2 rounded-md ${
+                    className={`flex items-center space-x-2 rounded-md p-2 ${
                       isExisting ? "bg-muted" : "hover:bg-muted/50"
                     }`}
                   >
                     {isExisting ? (
-                      <div className="h-4 w-4 flex items-center justify-center rounded-sm border border-primary bg-primary text-primary-foreground">
+                      <div className="flex h-4 w-4 items-center justify-center rounded-sm border border-primary bg-primary text-primary-foreground">
                         <Check className="h-3 w-3" />
                       </div>
                     ) : (
@@ -133,7 +133,7 @@ export function AddItemSuppliersModal({
                     )}
                     <label
                       htmlFor={`supplier-${supplier.id}`}
-                      className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex-1 ${
+                      className={`flex-1 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
                         isExisting ? "text-muted-foreground" : ""
                       }`}
                     >

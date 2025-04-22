@@ -1,7 +1,7 @@
-import { checkPermission } from "@/config/useAuth";
+// import { checkPermission } from "@/config/useAuth";
 import React, { ReactNode } from "react";
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  await checkPermission("suppliers.update");
+  // await checkPermission("suppliers.update");
   return <div>{children}</div>;
 }

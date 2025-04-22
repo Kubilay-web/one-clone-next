@@ -2,7 +2,7 @@
 
 // import { getDashboardOverview } from "@/actions/analytics";
 import DashboardMain from "../../../../components/inventory/dashboard/DashboardMain";
-import DefaultUserDashboard from "../../../../components/inventory/dashboard/DefaultUserDashboard";
+// import DefaultUserDashboard from "../../../../components/inventory/dashboard/DefaultUserDashboard";
 import { Layers } from "lucide-react";
 import { validateRequest } from "@/auth";
 
