@@ -7,7 +7,7 @@ import { UnitForm } from "../../../../../../components/inventory/Forms/inventory
 import { BrandForm } from "../../../../../../components/inventory/Forms/inventory/BrandForm";
 // import { getOrgBrands } from "@/actions/brands";
 import { Suspense } from "react";
-import { TableLoading } from "../../../../../../components/inventory/ui/data-table";
+// import { TableLoading } from "../../../../../../components/inventory/ui/data-table";
 import { validateRequest } from "@/auth";
 export default async function page() {
   // const user = await validateRequest();
@@ -18,17 +18,17 @@ export default async function page() {
 
   return (
     <div className="p-8">
-      <Suspense fallback={<TableLoading title="Vehicle Inventory" />}>
-        {/* <ModalTableHeader
+      {/* <Suspense fallback={<TableLoading title="Vehicle Inventory" />}>
+        <ModalTableHeader
           title="Brands"
           linkTitle="Add Brand"
           href="#"
           data={brands}
           model="brand"
           modalForm={<BrandForm orgId={orgId} />}
-        /> */}
-        {/* <DataTable columns={columns} data={brands} /> */}
-      </Suspense>
+        /> 
+        <DataTable columns={columns} data={brands} /> 
+      </Suspense> */}
     </div>
   );
 }
