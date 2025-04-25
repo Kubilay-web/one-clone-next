@@ -1,4 +1,9 @@
-import { getAllStoreProducts, getProducts } from "@/queries/product";
+import {
+  getAllStoreProducts,
+  getProductPageData,
+  getProducts,
+  retrieveProductDetails,
+} from "@/queries/product";
 import { getStoreDefaultShippingDetails } from "@/queries/store";
 import { getAllSubCategories } from "@/queries/subCategory";
 import {
@@ -251,3 +256,11 @@ export type VariantImageType = {
   url: string;
   image: string;
 };
+
+export type ProductPageType = Prisma.PromiseReturnType<
+  typeof retrieveProductDetails
+>;
+
+export type ProductPageDataType = Prisma.PromiseReturnType<
+  typeof getProductPageData
+>;

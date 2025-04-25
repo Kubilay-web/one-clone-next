@@ -1,7 +1,7 @@
 "use server";
 
 import { validateRequest } from "@/auth";
-import { ProductWithVariantType } from "@/lib/types";
+import { ProductPageType, ProductWithVariantType } from "@/lib/types";
 
 import slugify from "slugify";
 
@@ -446,5 +446,97 @@ export const getProducts = async (
     currentPage,
     pageSize,
     totalCount,
+  };
+};
+
+export const getProductPageData = async (
+  productSlug: string,
+  variantSlug: string,
+) => {
+  const product = await retrieveProductDetails(productSlug, variantSlug);
+
+  if (!product) return;
+
+  return formatProductResponse(product);
+};
+
+export const retrieveProductDetails = async (
+  productSlug: string,
+  variantSlug: string,
+) => {
+  return await prisma.product.findUnique({
+    where: {
+      slug: productSlug,
+    },
+    include: {
+      category: true,
+      subCategory: true,
+      offerTag: true,
+      store: true,
+      specs: true,
+      questions: true,
+      variants: {
+        where: {
+          slug: variantSlug,
+        },
+        include: {
+          images: true,
+          colors: true,
+          sizes: true,
+          specs: true,
+        },
+      },
+    },
+  });
+};
+
+const formatProductResponse = (product: ProductPageType) => {
+  if (!product) return;
+  const variant = product.variants[0];
+  const { store, category, subCategory, offerTag, questions } = product;
+  const { images, colors, sizes } = variant;
+
+  return {
+    productId: product.id,
+    variantId: variant.id,
+    productSlug: product.slug,
+    variantSlug: variant.slug,
+    name: product.name,
+    description: product.description,
+    variantName: variant.variantName,
+    variantDescription: variant.variantDescription,
+    images,
+    category,
+    subCategory,
+    offerTag,
+    isSale: variant.isSale,
+    saleEndDate: variant.saleEndDate,
+    brand: product.brand,
+    sku: variant.sku,
+    store: {
+      id: store.id,
+      url: store.url,
+      name: store.name,
+      logo: store.logo,
+      followersCount: 10,
+      isUserFollowingStore: true,
+    },
+    colors,
+    sizes,
+    specs: {
+      product: product.specs,
+      variant: variant.specs,
+    },
+    questions,
+    rating: product.rating,
+    reviews: [],
+    numReviews: 122,
+    reviewsStatistics: {
+      ratingStatistics: [],
+      reviewsWithImagesCount: 5,
+    },
+    shippingDetails: {},
+    relatedProducts: [],
+    variantImages: [],
   };
 };
