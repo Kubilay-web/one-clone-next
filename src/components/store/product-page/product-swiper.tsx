@@ -11,11 +11,11 @@ export default function ProductSwiper({
 }: {
   images: ProductVariantImage[];
 }) {
-  if (!images) return;
-
   const [activeImage, setActiveImage] = useState<ProductVariantImage>(
     images[0],
   );
+  if (!images) return;
+
   return (
     <div className="relative">
       <div className="relative flex w-full flex-col-reverse gap-2 xl:flex-row">

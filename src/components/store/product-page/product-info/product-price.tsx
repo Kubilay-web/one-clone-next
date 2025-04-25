@@ -36,6 +36,7 @@ const ProductPrice: FC<Props> = ({ sizeId, sizes, isCard }) => {
     );
 
     const minPrice = Math.min(...discountedPrices).toFixed(2);
+    const maxPrice = Math.max(...discountedPrices).toFixed(2);
   }
 
   return <div></div>;

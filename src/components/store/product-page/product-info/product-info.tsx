@@ -16,6 +16,8 @@ interface Props {
 }
 
 const ProductInfo: FC<Props> = ({ productData, quantity, sizeId }) => {
+  const [currentRating, setCurrentRating] = useState(productData?.rating ?? 0);
+
   if (!productData) return null;
 
   const {
@@ -32,9 +34,6 @@ const ProductInfo: FC<Props> = ({ productData, quantity, sizeId }) => {
     rating,
     numReviews,
   } = productData;
-
-  // Yıldız rating state'i (başlangıçta mevcut rating ile)
-  const [currentRating, setCurrentRating] = useState(rating);
 
   const copySkuToClipboard = async () => {
     try {
