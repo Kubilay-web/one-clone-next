@@ -8,6 +8,10 @@ import { CopyIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import StarRatings from "react-star-ratings";
 import ProductPrice from "./product-price";
+import Countdown from "../../shared/countdown";
+import { Separator } from "@/components/ui/separator";
+import ColorWheel from "@/components/shared/color-wheel";
+import ProductVariantSelector from "./variant-selector";
 
 interface Props {
   productData: ProductPageDataType;
@@ -112,6 +116,28 @@ const ProductInfo: FC<Props> = ({ productData, quantity, sizeId }) => {
       </div>
       <div className="relative my-2 flex flex-col justify-between sm:flex-row">
         <ProductPrice sizeId={sizeId} sizes={sizes} />
+        {isSale && saleEndDate && (
+          <div className="mt-4 pb-2">
+            <Countdown targetDate={saleEndDate} />
+          </div>
+        )}
+      </div>
+
+      <Separator className="mt-2" />
+
+      <div className="mt-4 space-y-2">
+        <div className="relative flex items-center justify-between font-bold text-main-primary">
+          <span className="flex items-center gap-x-2">
+            {colors.length > 1 ? "Colors" : "Color"}
+            <ColorWheel colors={colors} size={25} />
+          </span>
+        </div>
+        {variantImages.length > 0 && (
+          <ProductVariantSelector
+            variants={variantImages}
+            slug={productData.variantSlug}
+          />
+        )}
       </div>
     </div>
   );

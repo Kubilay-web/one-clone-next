@@ -12,6 +12,7 @@ import { Heart } from "lucide-react";
 // import ProductPrice from "../../product-page/product-info/product-price";
 // import { addToWishlist } from "@/queries/user";
 import toast from "react-hot-toast";
+import ProductPrice from "../../product-page/product-info/product-price";
 
 export default function ProductCard({ product }: { product: ProductType }) {
   const { name, slug, rating, sales, variantImages, variants, id } = product;
@@ -62,6 +63,7 @@ export default function ProductCard({ product }: { product: ProductType }) {
               </div>
             )}
             {/* Price */}
+            <ProductPrice sizes={sizes} isCard />
             {/* <ProductPrice sizes={sizes} isCard handleChange={() => {}} /> */}
           </Link>
         </div>

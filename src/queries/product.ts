@@ -464,7 +464,7 @@ export const retrieveProductDetails = async (
   productSlug: string,
   variantSlug: string,
 ) => {
-  return await prisma.product.findUnique({
+  const product = await prisma.product.findUnique({
     where: {
       slug: productSlug,
     },
@@ -488,6 +488,29 @@ export const retrieveProductDetails = async (
       },
     },
   });
+
+  if (!product) return null;
+
+  const variantImages = await prisma.productVariant.findMany({
+    where: {
+      productId: product.id,
+    },
+    select: {
+      slug: true,
+      variantImage: true,
+    },
+  });
+
+  console.log("variantImages", variantImages);
+
+  return {
+    ...product,
+    variantImages: variantImages.map((v) => ({
+      url: `/product/${productSlug}/${v.slug}`,
+      img: v.variantImage,
+      slug: v.slug,
+    })),
+  };
 };
 
 const formatProductResponse = (product: ProductPageType) => {
@@ -537,6 +560,6 @@ const formatProductResponse = (product: ProductPageType) => {
     },
     shippingDetails: {},
     relatedProducts: [],
-    variantImages: [],
+    variantImages: product.variantImages,
   };
 };

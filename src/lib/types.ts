@@ -11,6 +11,7 @@ import {
   ProductVariantImage,
   ShippingRate,
   Size,
+  Spec,
 } from "@prisma/client";
 import countries from "@/data/countries.json";
 
@@ -264,3 +265,46 @@ export type ProductPageType = Prisma.PromiseReturnType<
 export type ProductPageDataType = Prisma.PromiseReturnType<
   typeof getProductPageData
 >;
+
+export type CartProductType = {
+  productId: string;
+  variantId: string;
+  productSlug: string;
+  variantSlug: string;
+  name: string;
+  variantName: string;
+  image: string;
+  variantImage: string;
+  sizeId: string;
+  size: string;
+  quantity: number;
+  price: number;
+  stock: number;
+  weight: number;
+  shippingMethod: string;
+  shippingService: string;
+  shippingFee: number;
+  extraShippingFee: number;
+  deliveryTimeMin: number;
+  deliveryTimeMax: number;
+  isFreeShipping: boolean;
+};
+
+export type ProductVariantDataType = {
+  id: string;
+  variantName: string;
+  slug: string;
+  sku: string;
+  variantImage: string;
+  weight: number;
+  isSale: boolean;
+  saleEndDate: string | null;
+  variantDescription: string | null;
+  images: {
+    url: string;
+  }[];
+  sizes: Size[];
+  specs: Spec[];
+  colors: { name: string }[];
+  keywords: string;
+};
