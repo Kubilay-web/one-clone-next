@@ -1,11 +1,22 @@
 "use server";
 
 import { validateRequest } from "@/auth";
-import { ProductPageType, ProductWithVariantType } from "@/lib/types";
+import {
+  FreeShippingWithCountriesType,
+  ProductPageType,
+  ProductShippingDetailsType,
+  ProductWithVariantType,
+} from "@/lib/types";
 
 import slugify from "slugify";
 
-import { PrismaClient, ProductVariant, Size, Store } from "@prisma/client";
+import {
+  FreeShipping,
+  PrismaClient,
+  ProductVariant,
+  Size,
+  Store,
+} from "@prisma/client";
 import { generateUniqueSlug } from "@/lib/utils";
 import { getCookie } from "cookies-next";
 import { cookies } from "next/headers";
@@ -92,6 +103,7 @@ export async function upsertProduct(
       isSale: product.isSale,
       saleEndDate: product.isSale ? product.saleEndDate : "",
       sku: product.sku,
+      weight: product.weight,
       keywords: product.keywords.join(","),
       specs: {
         create: product.variant_specs.map((spec) => ({
@@ -466,11 +478,12 @@ export const getProductPageData = async (
     product.shippingFeeMethod,
     userCountry,
     product.store,
+    product.freeShipping,
   );
 
   console.log("productShippingDetails", productShippingDetails);
 
-  return formatProductResponse(product);
+  return formatProductResponse(product, productShippingDetails);
 };
 
 export const retrieveProductDetails = async (
@@ -488,6 +501,11 @@ export const retrieveProductDetails = async (
       store: true,
       specs: true,
       questions: true,
+      freeShipping: {
+        include: {
+          eligableCountries: true,
+        },
+      },
       variants: {
         where: {
           slug: variantSlug,
@@ -554,7 +572,10 @@ const getUserCountry = async (): Promise<{ name: string; code: string }> => {
   }
 };
 
-const formatProductResponse = (product: ProductPageType) => {
+const formatProductResponse = (
+  product: ProductPageType,
+  shippingDetails: ProductShippingDetailsType,
+) => {
   if (!product) return;
   const variant = product.variants[0];
   const { store, category, subCategory, offerTag, questions } = product;
@@ -577,6 +598,7 @@ const formatProductResponse = (product: ProductPageType) => {
     saleEndDate: variant.saleEndDate,
     brand: product.brand,
     sku: variant.sku,
+    weight: variant.weight,
     store: {
       id: store.id,
       url: store.url,
@@ -599,7 +621,7 @@ const formatProductResponse = (product: ProductPageType) => {
       ratingStatistics: [],
       reviewsWithImagesCount: 5,
     },
-    shippingDetails: {},
+    shippingDetails,
     relatedProducts: [],
     variantImages: product.variantImages,
   };
@@ -609,7 +631,22 @@ export const getShippingDetails = async (
   shippingFeeMethod: string,
   userCountry: { name: string; code: string; city: string },
   store: Store,
+  freeShipping: FreeShippingWithCountriesType | null,
 ) => {
+  let shippingDetails = {
+    shippingFeeMethod,
+    shippingService: "",
+    shippingFee: 0,
+    extraShippingFee: 0,
+    deliveryTimeMin: 0,
+    deliveryTimeMax: 0,
+    returnPolicy: "",
+    countryCode: userCountry.code,
+    countryName: userCountry.name,
+    city: userCountry.city,
+    isFreeShipping: false,
+  };
+
   const country = await prisma.country.findUnique({
     where: {
       name: userCountry.name,
@@ -648,7 +685,17 @@ export const getShippingDetails = async (
     const deliveryTimeMax =
       shippingRate?.deliveryTimeMax || store.defaultDeliveryTimeMax;
 
-    let shippingDetails = {
+    if (freeShipping) {
+      const free_shipping_countries = freeShipping.eligibaleCountries;
+      const check_free_shipping = free_shipping_countries.find(
+        (c) => c.countryId === country.id,
+      );
+      if (check_free_shipping) {
+        shippingDetails.isFreeShipping = true;
+      }
+    }
+
+    shippingDetails = {
       shippingFeeMethod,
       shippingService: shippingService,
       shippingFee: 0,
@@ -659,18 +706,23 @@ export const getShippingDetails = async (
       countryCode: userCountry.code,
       countryName: userCountry.name,
       city: userCountry.city,
+      isFreeShipping: shippingDetails.isFreeShipping,
     };
+
+    const { isFreeShipping } = shippingDetails;
 
     switch (shippingFeeMethod) {
       case "ITEM":
-        shippingDetails.shippingFee = shippingFeePerItem;
-        shippingDetails.extraShippingFee = shippingFeeForAdditionalItem;
+        shippingDetails.shippingFee = isFreeShipping ? 0 : shippingFeePerItem;
+        shippingDetails.extraShippingFee = isFreeShipping
+          ? 0
+          : shippingFeeForAdditionalItem;
         break;
       case "WEIGHT":
-        shippingDetails.shippingFee = shippingFeePerKg;
+        shippingDetails.shippingFee = isFreeShipping ? 0 : shippingFeePerKg;
         break;
       case "FIXED":
-        shippingDetails.shippingFee = shippingFeeFixed;
+        shippingDetails.shippingFee = isFreeShipping ? 0 : shippingFeeFixed;
         break;
 
       default:

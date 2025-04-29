@@ -2,6 +2,8 @@ import { ProductPageDataType } from "@/lib/types";
 import { ReactNode, FC } from "react";
 import ProductSwiper from "./product-swiper";
 import ProductInfo from "./product-info/product-info";
+import ShipTo from "./shipping/ship-to";
+import ShippingDetails from "./shipping/shipping-details";
 
 interface Props {
   productData: ProductPageDataType;
@@ -12,7 +14,7 @@ interface Props {
 const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
   if (!productData) return null;
 
-  const { images } = productData;
+  const { images, shippingDetails } = productData;
   return (
     <div className="relative">
       <div className="w-full xl:flex xl:gap-4">
@@ -22,7 +24,26 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
 
           <div className="w-[390px]">
             <div className="z-20">
-              <div className="overflow-hidden overflow-y-auto rounded-md border bg-white p-4 pb-0"></div>
+              <div className="overflow-hidden overflow-y-auto rounded-md border bg-white p-4 pb-0">
+                {typeof shippingDetails !== "boolean" && (
+                  <>
+                    <ShipTo
+                      countryCode={shippingDetails.countryCode}
+                      countryName={shippingDetails.countryName}
+                      city={shippingDetails.city}
+                    />
+                    <div className="mt-3 space-y-3">
+                      <ShippingDetails
+                        shippingDetails={shippingDetails}
+                        quantity={1}
+                        weight={productData.weight}
+                        loading={false}
+                        countryName={shippingDetails.countryName}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -68,6 +68,7 @@ import "react-datetime-picker/dist/DateTimePicker.css";
 import "react-calendar/dist/Calendar.css";
 import "react-clock/dist/Clock.css";
 import { format } from "date-fns";
+import { NumberInput } from "@tremor/react";
 
 interface ProductDetailsProps {
   data?: Partial<ProductWithVariantType>;
@@ -157,6 +158,7 @@ const ProductDetails: FC<ProductDetailsProps> = ({
       keywords: data?.keywords,
       questions: data?.questions,
       isSale: data?.isSale,
+      weight: data?.weight,
       saleEndDate:
         data?.saleEndDate || format(new Date(), "yyyy-MM-dd'T'HH:mm:ss"),
     },
@@ -202,6 +204,7 @@ const ProductDetails: FC<ProductDetailsProps> = ({
           saleEndDate: values.saleEndDate,
           brand: values.brand,
           sku: values.sku,
+          weight: values.weight,
           colors: values.colors,
           sizes: values.sizes,
           product_specs: values.product_specs,
@@ -512,6 +515,28 @@ const ProductDetails: FC<ProductDetailsProps> = ({
                     <FormItem className="flex-1">
                       <FormControl>
                         <Input placeholder="Product sku" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  disabled={isLoading}
+                  control={form.control}
+                  name="weight"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Product weight</FormLabel>
+                      <FormControl>
+                        <NumberInput
+                          defaultValue={field.value}
+                          onValueChange={field.onChange}
+                          placeholder="Weight"
+                          min={0.01}
+                          step={0.01}
+                          className="rounded-md! !text-sm shadow-none"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -2,11 +2,14 @@ import {
   getAllStoreProducts,
   getProductPageData,
   getProducts,
+  getShippingDetails,
   retrieveProductDetails,
 } from "@/queries/product";
 import { getStoreDefaultShippingDetails } from "@/queries/store";
 import { getAllSubCategories } from "@/queries/subCategory";
 import {
+  FreeShipping,
+  FreeShippingCountry,
   Prisma,
   ProductVariantImage,
   ShippingRate,
@@ -201,6 +204,7 @@ export interface ProductWithVariantType {
   saleEndDate: string;
   brand: string;
   sku: string;
+  weight: number;
   colors: { id?: string; color: string }[];
   sizes: {
     id?: string;
@@ -307,4 +311,26 @@ export type ProductVariantDataType = {
   specs: Spec[];
   colors: { name: string }[];
   keywords: string;
+};
+
+export type ProductShippingDetailsType = Prisma.PromiseReturnType<
+  typeof getShippingDetails
+>;
+
+export type ShippingDetailsType = {
+  countryCode: string;
+  countryName: string;
+  city: string;
+  shippingFeeMethod: string;
+  shippingFee: number;
+  extraShippingFee: number;
+  deliveryTimeMin: number;
+  deliveryTimeMax: number;
+  isFreeShipping: boolean;
+  shippingService: string;
+  returnPolicy: string;
+};
+
+export type FreeShippingWithCountriesType = FreeShipping & {
+  eligibaleCountries: FreeShippingCountry[];
 };

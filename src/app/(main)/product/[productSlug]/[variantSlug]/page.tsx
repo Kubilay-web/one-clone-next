@@ -40,7 +40,8 @@ export default async function ProductVariantPage({
     products: [],
   };
 
-  const { specs, questions } = productData;
+  const { specs, questions, shippingDetails } = productData;
+  console.log("shippingDetails", shippingDetails);
 
   return (
     <div>
