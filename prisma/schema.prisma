@@ -241,6 +241,13 @@ model Store {
 }
 
 
+enum ShippingFeeMethod{
+  ITEM
+  WEIGHT
+  FIXED
+}
+
+
 model Product{
     id                    String   @id @default(cuid()) @map("_id")
     name String 
@@ -249,8 +256,10 @@ model Product{
     brand String
     rating Float @default(0)
     sales Int @default(0)
+    shippingFeeMethod ShippingFeeMethod @default(ITEM)
 
-      createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
+
+  createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
 
   storeId String

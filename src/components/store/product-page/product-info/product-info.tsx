@@ -12,6 +12,8 @@ import Countdown from "../../shared/countdown";
 import { Separator } from "@/components/ui/separator";
 import ColorWheel from "@/components/shared/color-wheel";
 import ProductVariantSelector from "./variant-selector";
+import SizeSelector from "./size-selector";
+import ProductAssurancePolicy from "./assurance-policy";
 
 interface Props {
   productData: ProductPageDataType;
@@ -132,13 +134,25 @@ const ProductInfo: FC<Props> = ({ productData, quantity, sizeId }) => {
             <ColorWheel colors={colors} size={25} />
           </span>
         </div>
-        {variantImages.length > 0 && (
-          <ProductVariantSelector
-            variants={variantImages}
-            slug={productData.variantSlug}
-          />
-        )}
+        <div className="mt-4">
+          {variantImages.length > 0 && (
+            <ProductVariantSelector
+              variants={variantImages}
+              slug={productData.variantSlug}
+            />
+          )}
+        </div>
       </div>
+
+      <div className="mt-4 space-y-2 pb-2">
+        <div>
+          <h1 className="font-bold text-main-primary">Size</h1>
+        </div>
+        <SizeSelector sizes={sizes} sizeId={sizeId} />
+      </div>
+
+      <Separator className="mt-3" />
+      <ProductAssurancePolicy />
     </div>
   );
 };

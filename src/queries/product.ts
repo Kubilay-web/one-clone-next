@@ -5,8 +5,10 @@ import { ProductPageType, ProductWithVariantType } from "@/lib/types";
 
 import slugify from "slugify";
 
-import { PrismaClient, ProductVariant, Size } from "@prisma/client";
+import { PrismaClient, ProductVariant, Size, Store } from "@prisma/client";
 import { generateUniqueSlug } from "@/lib/utils";
+import { getCookie } from "cookies-next";
+import { cookies } from "next/headers";
 
 // Prisma client
 const prisma = new PrismaClient();
@@ -457,6 +459,17 @@ export const getProductPageData = async (
 
   if (!product) return;
 
+  const userCountry = await getUserCountry();
+  console.log("userCountry", userCountry);
+
+  const productShippingDetails = await getShippingDetails(
+    product.shippingFeeMethod,
+    userCountry,
+    product.store,
+  );
+
+  console.log("productShippingDetails", productShippingDetails);
+
   return formatProductResponse(product);
 };
 
@@ -513,6 +526,34 @@ export const retrieveProductDetails = async (
   };
 };
 
+const getUserCountry = async (): Promise<{ name: string; code: string }> => {
+  const defaultCountry = { name: "United States", code: "US" };
+
+  try {
+    const userCountryCookie = await getCookie("userCountry", { cookies });
+
+    if (!userCountryCookie || typeof userCountryCookie !== "string") {
+      return defaultCountry;
+    }
+
+    const parsedCountry = JSON.parse(userCountryCookie);
+
+    if (
+      parsedCountry &&
+      typeof parsedCountry === "object" &&
+      "name" in parsedCountry &&
+      "code" in parsedCountry
+    ) {
+      return parsedCountry;
+    }
+
+    return defaultCountry;
+  } catch (error) {
+    console.error("Failed to parse userCountryCookie", error);
+    return defaultCountry;
+  }
+};
+
 const formatProductResponse = (product: ProductPageType) => {
   if (!product) return;
   const variant = product.variants[0];
@@ -562,4 +603,82 @@ const formatProductResponse = (product: ProductPageType) => {
     relatedProducts: [],
     variantImages: product.variantImages,
   };
+};
+
+export const getShippingDetails = async (
+  shippingFeeMethod: string,
+  userCountry: { name: string; code: string; city: string },
+  store: Store,
+) => {
+  const country = await prisma.country.findUnique({
+    where: {
+      name: userCountry.name,
+      code: userCountry.code,
+    },
+  });
+
+  if (country) {
+    const shippingRate = await prisma.shippingRate.findFirst({
+      where: {
+        countryId: country.id,
+        storeId: store.id,
+      },
+    });
+
+    const returnPolicy = shippingRate?.returnPolicy || store.returnPolicy;
+    const shippingService =
+      shippingRate?.shippingService || store.defaultShippingService;
+
+    const shippingFeePerItem =
+      shippingRate?.shippingFeePerItem || store.defaultShippingFeePerItem;
+
+    const shippingFeeForAdditionalItem =
+      shippingRate?.shippingFeeForAdditionalItem ||
+      store.defaultShippingFeeForAdditionalItem;
+
+    const shippingFeePerKg =
+      shippingRate?.shippingFeePerKg || store.defaultShippingFeePerKg;
+
+    const shippingFeeFixed =
+      shippingRate?.shippingFeeFixed || store.defaultShippingFeeFixed;
+
+    const deliveryTimeMin =
+      shippingRate?.deliveryTimeMin || store.defaultDeliveryTimeMin;
+
+    const deliveryTimeMax =
+      shippingRate?.deliveryTimeMax || store.defaultDeliveryTimeMax;
+
+    let shippingDetails = {
+      shippingFeeMethod,
+      shippingService: shippingService,
+      shippingFee: 0,
+      extraShippingFee: 0,
+      deliveryTimeMin,
+      deliveryTimeMax,
+      returnPolicy,
+      countryCode: userCountry.code,
+      countryName: userCountry.name,
+      city: userCountry.city,
+    };
+
+    switch (shippingFeeMethod) {
+      case "ITEM":
+        shippingDetails.shippingFee = shippingFeePerItem;
+        shippingDetails.extraShippingFee = shippingFeeForAdditionalItem;
+        break;
+      case "WEIGHT":
+        shippingDetails.shippingFee = shippingFeePerKg;
+        break;
+      case "FIXED":
+        shippingDetails.shippingFee = shippingFeeFixed;
+        break;
+
+      default:
+        break;
+    }
+
+    return shippingDetails;
+  }
+
+  return false;
 };
