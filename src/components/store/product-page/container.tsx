@@ -1,9 +1,14 @@
-import { ProductPageDataType } from "@/lib/types";
-import { ReactNode, FC } from "react";
+"use client";
+
+import { CartProductType, ProductPageDataType } from "@/lib/types";
+import { ReactNode, FC, useState, useEffect } from "react";
 import ProductSwiper from "./product-swiper";
 import ProductInfo from "./product-info/product-info";
 import ShipTo from "./shipping/ship-to";
 import ShippingDetails from "./shipping/shipping-details";
+import ReturnPrivacySecurityCard from "./returns-security-privacy-card";
+import { isProductValidToAdd } from "@/lib/utils";
+import QuantitySelector from "./quantity-selector";
 
 interface Props {
   productData: ProductPageDataType;
@@ -15,12 +20,66 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
   if (!productData) return null;
 
   const { images, shippingDetails } = productData;
+
+  if (typeof shippingDetails === "boolean") return null;
+
+  // Initialize the default product data for the cart item
+  const data: CartProductType = {
+    productId: productData.productId,
+    variantId: productData.variantId,
+    productSlug: productData.productSlug,
+    variantSlug: productData.variantSlug,
+    name: productData.name,
+    variantName: productData.variantName,
+    image: productData.images[0].url,
+    variantImage: productData.variantImage,
+    quantity: 1,
+    price: 0,
+    sizeId: sizeId || "",
+    size: "",
+    stock: 1,
+    weight: productData.weight || 0,
+    shippingMethod: shippingDetails.shippingFeeMethod,
+    shippingService: shippingDetails.shippingService,
+    shippingFee: shippingDetails.shippingFee,
+    extraShippingFee: shippingDetails.extraShippingFee,
+    deliveryTimeMin: shippingDetails.deliveryTimeMin,
+    deliveryTimeMax: shippingDetails.deliveryTimeMax,
+    isFreeShipping: shippingDetails.isFreeShipping,
+  };
+
+  const [productToBeAddedToCart, setProductToBeAddedToCart] =
+    useState<CartProductType>(data);
+
+  const [isProductValid, setIsProductValid] = useState<boolean>(false);
+
+  const handleChange = (property: keyof CartProductType, value: any) => {
+    setProductToBeAddedToCart((prevProduct) => ({
+      ...prevProduct,
+      [property]: value,
+    }));
+  };
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const check = isProductValidToAdd(productToBeAddedToCart);
+    if (check !== isProductValid) {
+      setIsProductValid(check);
+    }
+  }, [productToBeAddedToCart]);
+
+  console.log("productToBeAddedToCart---->>>", productToBeAddedToCart);
+
   return (
     <div className="relative">
       <div className="w-full xl:flex xl:gap-4">
         <ProductSwiper images={images} />
         <div className="mt-4 flex w-full flex-col gap-4 md:mt-0 md:flex-row">
-          <ProductInfo productData={productData} sizeId={sizeId} />
+          <ProductInfo
+            productData={productData}
+            sizeId={sizeId}
+            handleChange={handleChange}
+          />
 
           <div className="w-[390px]">
             <div className="z-20">
@@ -41,8 +100,19 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
                         countryName={shippingDetails.countryName}
                       />
                     </div>
+                    <ReturnPrivacySecurityCard
+                      returnPolicy={shippingDetails.returnPolicy}
+                      loading={false}
+                    />
                   </>
                 )}
+                <div className="sticky bottom-0 mt-5 space-y-3 bg-white pb-4">
+                  {sizeId && (
+                    <div className="mt-4 flex w-full justify-end">
+                      <QuantitySelector />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

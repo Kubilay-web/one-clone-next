@@ -21,9 +21,25 @@ const SizeSelector: FC<Props> = ({
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
 
+  useEffect(() => {
+    if (sizeId) {
+      const search_size = sizes.find((s) => s.id === sizeId);
+      if (search_size) {
+        handleCartProductToBeAddedChange(search_size);
+      }
+    } else {
+    }
+  }, [sizeId]);
+
   const handleSelectSize = (size: Size) => {
     params.set("size", size.id);
+    handleCartProductToBeAddedChange(size);
     replace(`${pathname}?${params.toString()}`);
+  };
+
+  const handleCartProductToBeAddedChange = (size: Size) => {
+    handleChange("sizeId", size.id);
+    handleChange("size", size.size);
   };
 
   if (!sizes || sizes.length === 0) {

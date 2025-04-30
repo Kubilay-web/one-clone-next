@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 import ColorThief from "colorthief";
 import { PrismaClient } from "@prisma/client";
 import prisma from "./db";
-import { Country } from "./types";
+import { CartProductType, Country } from "./types";
 import countries from "@/data/countries.json";
 
 export function cn(...inputs: ClassValue[]) {
@@ -170,4 +170,55 @@ export const getShippingDatesRange = (
     minDate: minDate.toDateString(),
     maxDate: maxDate.toDateString(),
   };
+};
+
+export const isProductValidToAdd = (product: CartProductType): boolean => {
+  // Check that all required fields are filled
+  const {
+    productId,
+    variantId,
+    productSlug,
+    variantSlug,
+    name,
+    variantName,
+    image,
+    quantity,
+    price,
+    sizeId,
+    size,
+    stock,
+    shippingFee,
+    extraShippingFee,
+    shippingMethod,
+    shippingService,
+    variantImage,
+    weight,
+    deliveryTimeMin,
+    deliveryTimeMax,
+  } = product;
+
+  // Ensure that all necessary fields have values
+  if (
+    !productId ||
+    !variantId ||
+    !productSlug ||
+    !variantSlug ||
+    !name ||
+    !variantName ||
+    !image ||
+    quantity <= 0 ||
+    price <= 0 ||
+    !sizeId || // Ensure sizeId is not empty
+    !size || // Ensure size is not empty
+    stock <= 0 ||
+    weight <= 0 || // Weight should be <= 0
+    !shippingMethod ||
+    !variantImage ||
+    deliveryTimeMin < 0 ||
+    deliveryTimeMax < deliveryTimeMin // Ensure delivery times are valid
+  ) {
+    return false; // Validation failed
+  }
+
+  return true; // Product is valid
 };

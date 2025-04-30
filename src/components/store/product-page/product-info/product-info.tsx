@@ -1,6 +1,6 @@
 "use client";
 
-import { ProductPageDataType } from "@/lib/types";
+import { CartProductType, ProductPageDataType } from "@/lib/types";
 import Link from "next/link";
 import { FC, useState } from "react";
 import Image from "next/image";
@@ -19,9 +19,15 @@ interface Props {
   productData: ProductPageDataType;
   quantity?: number;
   sizeId: string | undefined;
+  handleChange: (property: keyof CartProductType, value: any) => void;
 }
 
-const ProductInfo: FC<Props> = ({ productData, quantity, sizeId }) => {
+const ProductInfo: FC<Props> = ({
+  productData,
+  quantity,
+  sizeId,
+  handleChange,
+}) => {
   const [currentRating, setCurrentRating] = useState(productData?.rating ?? 0);
 
   if (!productData) return null;
@@ -44,9 +50,9 @@ const ProductInfo: FC<Props> = ({ productData, quantity, sizeId }) => {
   const copySkuToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(sku);
-      toast.success("Kopyalandı!");
+      toast.success("Copy!");
     } catch (error) {
-      toast.error("Kopyalanamadı!");
+      toast.error("Not copied!");
     }
   };
 
@@ -117,7 +123,11 @@ const ProductInfo: FC<Props> = ({ productData, quantity, sizeId }) => {
         </div>
       </div>
       <div className="relative my-2 flex flex-col justify-between sm:flex-row">
-        <ProductPrice sizeId={sizeId} sizes={sizes} />
+        <ProductPrice
+          sizeId={sizeId}
+          sizes={sizes}
+          handleChange={handleChange}
+        />
         {isSale && saleEndDate && (
           <div className="mt-4 pb-2">
             <Countdown targetDate={saleEndDate} />
@@ -148,7 +158,11 @@ const ProductInfo: FC<Props> = ({ productData, quantity, sizeId }) => {
         <div>
           <h1 className="font-bold text-main-primary">Size</h1>
         </div>
-        <SizeSelector sizes={sizes} sizeId={sizeId} />
+        <SizeSelector
+          sizes={sizes}
+          sizeId={sizeId}
+          handleChange={handleChange}
+        />
       </div>
 
       <Separator className="mt-3" />

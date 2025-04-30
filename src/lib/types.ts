@@ -334,3 +334,5 @@ export type ShippingDetailsType = {
 export type FreeShippingWithCountriesType = FreeShipping & {
   eligibaleCountries: FreeShippingCountry[];
 };
+
+
