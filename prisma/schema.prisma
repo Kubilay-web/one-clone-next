@@ -38,6 +38,7 @@ model User {
   updatedAt             DateTime?       @updatedAt
 
   stores Store[] @relation("UserStores")
+  followingStores UserFollowingStore[]
 
   @@map("users")
 }
@@ -160,7 +161,7 @@ model Category {
   id        String   @id @default(cuid()) @map("_id") 
   name      String
   image     String
-  url       String
+  url       String @unique
   featured  Boolean  @default(false)
 
 
@@ -180,7 +181,7 @@ model SubCategory {
   id        String   @id @default(cuid()) @map("_id") 
   name      String
   image     String
-  url       String
+  url       String @unique
   featured  Boolean  @default(false)
 
   categoryId String 
@@ -233,12 +234,29 @@ model Store {
   products Product[] @relation("StoreToProduct")
 
   shippingRates ShippingRate[] @relation("StoreShippingRates")
+    followers UserFollowingStore[]
 
   @@index([userId])
 
   @@map("store")
 
 }
+
+
+model UserFollowingStore {
+  id      String @id @default(cuid()) @map("_id")
+  userId  String
+  storeId String
+
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store   Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storeId])
+  @@index([userId])
+  @@index([storeId])
+  @@map("user_following_store")
+}
+
 
 
 enum ShippingFeeMethod{

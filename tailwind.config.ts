@@ -67,6 +67,9 @@ const config: Config = {
           primary: "#191919",
           secondary: "#757575",
         },
+        transitionTimingFunction: {
+          "bezier-1": "cubic-bezier(.645,.045,.355,1)",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

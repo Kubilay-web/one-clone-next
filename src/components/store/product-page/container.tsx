@@ -9,6 +9,7 @@ import ShippingDetails from "./shipping/shipping-details";
 import ReturnPrivacySecurityCard from "./returns-security-privacy-card";
 import { isProductValidToAdd } from "@/lib/utils";
 import QuantitySelector from "./quantity-selector";
+import SocialShare from "../shared/social-share";
 
 interface Props {
   productData: ProductPageDataType;
@@ -19,7 +20,7 @@ interface Props {
 const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
   if (!productData) return null;
 
-  const { images, shippingDetails } = productData;
+  const { images, shippingDetails, sizes } = productData;
 
   if (typeof shippingDetails === "boolean") return null;
 
@@ -68,7 +69,11 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
     }
   }, [productToBeAddedToCart]);
 
-  console.log("productToBeAddedToCart---->>>", productToBeAddedToCart);
+  console.log(
+    "productToBeAddedToCart---->>>",
+    productToBeAddedToCart.stock,
+    productToBeAddedToCart.quantity,
+  );
 
   return (
     <div className="relative">
@@ -109,9 +114,32 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
                 <div className="sticky bottom-0 mt-5 space-y-3 bg-white pb-4">
                   {sizeId && (
                     <div className="mt-4 flex w-full justify-end">
-                      <QuantitySelector />
+                      <QuantitySelector
+                        productId={productToBeAddedToCart.productId}
+                        variantId={productToBeAddedToCart.variantId}
+                        sizeId={productToBeAddedToCart.sizeId}
+                        quantity={productToBeAddedToCart.quantity}
+                        stock={productToBeAddedToCart.stock}
+                        handleChange={handleChange}
+                        sizes={sizes}
+                      />
                     </div>
                   )}
+
+                  <button className="ease-bezier-1 relative inline-block h-11 w-full min-w-20 cursor-pointer select-none whitespace-nowrap rounded-3xl border border-orange-border bg-orange-background py-2.5 font-bold leading-6 text-white transition-all duration-300 hover:bg-orange-hover">
+                    <span>Buy now</span>
+                  </button>
+                  <button
+                    disabled={!isProductValid}
+                    className="ease-bezier-1 relative inline-block h-11 w-full min-w-20 cursor-pointer select-none whitespace-nowrap rounded-3xl border border-orange-border bg-orange-border py-2.5 font-bold leading-6 text-orange-hover transition-all duration-300 hover:bg-[#e4cdce]"
+                  >
+                    <span>Add to cart</span>
+                  </button>
+
+                  <SocialShare
+                    url={`/product/${productData.productSlug}/${productData.variantSlug}`}
+                    quote={`${productData.name} . ${productData.variantName}`}
+                  />
                 </div>
               </div>
             </div>

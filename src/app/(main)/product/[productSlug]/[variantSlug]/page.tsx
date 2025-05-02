@@ -1,8 +1,13 @@
 import ProductPageContainer from "@/components/store/product-page/container";
-import { getProductPageData } from "@/queries/product";
+import { getProductPageData, getProducts } from "@/queries/product";
 import { Separator } from "@/components/ui/separator";
 import { notFound, redirect } from "next/navigation";
 import React from "react";
+import RelatedProducts from "@/components/store/product-page/related-product";
+import ProductDescription from "@/components/store/product-page/product-description";
+import ProductSpecs from "@/components/store/product-page/product-specs";
+import ProductQuestions from "@/components/store/product-page/product-questions";
+import StoreCard from "@/components/store/cards/store-card";
 
 interface PageProps {
   params: { productSlug: string; variantSlug: string };
@@ -36,11 +41,16 @@ export default async function ProductVariantPage({
     );
   }
 
-  const relatedProducts = {
-    products: [],
-  };
+  const { specs, questions, shippingDetails, category, subCategory } =
+    productData;
+  const relatedProducts = await getProducts(
+    { category: category.url },
+    "",
+    1,
+    12,
+  );
 
-  const { specs, questions, shippingDetails } = productData;
+  console.log("related products-->>>", relatedProducts);
   console.log("shippingDetails", shippingDetails);
 
   return (
@@ -50,23 +60,36 @@ export default async function ProductVariantPage({
           {relatedProducts.products && (
             <>
               <Separator />
+
+              <RelatedProducts products={relatedProducts.products} />
             </>
           )}
           <Separator className="mt-6" />
           <>
             <Separator className="mt-6" />
+
+            <ProductDescription
+              text={
+                (productData.description, productData.variantDescription || "")
+              }
+            />
           </>
           {(specs.product.length > 0 || specs.variant.length > 0) && (
             <>
               <Separator className="mt-6" />
+
+              <ProductSpecs specs={specs} />
             </>
           )}
           {questions.length > 0 && (
             <>
               <Separator className="mt-6" />
+
+              <ProductQuestions questions={productData.questions} />
             </>
           )}
           <Separator className="mt-6" />
+          <StoreCard store={productData.store} />
         </ProductPageContainer>
       </div>
     </div>

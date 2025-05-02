@@ -251,6 +251,31 @@ export const getProducts = async (
     AND: [],
   };
 
+  if (filters.category) {
+    const category = await prisma.category.findUnique({
+      where: {
+        url: filters.category,
+      },
+      select: { id: true },
+    });
+    if (category) {
+      whereClause.AND.push({ categoryId: category.id });
+    }
+  }
+
+  // Apply subCategory filter (using subCategory URL)
+  if (filters.subCategory) {
+    const subCategory = await prisma.subCategory.findUnique({
+      where: {
+        url: filters.subCategory,
+      },
+      select: { id: true },
+    });
+    if (subCategory) {
+      whereClause.AND.push({ subCategoryId: subCategory.id });
+    }
+  }
+
   // Store filter
   if (filters.store) {
     const store = await prisma.store.findUnique({
@@ -498,7 +523,11 @@ export const retrieveProductDetails = async (
       category: true,
       subCategory: true,
       offerTag: true,
-      store: true,
+      store: {
+        include: {
+          followers: true,
+        },
+      },
       specs: true,
       questions: true,
       freeShipping: {
@@ -581,6 +610,8 @@ const formatProductResponse = (
   const { store, category, subCategory, offerTag, questions } = product;
   const { images, colors, sizes } = variant;
 
+  const storeFollowersCount = store.followers.length;
+
   return {
     productId: product.id,
     variantId: variant.id,
@@ -605,7 +636,7 @@ const formatProductResponse = (
       url: store.url,
       name: store.name,
       logo: store.logo,
-      followersCount: 10,
+      followersCount: storeFollowersCount,
       isUserFollowingStore: true,
     },
     colors,
