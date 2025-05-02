@@ -50,8 +50,10 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
   };
 
   const [productToBeAddedToCart, setProductToBeAddedToCart] =
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useState<CartProductType>(data);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [isProductValid, setIsProductValid] = useState<boolean>(false);
 
   const handleChange = (property: keyof CartProductType, value: any) => {

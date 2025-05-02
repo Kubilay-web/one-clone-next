@@ -494,6 +494,8 @@ export const getProductPageData = async (
 ) => {
   const product = await retrieveProductDetails(productSlug, variantSlug);
 
+  const { user } = await validateRequest();
+
   if (!product) return;
 
   const userCountry = await getUserCountry();
@@ -508,7 +510,19 @@ export const getProductPageData = async (
 
   console.log("productShippingDetails", productShippingDetails);
 
-  return formatProductResponse(product, productShippingDetails);
+  const storeFollowersCount = await getStoreFollowersCount(product.storeId);
+
+  const isUserFollowingStore = await checkIfUserFollowingStore(
+    product.storeId,
+    user?.id,
+  );
+
+  return formatProductResponse(
+    product,
+    productShippingDetails,
+    storeFollowersCount,
+    isUserFollowingStore,
+  );
 };
 
 export const retrieveProductDetails = async (
@@ -523,11 +537,7 @@ export const retrieveProductDetails = async (
       category: true,
       subCategory: true,
       offerTag: true,
-      store: {
-        include: {
-          followers: true,
-        },
-      },
+      store: true,
       specs: true,
       questions: true,
       freeShipping: {
@@ -604,13 +614,13 @@ const getUserCountry = async (): Promise<{ name: string; code: string }> => {
 const formatProductResponse = (
   product: ProductPageType,
   shippingDetails: ProductShippingDetailsType,
+  storeFollowersCount: number,
+  isUserFollowingStore: boolean,
 ) => {
   if (!product) return;
   const variant = product.variants[0];
   const { store, category, subCategory, offerTag, questions } = product;
   const { images, colors, sizes } = variant;
-
-  const storeFollowersCount = store.followers.length;
 
   return {
     productId: product.id,
@@ -637,7 +647,7 @@ const formatProductResponse = (
       name: store.name,
       logo: store.logo,
       followersCount: storeFollowersCount,
-      isUserFollowingStore: true,
+      isUserFollowingStore,
     },
     colors,
     sizes,
@@ -657,6 +667,50 @@ const formatProductResponse = (
     relatedProducts: [],
     variantImages: product.variantImages,
   };
+};
+
+const getStoreFollowersCount = async (storeId: string) => {
+  const storeFollowersCount = await prisma.store.findUnique({
+    where: {
+      id: storeId,
+    },
+    select: {
+      _count: {
+        select: {
+          followers: true,
+        },
+      },
+    },
+  });
+  return storeFollowersCount?._count.followers || 0;
+};
+
+const checkIfUserFollowingStore = async (
+  storeId: string,
+  userId: string | undefined,
+) => {
+  let isUserFollowingStore = false;
+  if (userId) {
+    const storeFollowersInfo = await prisma.store.findUnique({
+      where: {
+        id: storeId,
+      },
+      select: {
+        followers: {
+          where: {
+            id: userId,
+          },
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (storeFollowersInfo && storeFollowersInfo.followers.length > 0) {
+      isUserFollowingStore = true;
+    }
+  }
+  return isUserFollowingStore;
 };
 
 export const getShippingDetails = async (
