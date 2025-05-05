@@ -1,15 +1,11 @@
 "use client";
-import { cn } from "@/lib/utils";
-// import { getStoreFollowingInfo } from "@/queries/product-optimized";
-// import { followStore } from "@/queries/user";
-// import { useUser } from "@clerk/nextjs";
-import { Check, MessageSquareMore, Plus } from "lucide-react";
+import { followStore, UserInfo } from "@/queries/user";
+import { FC, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Check, MessageSquareMore, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FC, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
 interface Props {
   store: {
     id: string;
@@ -19,44 +15,45 @@ interface Props {
     followersCount: number;
     isUserFollowingStore: boolean;
   };
-  checkForFollowing?: boolean;
 }
 
-const StoreCard: FC<Props> = ({ store, checkForFollowing }) => {
+const StoreCard: FC<Props> = ({ store }) => {
   const { id, name, logo, url, followersCount, isUserFollowingStore } = store;
+  const [user, setUser] = useState<any>(null);
   const [following, setFollowing] = useState<boolean>(isUserFollowingStore);
   const [storeFollowersCount, setStoreFollowersCount] =
     useState<number>(followersCount);
-  //   const user = useUser();
   const router = useRouter();
 
-  //   useEffect(() => {
-  //     const getDetails = async () => {
-  //       try {
-  //         const res = await getStoreFollowingInfo(id);
-  //         setFollowing(res.isUserFollowingStore);
-  //         setStoreFollowersCount(res.followersCount);
-  //       } catch (error) {}
-  //     };
-  //     getDetails();
-  //   }, []);
-  //   const handleStoreFollow = async () => {
-  //     if (!user.isSignedIn) router.push("/sign-in");
-  //     try {
-  //       const res = await followStore(id);
-  //       setFollowing(res);
-  //       if (res) {
-  //         setStoreFollowersCount((prev) => prev + 1);
-  //         // toast.success(`You are now following ${name}`);
-  //       }
-  //       if (!res) {
-  //         setStoreFollowersCount((prev) => prev - 1);
-  //         // toast.success(`You unfollowed ${name}`);
-  //       }
-  //     } catch (error) {
-  //       toast.error("Something happend, Try again later !");
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await UserInfo();
+      setUser(userData);
+    };
+
+    fetchUser();
+  }, []);
+
+  if (!user) return null;
+
+  const handleStoreFollow = async () => {
+    if (!user) router.push("/sign-in");
+    try {
+      const res = await followStore(id);
+      setFollowing(res);
+      if (res) {
+        setStoreFollowersCount((prev) => prev + 1);
+        toast.success(`You are now following ${name}`);
+      }
+      if (!res) {
+        setStoreFollowersCount((prev) => prev - 1);
+        toast.success(`You unfollowed ${name}`);
+      }
+    } catch (error) {
+      toast.error("Something happend, Try again later !");
+    }
+  };
+
   return (
     <div className="mt-5 w-full">
       <div className="flex flex-col gap-5 rounded-xl bg-[#f5f5f5] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
@@ -78,7 +75,7 @@ const StoreCard: FC<Props> = ({ store, checkForFollowing }) => {
             </div>
             <div className="mt-1 text-sm leading-5">
               <strong>100%</strong>
-              <span> Positive Feedback</span>&nbsp;|&nbsp;
+              <span>Positive Feedback</span>&nbsp;|&nbsp;
               <strong>{storeFollowersCount}</strong>
               <strong> Followers</strong>
             </div>
@@ -86,13 +83,8 @@ const StoreCard: FC<Props> = ({ store, checkForFollowing }) => {
         </div>
         <div className="flex">
           <div
-            className={cn(
-              "mx-2 flex h-9 cursor-pointer items-center rounded-full border border-black px-4 text-base font-bold hover:bg-black hover:text-white",
-              {
-                "text-black": following,
-              },
-            )}
-            // onClick={() => handleStoreFollow()}
+            className="mx-2 flex h-9 cursor-pointer items-center rounded-full border border-black px-4 text-base font-bold hover:bg-black hover:text-white"
+            onClick={() => handleStoreFollow()}
           >
             {following ? (
               <Check className="me-1 w-4" />

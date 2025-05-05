@@ -8,6 +8,7 @@ import ProductDescription from "@/components/store/product-page/product-descript
 import ProductSpecs from "@/components/store/product-page/product-specs";
 import ProductQuestions from "@/components/store/product-page/product-questions";
 import StoreCard from "@/components/store/cards/store-card";
+import StoreProducts from "@/components/store/product-page/store-products";
 
 interface PageProps {
   params: { productSlug: string; variantSlug: string };
@@ -41,7 +42,7 @@ export default async function ProductVariantPage({
     );
   }
 
-  const { specs, questions, shippingDetails, category, subCategory } =
+  const { specs, questions, shippingDetails, category, subCategory, store } =
     productData;
   const relatedProducts = await getProducts(
     { category: category.url },
@@ -90,6 +91,11 @@ export default async function ProductVariantPage({
           )}
           <Separator className="mt-6" />
           <StoreCard store={productData.store} />
+          <StoreProducts
+            storeUrl={store.url}
+            storeName={store.name}
+            count={6}
+          />
         </ProductPageContainer>
       </div>
     </div>
