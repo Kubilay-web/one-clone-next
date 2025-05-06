@@ -9,6 +9,9 @@ import ProductSpecs from "@/components/store/product-page/product-specs";
 import ProductQuestions from "@/components/store/product-page/product-questions";
 import StoreCard from "@/components/store/cards/store-card";
 import StoreProducts from "@/components/store/product-page/store-products";
+import ProductReviews from "@/components/store/product-page/reviews/product-reviews";
+import AddReview from "@/components/store/product-page/reviews/add-review";
+import getProductReviews from "@/queries/review";
 
 interface PageProps {
   params: { productSlug: string; variantSlug: string };
@@ -42,8 +45,18 @@ export default async function ProductVariantPage({
     );
   }
 
-  const { specs, questions, shippingDetails, category, subCategory, store } =
-    productData;
+  const {
+    productId,
+    specs,
+    questions,
+    shippingDetails,
+    category,
+    subCategory,
+    store,
+    reviewsStatistics,
+    reviews,
+    variantInfo,
+  } = productData;
   const relatedProducts = await getProducts(
     { category: category.url },
     "",
@@ -53,6 +66,8 @@ export default async function ProductVariantPage({
 
   console.log("related products-->>>", relatedProducts);
   console.log("shippingDetails", shippingDetails);
+
+  const productReviews = await getProductReviews(productId);
 
   return (
     <div>
@@ -66,6 +81,23 @@ export default async function ProductVariantPage({
             </>
           )}
           <Separator className="mt-6" />
+          <ProductReviews
+            productId={productData.productId}
+            rating={productData.rating}
+            statistics={reviewsStatistics}
+            reviews={reviews}
+            reviewsProduct={productReviews} // Yorumları buraya geçiriyoruz
+            variantsInfo={variantInfo}
+          />
+
+          {/* <div className="mt-4">
+            <AddReview
+              productId={productId}
+              reviews={reviews}
+              variantsInfo={variantInfo}
+            />
+          </div> */}
+
           <>
             <Separator className="mt-6" />
 

@@ -275,9 +275,10 @@ model Product{
     brand String
     rating Float @default(0)
     sales Int @default(0)
+    numReviews Int @default(0)
     shippingFeeMethod ShippingFeeMethod @default(ITEM)
 
-    freeShipping FreeShipping? @relation("ProductFreeShipping")
+   freeShipping FreeShipping? @relation("ProductFreeShipping")
 
 
   createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
@@ -336,7 +337,7 @@ model ProductVariant{
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
 
    @@index([productId])
-   
+
 }
 
 
@@ -506,30 +507,32 @@ model FreeShippingCountry{
 }
 
 
-model Review{
-  id                    String   @id @default(cuid()) @map("_id")
-  variant String
-  review String
-  rating Float
-  color String
-  size String
-  quantity String
-  likes Int @default(0)
+model Review {
+  id          String   @id @default(cuid()) @map("_id")
+  variant     String
+  variantImage String?
+  review      String
+  rating      Float
+  color       String
+  size        String
+  quantity    String
+  likes       Int      @default(0)
 
-  images ReviewImage[] @relation("ReviewToReviewImage")
+  images      ReviewImage[] @relation("ReviewToReviewImage")
+  userId      String
+  user        User @relation("ReviewToUser", fields: [userId], references: [id])
+  productId   String
+  product     Product @relation("ReviewToProduct", fields: [productId], references: [id])
 
-  userId String
-  user User @relation("ReviewToUser",fields: [userId],references: [id])
-
-  productId String
-  product Product @relation("ReviewToProduct",fields: [productId],references: [id])
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   @@index([userId])
   @@index([productId])
+
+  @@unique([productId, userId, variant]) // Ensures only one review per user, product and variant
 }
+
 
 model ReviewImage{
   id                    String   @id @default(cuid()) @map("_id")

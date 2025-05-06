@@ -1,48 +1,56 @@
 "use client";
-import { CartProductType, ProductVariantDataType } from "@/lib/types";
+import {
+  CartProductType,
+  ProductVariantDataType,
+  VariantInfoType,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { ProductVariantImage } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Dispatch, FC, SetStateAction } from "react";
 
-interface Variant {
-  url: string;
-  img: string;
-  slug: string;
-}
-
 interface Props {
-  variants: Variant[];
+  variants: VariantInfoType[];
   slug: string;
+  setVariantImages: Dispatch<SetStateAction<ProductVariantImage[]>>;
+  setActiveImage: Dispatch<SetStateAction<ProductVariantImage | null>>;
 }
 
-const ProductVariantSelector: FC<Props> = ({ variants, slug }) => {
+const ProductVariantSelector: FC<Props> = ({
+  variants,
+  slug,
+  setVariantImages,
+  setActiveImage,
+}) => {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {variants.map((variant, i) => (
-        <Link href={variant.slug} key={i}>
+        <Link href={variant.variantUrl} key={i}>
           <div
             key={i}
-            onMouseEnter={() => {
-              //  setVariantImages(variant.images);
-              // setActiveImage(variant.images[0]);
-            }}
-            onMouseLeave={() => {
-              //   setVariantImages(activeVariant?.images || []);
-              // setActiveImage(activeVariant?.images[0] || null);
-            }}
+            // onMouseEnter={() => {
+            //   setVariantImages(variant.images);
+            //   setActiveImage(variant.images[0]);
+            // }}
+            // onMouseLeave={() => {
+            //   setVariantImages([]);
+            //   setActiveImage(null);
+            // }}
           >
             <div
               className={cn(
                 "grid h-12 max-h-12 w-12 cursor-pointer place-items-center overflow-hidden rounded-full outline-dashed outline-[1px] outline-offset-2 outline-transparent transition-all duration-75 ease-in hover:outline-main-primary",
                 {
-                  "outline-main-primary": slug ? slug === variant.slug : i == 0,
+                  "outline-main-primary": slug
+                    ? slug === variant.variantSlug
+                    : i == 0,
                 },
               )}
             >
               <Image
-                src={variant.img}
+                src={variant.variantImage}
                 alt={`product variant `}
                 width={60}
                 height={60}

@@ -7,7 +7,7 @@ import {
   ProductShippingDetailsType,
   ProductWithVariantType,
   RatingStatisticsType,
-  ratingStatisticsType,
+  SortOrder,
 } from "@/lib/types";
 
 import slugify from "slugify";
@@ -559,6 +559,13 @@ export const retrieveProductDetails = async (
       store: true,
       specs: true,
       questions: true,
+      reviews: {
+        include: {
+          images: true,
+          user: true,
+        },
+        take: 4,
+      },
       freeShipping: {
         include: {
           eligableCountries: true,
@@ -580,24 +587,32 @@ export const retrieveProductDetails = async (
 
   if (!product) return null;
 
-  const variantImages = await prisma.productVariant.findMany({
+  const variantsInfo = await prisma.productVariant.findMany({
     where: {
       productId: product.id,
     },
-    select: {
-      slug: true,
-      variantImage: true,
+    include: {
+      images: true,
+      sizes: true,
+      colors: true,
+      product: {
+        select: {
+          slug: true,
+        },
+      },
     },
   });
 
-  console.log("variantImages", variantImages);
-
   return {
     ...product,
-    variantImages: variantImages.map((v) => ({
-      url: `/product/${productSlug}/${v.slug}`,
-      img: v.variantImage,
-      slug: v.slug,
+    variantsInfo: variantsInfo.map((variant) => ({
+      variantName: variant.variantName,
+      variantSlug: variant.slug,
+      variantImage: variant.variantImage,
+      variantUrl: `/product/${productSlug}/${variant.slug}`,
+      images: variant.images,
+      sizes: variant.sizes,
+      colors: variant.colors.map((color) => color.name).join(","),
     })),
   };
 };
@@ -639,7 +654,8 @@ const formatProductResponse = (
 ) => {
   if (!product) return;
   const variant = product.variants[0];
-  const { store, category, subCategory, offerTag, questions } = product;
+  const { store, category, subCategory, offerTag, questions, reviews } =
+    product;
   const { images, colors, sizes } = variant;
 
   return {
@@ -677,11 +693,11 @@ const formatProductResponse = (
     },
     questions,
     rating: product.rating,
-    reviews: [],
+    reviews,
     reviewsStatistics: ratingStatistics,
     shippingDetails,
     relatedProducts: [],
-    variantImages: product.variantImages,
+    variantInfo: product.variantsInfo,
   };
 };
 
@@ -876,4 +892,57 @@ export const getRatingStatistics = async (productId: string) => {
     }),
     totalReviews,
   };
+};
+
+export const getProductFilteredReviews = async (
+  productId: string,
+  filters: { rating?: number; hasImages?: boolean },
+  sort: { orderBy: "latest" | "oldest" | "highest" } | undefined,
+  page: number = 1,
+  pageSize: number = 4,
+) => {
+  const reviewFilter: any = {
+    productId,
+  };
+
+  // Apply rating filter if provided
+  if (filters.rating) {
+    const rating = filters.rating;
+    reviewFilter.rating = {
+      in: [rating, rating + 0.5],
+    };
+  }
+
+  // Apply image filter if provided
+  if (filters.hasImages) {
+    reviewFilter.images = {
+      some: {},
+    };
+  }
+
+  // Set sorting order using local SortOrder type
+  const sortOption: { createdAt?: SortOrder; rating?: SortOrder } =
+    sort && sort.orderBy === "latest"
+      ? { createdAt: "desc" }
+      : sort && sort.orderBy === "oldest"
+        ? { createdAt: "asc" }
+        : { rating: "desc" };
+
+  // Calculate pagination parameters
+  const skip = (page - 1) * pageSize;
+  const take = pageSize;
+
+  // Fetch reviews from the database
+  const reviews = await prisma.review.findMany({
+    where: reviewFilter,
+    include: {
+      images: true,
+      user: true,
+    },
+    orderBy: sortOption,
+    skip, // Skip records for pagination
+    take, // Take records for pagination
+  });
+
+  return reviews;
 };

@@ -9,13 +9,20 @@ import {
 import { getStoreDefaultShippingDetails } from "@/queries/store";
 import { getAllSubCategories } from "@/queries/subCategory";
 import {
+  Category,
+  Color,
   FreeShipping,
   FreeShippingCountry,
+  OfferTag,
   Prisma,
   ProductVariantImage,
+  Review,
+  ReviewImage,
   ShippingRate,
   Size,
   Spec,
+  SubCategory,
+  User,
 } from "@prisma/client";
 import countries from "@/data/countries.json";
 
@@ -339,3 +346,87 @@ export type ShippingDetailsType = {
 export type FreeShippingWithCountriesType = FreeShipping & {
   eligibaleCountries: FreeShippingCountry[];
 };
+
+export type StatisticsCardType = Prisma.PromiseReturnType<
+  typeof getRatingStatistics
+>["ratingStatistics"];
+
+export type ReviewWithImageType = Review & {
+  images: ReviewImage[];
+  user: User;
+};
+
+export type ReviewsOrderType = {
+  orderBy: "latest" | "oldest" | "highest";
+};
+
+export type ReviewsFiltersType = {
+  rating?: number;
+  hasImages?: boolean;
+};
+
+export type SortOrder = "asc" | "desc";
+
+export type ReviewDetailsType = {
+  id: string;
+  review: string;
+  rating: number;
+  images: { url: string }[];
+  size: string;
+  quantity: string;
+  variant: string;
+  variantImage: string;
+  color: string;
+};
+
+export type VariantInfoType = {
+  variantName: string;
+  variantSlug: string;
+  variantImage: string;
+  variantUrl: string;
+  images: ProductVariantImage[];
+  sizes: Size[];
+  colors: string;
+};
+
+export interface ProductPageData {
+  productId: string;
+  variantId: string;
+  productSlug: string;
+  variantSlug: string;
+  name: string;
+  description: string;
+  variantName: string;
+  sku: string;
+  colors: Color[];
+  saleEndDate: string | null;
+  rating: number;
+  variantDescription: string | null;
+  variantImage: string;
+  weight: number;
+  category: Category;
+  subCategory: SubCategory;
+  offerTag: OfferTag | null;
+  isSale: boolean;
+  images: ProductVariantImage[];
+  sizes: Size[];
+  shippingDetails: ShippingDetailsType | boolean;
+  store: {
+    id: string;
+    name: string;
+    url: string;
+    logo: string;
+    followersCount: number;
+    isUserFollowingStore: boolean;
+  };
+  reviewsStatistics: RatingStatisticsType;
+  variantInfo: {
+    variantName: string;
+    variantSlug: string;
+    variantImage: string;
+    variantUrl: string;
+    images: ProductVariantImage[];
+    sizes: Size[];
+    colors: Color[];
+  }[];
+}

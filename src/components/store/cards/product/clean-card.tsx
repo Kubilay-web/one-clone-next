@@ -2,7 +2,7 @@ import { ProductType, VariantSimplified } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import ReactStars from "react-rating-stars-component";
+import StarRatings from "react-star-ratings";
 
 export default function ProductCardClean({
   product,
@@ -10,7 +10,7 @@ export default function ProductCardClean({
   product: ProductType;
 }) {
   const [variant, setVariant] = useState<VariantSimplified>(
-    product.variants[0]
+    product.variants[0],
   );
 
   const size = variant.sizes.reduce((lowest, current) => {
@@ -47,7 +47,7 @@ export default function ProductCardClean({
                       alt=""
                       width={50}
                       height={50}
-                      className="w-6 h-6 object-cover rounded-full"
+                      className="h-6 w-6 rounded-full object-cover"
                     />
                   </li>
                 ))}
@@ -55,7 +55,7 @@ export default function ProductCardClean({
             </div>
           </div>
           <div className="rating h-4">
-            <ReactStars
+            <StarRatings
               count={5}
               size={18}
               color="#e2dfdf"

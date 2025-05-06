@@ -2,18 +2,19 @@
 
 import { cn } from "@/lib/utils";
 import { ProductVariantImage } from "@prisma/client";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import ImageZoom from "react-image-zooom";
 import Image from "next/image";
 
 export default function ProductSwiper({
   images,
+  activeImage,
+  setActiveImage,
 }: {
   images: ProductVariantImage[];
+  activeImage: ProductVariantImage | null;
+  setActiveImage: Dispatch<SetStateAction<ProductVariantImage | null>>;
 }) {
-  const [activeImage, setActiveImage] = useState<ProductVariantImage>(
-    images[0],
-  );
   if (!images) return;
 
   return (
@@ -26,7 +27,9 @@ export default function ProductSwiper({
               className={cn(
                 "grid h-16 w-16 cursor-pointer place-items-center overflow-hidden rounded-md border border-gray-100 transition-all duration-75 ease-in",
                 {
-                  "border-main-primary": activeImage.id === img.id,
+                  "border-main-primary": activeImage
+                    ? activeImage.id === img.id
+                    : false,
                 },
               )}
               onMouseEnter={() => setActiveImage(img)}
@@ -43,7 +46,7 @@ export default function ProductSwiper({
         </div>
         <div className="relative flex w-full rounded-lg 2xl:h-[600px] 2xl:w-[600px]">
           <ImageZoom
-            src={activeImage.url}
+            src={activeImage ? activeImage.url : ""}
             zoom={300}
             className="w-full rounded-lg"
           />
