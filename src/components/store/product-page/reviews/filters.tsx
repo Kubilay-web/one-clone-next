@@ -15,8 +15,7 @@ interface Props {
 
 const ReviewsFilters: FC<Props> = ({ filters, setFilters, setSort, stats }) => {
   const { rating, hasImages } = filters;
-  const { ratingStatistics, reviewsWithImagesCount, totalReviews } =
-    stats || {};
+  const { ratingStatistics, reviewsWithImagesCount, totalReviews } = stats;
   return (
     <div className="relative mt-8 overflow-hidden">
       <div className="flex flex-wrap gap-4">
@@ -48,7 +47,6 @@ const ReviewsFilters: FC<Props> = ({ filters, setFilters, setSort, stats }) => {
         >
           Include Pictures ({reviewsWithImagesCount})
         </div>
-        {/* Rating Filters */}
         {ratingStatistics?.map((r) => (
           <div
             key={r.rating}

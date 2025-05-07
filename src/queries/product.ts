@@ -564,7 +564,7 @@ export const retrieveProductDetails = async (
           images: true,
           user: true,
         },
-        take: 4,
+        take: 8,
       },
       freeShipping: {
         include: {
@@ -694,6 +694,7 @@ const formatProductResponse = (
     questions,
     rating: product.rating,
     reviews,
+    numReviews: product.numReviews,
     reviewsStatistics: ratingStatistics,
     shippingDetails,
     relatedProducts: [],

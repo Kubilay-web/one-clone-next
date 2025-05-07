@@ -10,8 +10,8 @@ export default function ReviewCard({
 }: {
   review: ReviewWithImageType;
 }) {
-  console.log(review);
   const { images, user } = review;
+  console.log("review", review);
   const colors = review.color
     .split(",")
     .filter((color) => color.trim() !== "") // Remove any empty strings
@@ -44,6 +44,9 @@ export default function ReviewCard({
             isHalf
             edit={false}
           />
+          <div className="flex items-center gap-x-2">
+            <ColorWheel colors={colors} size={24} />
+          </div>
           <div className="flex items-center gap-x-2">
             <Image
               src={review.variantImage}

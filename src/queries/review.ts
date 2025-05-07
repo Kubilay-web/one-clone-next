@@ -133,7 +133,7 @@ const getProductReviews = async (productId: string) => {
             avatarUrl: true,
           },
         },
-        images: true, // Yorumla ilişkili resimler
+        images: true,
       },
     });
 

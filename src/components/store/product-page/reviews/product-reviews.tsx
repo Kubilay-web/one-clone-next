@@ -19,6 +19,7 @@ import ProductPageReviewsSkeletonLoader from "../../skeletons/product-page/revie
 import { DotLoader } from "react-spinners";
 import { getProductFilteredReviews } from "@/queries/product";
 import { Review } from "@prisma/client";
+import { randomBytes } from "crypto";
 
 interface Props {
   productId: string;
@@ -44,6 +45,7 @@ const defaultData = {
 const ProductReviews: FC<Props> = ({
   productId,
   rating,
+  statistics,
   reviews,
   variantsInfo,
   numReviews,
@@ -51,10 +53,13 @@ const ProductReviews: FC<Props> = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [filterLoading, setFilterLoading] = useState<boolean>(true);
-  const [data, setData] = useState<ReviewWithImageType[]>([]);
-  const [statistics, setStatistics] =
-    useState<RatingStatisticsType>(defaultData);
+  const [data, setData] = useState<ReviewWithImageType[]>(reviews);
+
+  // const [statistics, setStatistics] =
+  //   useState<RatingStatisticsType>(defaultData);
   const [averageRating, setAverageRating] = useState<number>(rating);
+
+  const { totalReviews, ratingStatistics } = statistics;
 
   const half = Math.ceil(data?.length / 2);
 
@@ -110,7 +115,7 @@ const ProductReviews: FC<Props> = ({
           {/* Title */}
           <div className="h-12">
             <h2 className="text-2xl font-bold text-main-primary">
-              Custom Reviews ({reviewsProduct.length})
+              Custom Reviews ({totalReviews})
             </h2>
           </div>
 
@@ -170,10 +175,11 @@ const ProductReviews: FC<Props> = ({
           {/* Statistics */}
           <div className="w-full">
             <div className="flex flex-col items-center gap-4 md:flex-row">
-              <RatingCard rating={averageRating} />
-              <RatingStatisticsCard statistics={statistics?.ratingStatistics} />
+              <RatingCard rating={rating} />
+              <RatingStatisticsCard statistics={ratingStatistics} />
             </div>
           </div>
+
           <>
             <div className="space-y-6">
               <ReviewsFilters
@@ -184,6 +190,30 @@ const ProductReviews: FC<Props> = ({
               />
               <ReviewsSort sort={sort} setSort={setSort} />
             </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {data?.length > 0 ? (
+                <>
+                  <div className="flex flex-col gap-3">
+                    {data
+                      ?.slice(0, half)
+                      .map((review) => (
+                        <ReviewCard key={review.id} review={review} />
+                      ))}
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    {data
+                      ?.slice(half)
+                      .map((review) => (
+                        <ReviewCard key={review.id} review={review} />
+                      ))}
+                  </div>
+                </>
+              ) : (
+                <>No Reviews yet.</>
+              )}
+            </div>
+
             {/* Reviews */}
             {!filterLoading ? (
               <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -233,7 +263,7 @@ const ProductReviews: FC<Props> = ({
           setReviews={setData}
           reviews={data}
           variantsInfo={variantsInfo}
-          setStatistics={setStatistics}
+          // setStatistics={setStatistics}
           setAverageRating={setAverageRating}
         />
       </div>

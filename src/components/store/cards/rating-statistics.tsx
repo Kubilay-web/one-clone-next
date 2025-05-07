@@ -1,6 +1,8 @@
 "use client";
 import { StatisticsCardType } from "@/lib/types";
+import ReactStars from "react-rating-stars-component"; // Yeni paket
 import StarRatings from "react-star-ratings";
+
 export default function RatingStatisticsCard({
   statistics,
 }: {
@@ -14,20 +16,27 @@ export default function RatingStatisticsCard({
           .reverse()
           .map((rating) => (
             <div key={rating.rating} className="flex h-4 items-center">
+              {/* Yıldızlı Puanlama */}
               <StarRatings
-                count={5}
-                value={rating.rating}
-                size={15}
-                color="#e2dfdf"
-                isHalf
-                edit={false}
+                rating={rating.rating}
+                starRatedColor="#FFD804"
+                starEmptyColor="#e2dfdf"
+                starHoverColor="#FFD804"
+                numberOfStars={5}
+                name="rating"
+                starDimension="12px"
+                starSpacing="2px"
               />
+
+              {/* Yüzde Barı */}
               <div className="relative mx-2.5 h-1.5 w-full flex-1 rounded-full bg-[#e2dfdf]">
                 <div
                   className="absolute left-0 h-full rounded-full bg-[#ffc50A]"
                   style={{ width: `${rating.percentage}%` }}
                 />
               </div>
+
+              {/* Yorum Sayısı */}
               <div className="w-12 text-xs leading-4">{rating.numReviews}</div>
             </div>
           ))}
