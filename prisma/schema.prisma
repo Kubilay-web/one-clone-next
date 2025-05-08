@@ -279,6 +279,7 @@ model Product{
     shippingFeeMethod ShippingFeeMethod @default(ITEM)
 
    freeShipping FreeShipping? @relation("ProductFreeShipping")
+   freeShippingForAllCountries Boolean @default(false)
 
 
   createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
@@ -483,7 +484,7 @@ model FreeShipping{
    productId String @unique
    product Product @relation("ProductFreeShipping",fields: [productId],references: [id],onDelete:Cascade) 
 
-   eligableCountries FreeShippingCountry[] @relation("FreeShippingCountries")
+  eligableCountries FreeShippingCountry[] @relation("FreeShippingCountries")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

@@ -18,6 +18,7 @@ import {
   ProductVariantImage,
   Review,
   ReviewImage,
+  ShippingFeeMethod,
   ShippingRate,
   Size,
   Spec,
@@ -208,6 +209,7 @@ export interface ProductWithVariantType {
   variantImage: string;
   categoryId: string;
   subCategoryId: string;
+  offerTagId: string;
   isSale: boolean;
   saleEndDate: string;
   brand: string;
@@ -225,6 +227,9 @@ export interface ProductWithVariantType {
   variant_specs: { name: string; value: string }[];
   keywords: string[];
   questions: { question: string; answer: string }[];
+  freeShippingForAllCountries: boolean;
+  freeShippingCountriesId: { id?: string; label: string; value: string }[];
+  shippingFeeMethod: ShippingFeeMethod;
   createdAt: Date;
   updatedAt: Date;
 }

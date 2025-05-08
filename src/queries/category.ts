@@ -152,3 +152,16 @@ export const getAllSubCategoriesForCategory = async (categoryId: string) => {
     throw error; // Hata durumunda, hatayı fırlat
   }
 };
+
+export const getAllCategoriesForCategory = async (categoryId: string) => {
+  // Retrieve all subcategories of category from the database
+  const subCategories = await prisma.subCategory.findMany({
+    where: {
+      categoryId,
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
+  return subCategories;
+};
