@@ -17,6 +17,7 @@ import {
   FreeShipping,
   PrismaClient,
   ProductVariant,
+  ShippingFeeMethod,
   Size,
   Store,
 } from "@prisma/client";
@@ -249,6 +250,10 @@ export const getProductMainInfo = async (productId: string) => {
     where: {
       id: productId,
     },
+    include: {
+      questions: true,
+      specs: true,
+    },
   });
   if (!product) return null;
 
@@ -259,7 +264,19 @@ export const getProductMainInfo = async (productId: string) => {
     brand: product.brand,
     categoryId: product.categoryId,
     subCategoryId: product.subCategoryId,
+    offerTagId: product.offerTagId || undefined,
     storeId: product.storeId,
+    ShippingFeeMethod: product.shippingFeeMethod,
+
+    questions: product.questions.map((q) => ({
+      question: q.question,
+      answer: q.answer,
+    })),
+
+    product_specs: product.specs.map((spec) => ({
+      name: spec.name,
+      value: spec.value,
+    })),
   };
 };
 
@@ -276,6 +293,7 @@ export const getAllStoreProducts = async (storeUrl: string) => {
     include: {
       category: true,
       subCategory: true,
+      offerTag: true,
       variants: {
         include: {
           images: true,
