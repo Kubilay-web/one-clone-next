@@ -11,6 +11,7 @@ import { CartProductType } from "@/lib/types";
 import { useState } from "react";
 
 export default function page() {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const cartItems = useFromStore(useCartStore, (state) => state.cart);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -34,6 +35,7 @@ export default function page() {
               <div className="mt-2 h-auto overflow-auto overflow-x-hidden">
                 {cartItems.map((product) => (
                   <CartProduct
+                    key={`${product.productId}-${product.variantId}-${product.sizeId}`} // benzersiz bir key
                     product={product}
                     selectedItems={selectedItems}
                     setSelectedItems={setSelectedItems}
