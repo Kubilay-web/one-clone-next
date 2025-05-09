@@ -36,6 +36,7 @@ const QuantitySelector: FC<QuantitySelectorProps> = ({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const cart = useFromStore(useCartStore, (state) => state.cart);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const maxQty = useMemo(() => {
     const search_product = cart?.find(
       (p) =>

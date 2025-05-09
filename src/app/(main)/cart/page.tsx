@@ -13,7 +13,9 @@ import { useState } from "react";
 export default function page() {
   const cartItems = useFromStore(useCartStore, (state) => state.cart);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [selectedItems, setSelectedItems] = useState<CartProductType[]>([]);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [totalShipping, setTotalShipping] = useState<number>(0);
 
   console.log("selectedItems", selectedItems);

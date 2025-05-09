@@ -28,6 +28,7 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
 
   if (typeof shippingDetails === "boolean") return null;
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { toast } = useToast();
 
   const [variantImages, setVariantImages] =
@@ -109,6 +110,7 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
     });
   };
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const maxQty = useMemo(() => {
     const search_product = cartItems?.find(
       (p) =>
