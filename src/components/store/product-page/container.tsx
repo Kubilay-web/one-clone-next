@@ -1,7 +1,7 @@
 "use client";
 
 import { CartProductType, ProductPageDataType } from "@/lib/types";
-import { ReactNode, FC, useState, useEffect } from "react";
+import { ReactNode, FC, useState, useEffect, useMemo } from "react";
 import ProductSwiper from "./product-swiper";
 import ProductInfo from "./product-info/product-info";
 import ShipTo from "./shipping/ship-to";
@@ -11,6 +11,9 @@ import { isProductValidToAdd } from "@/lib/utils";
 import QuantitySelector from "./quantity-selector";
 import SocialShare from "../shared/social-share";
 import { ProductVariantImage } from "@prisma/client";
+import { useCartStore } from "@/cart-store/useCartStore";
+import { useToast } from "@/components/ui/use-toast";
+import useFromStore from "@/hooks/useFromStore";
 
 interface Props {
   productData: ProductPageDataType;
@@ -21,9 +24,11 @@ interface Props {
 const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
   if (!productData) return null;
 
-  const { images, shippingDetails, sizes } = productData;
+  const { images, shippingDetails, sizes, productId, variantId } = productData;
 
   if (typeof shippingDetails === "boolean") return null;
+
+  const { toast } = useToast();
 
   const [variantImages, setVariantImages] =
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -63,6 +68,8 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useState<CartProductType>(data);
 
+  const { stock } = productToBeAddedToCart;
+
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [isProductValid, setIsProductValid] = useState<boolean>(false);
 
@@ -86,6 +93,33 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
     productToBeAddedToCart.stock,
     productToBeAddedToCart.quantity,
   );
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const addToCart = useCartStore((state) => state.addToCart);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const cartItems = useFromStore(useCartStore, (state) => state.cart);
+  console.log("cart items -->>", cartItems);
+
+  const handleAddToCart = () => {
+    if (maxQty <= 0) return;
+    addToCart(productToBeAddedToCart);
+    toast({
+      description: "Product add to cart.",
+    });
+  };
+
+  const maxQty = useMemo(() => {
+    const search_product = cartItems?.find(
+      (p) =>
+        p.productId === productId &&
+        p.variantId === variantId &&
+        p.sizeId === sizeId,
+    );
+    return search_product
+      ? search_product.stock - search_product.quantity
+      : stock;
+  }, [cartItems, productId, variantId, sizeId, stock]);
 
   return (
     <div className="relative">
@@ -147,9 +181,11 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
                   <button className="ease-bezier-1 relative inline-block h-11 w-full min-w-20 cursor-pointer select-none whitespace-nowrap rounded-3xl border border-orange-border bg-orange-background py-2.5 font-bold leading-6 text-white transition-all duration-300 hover:bg-orange-hover">
                     <span>Buy now</span>
                   </button>
+
                   <button
-                    disabled={!isProductValid}
-                    className="ease-bezier-1 relative inline-block h-11 w-full min-w-20 cursor-pointer select-none whitespace-nowrap rounded-3xl border border-orange-border bg-orange-border py-2.5 font-bold leading-6 text-orange-hover transition-all duration-300 hover:bg-[#e4cdce]"
+                    disabled={!isProductValid || maxQty <= 0}
+                    onClick={handleAddToCart}
+                    className={`ease-bezier-1 relative inline-block h-11 w-full min-w-20 cursor-pointer select-none whitespace-nowrap rounded-3xl border border-orange-border bg-orange-border py-2.5 font-bold leading-6 text-orange-hover transition-all duration-300 hover:bg-[#e4cdce] ${!isProductValid || maxQty <= 0 ? "cursor-not-allowed" : ""}`}
                   >
                     <span>Add to cart</span>
                   </button>
