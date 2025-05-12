@@ -28,7 +28,7 @@ interface Props {
   reviews: ReviewWithImageType[];
   variantsInfo: VariantInfoType[];
   numReviews: number;
-  reviewsProduct: Review[];
+  // reviewsProduct: Review[];
 }
 const defaultData = {
   ratingStatistics: [
@@ -53,7 +53,10 @@ const ProductReviews: FC<Props> = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [filterLoading, setFilterLoading] = useState<boolean>(true);
-  const [data, setData] = useState<ReviewWithImageType[]>(reviews);
+
+  const [data, setData] = useState<ReviewWithImageType[]>([]);
+
+  console.log("data-->", data);
 
   // const [statistics, setStatistics] =
   //   useState<RatingStatisticsType>(defaultData);
@@ -105,6 +108,13 @@ const ProductReviews: FC<Props> = ({
       setLoading(false);
     }
   };
+
+  // useEffect(() => {
+  //   if (reviews) {
+  //     setData(reviews);
+  //     setLoading(false);
+  //   }
+  // }, [reviews]);
 
   return (
     <div className="pt-6" id="reviews">
@@ -173,15 +183,15 @@ const ProductReviews: FC<Props> = ({
           </div>
 
           {/* Statistics */}
-          <div className="w-full">
+          {/* <div className="w-full">
             <div className="flex flex-col items-center gap-4 md:flex-row">
               <RatingCard rating={rating} />
               <RatingStatisticsCard statistics={ratingStatistics} />
             </div>
-          </div>
+          </div> */}
 
           <>
-            <div className="space-y-6">
+            {/* <div className="space-y-6">
               <ReviewsFilters
                 filters={filters}
                 setFilters={setFilters}
@@ -198,24 +208,24 @@ const ProductReviews: FC<Props> = ({
                     {data
                       ?.slice(0, half)
                       .map((review) => (
-                        <ReviewCard key={review.id} review={review} />
+                        <ReviewCard key={review.id} review={reviews} />
                       ))}
                   </div>
                   <div className="flex flex-col gap-3">
                     {data
                       ?.slice(half)
                       .map((review) => (
-                        <ReviewCard key={review.id} review={review} />
+                        <ReviewCard key={review.id} review={reviews} />
                       ))}
                   </div>
                 </>
               ) : (
                 <>No Reviews yet.</>
               )}
-            </div>
+            </div> */}
 
             {/* Reviews */}
-            {!filterLoading ? (
+            {/* {!filterLoading ? (
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 {data?.length > 0 ? (
                   <>
@@ -253,11 +263,11 @@ const ProductReviews: FC<Props> = ({
                 }
                 setPage={setPage}
               />
-            )}
+            )} */}
           </>
         </div>
       )}
-      <div className="mt-10">
+      {/* <div className="mt-10">
         <ReviewDetails
           productId={productId}
           setReviews={setData}
@@ -266,7 +276,7 @@ const ProductReviews: FC<Props> = ({
           // setStatistics={setStatistics}
           setAverageRating={setAverageRating}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

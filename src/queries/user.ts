@@ -1,6 +1,6 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, ShippingAddress } from "@prisma/client";
 import { validateRequest } from "@/auth";
 import { CartProductType } from "@/lib/types";
 import { getCookie } from "cookies-next";
@@ -301,4 +301,84 @@ export const saveUserCart = async (
   });
   if (cart) return true;
   return false;
+};
+
+export const getUserShippingAddresses = async () => {
+  try {
+    // Get current user
+    const { user } = await validateRequest();
+
+    // Ensure user is authenticated
+    if (!user) throw new Error("Unauthenticated.");
+
+    // Retrieve all shipping addresses for the specified user
+    const shippingAddresses = await prisma.shippingAddress.findMany({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        country: true,
+        user: true,
+      },
+    });
+
+    return shippingAddresses;
+  } catch (error) {
+    // Log and re-throw any errors
+    throw error;
+  }
+};
+
+export const upsertShippingAddress = async (address: ShippingAddress) => {
+  try {
+    // Get current user
+    const { user } = await validateRequest();
+
+    // Ensure user is authenticated
+    if (!user) throw new Error("Unauthenticated.");
+
+    // Ensure address data is provided
+    if (!address) throw new Error("Please provide address data.");
+
+    // Handle making the rest of addresses default false when we are adding a new default
+    if (address.default) {
+      const addressDB = await prisma.shippingAddress.findUnique({
+        where: { id: address.id },
+      });
+      if (addressDB) {
+        try {
+          await prisma.shippingAddress.updateMany({
+            where: {
+              userId: user.id,
+              default: true,
+            },
+            data: {
+              default: false,
+            },
+          });
+        } catch (error) {
+          throw new Error("Could not reset default shipping addresses");
+        }
+      }
+    }
+
+    // Upsert shipping address into the database
+    const upsertedAddress = await prisma.shippingAddress.upsert({
+      where: {
+        id: address.id,
+      },
+      update: {
+        ...address,
+        userId: user.id,
+      },
+      create: {
+        ...address,
+        userId: user.id,
+      },
+    });
+
+    return upsertedAddress;
+  } catch (error) {
+    throw error;
+  }
 };

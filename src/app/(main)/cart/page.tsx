@@ -35,7 +35,7 @@ export default function page() {
               <div className="mt-2 h-auto overflow-auto overflow-x-hidden">
                 {cartItems.map((product) => (
                   <CartProduct
-                    key={`${product.productId}-${product.variantId}-${product.sizeId}`} // benzersiz bir key
+                    key={`${product.productId}-${product.variantId}-${product.sizeId}`}
                     product={product}
                     selectedItems={selectedItems}
                     setSelectedItems={setSelectedItems}

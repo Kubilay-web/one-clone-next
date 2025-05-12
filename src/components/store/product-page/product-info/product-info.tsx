@@ -111,7 +111,6 @@ const ProductInfo: FC<Props> = ({
             rating={currentRating}
             starRatedColor="#FFD804"
             starEmptyColor="#F5F5F5"
-            changeRating={handleRatingChange}
             numberOfStars={5}
             name="rating"
             starDimension="16px"

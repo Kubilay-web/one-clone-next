@@ -42,6 +42,7 @@ model User {
   reviews Review[] @relation("ReviewToUser")
 
   cart Cart? @relation("UserCart")
+  shippingAddresses ShippingAddress[] @relation("UserShippingAddresses")
 
   @@map("users")
 }
@@ -435,6 +436,7 @@ model Country{
 
    shippingRates ShippingRate[] @relation("CountryShippingRates")
    freeShippingCountries FreeShippingCountry[] @relation("FreeShippingToCountry")
+   shippingAddresses ShippingAddress[] @relation("CountryToShippingAddress")
 
   createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
@@ -599,6 +601,34 @@ updatedAt DateTime @default(now()) @updatedAt
 
 @@index([cartId])
 @@index([storeId])
+}
+
+
+model ShippingAddress{
+id                    String   @id @default(cuid()) @map("_id")
+firstName String
+lastName String
+phone String
+address1 String
+address2 String
+state String
+city String
+zip_code String
+default Boolean @default(false)
+
+userId String
+user User @relation("UserShippingAddresses",fields: [userId],references: [id])
+
+countryId String
+country Country @relation("CountryToShippingAddress",fields: [countryId],references: [id])
+
+
+
+createdAt DateTime @default(now())
+updatedAt DateTime @default(now()) @updatedAt
+
+@@index([countryId])
+@@index([userId])
 }
 
 

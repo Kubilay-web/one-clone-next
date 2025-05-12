@@ -11,26 +11,28 @@ export default function ReviewCard({
   review: ReviewWithImageType;
 }) {
   const { images, user } = review;
+  console.log("user----------->", user);
   console.log("review", review);
-  const colors = review.color
-    .split(",")
-    .filter((color) => color.trim() !== "") // Remove any empty strings
-    .map((color) => ({ name: color.trim() }));
+  // const colors = review.color
+  //   .split(",")
+  //   .filter((color) => color.trim() !== "")
+  //   .map((color) => ({ name: color.trim() }));
 
   const { username } = user;
-  const cesnoredName = `${name[0]}***${name[user.username.length - 1]}`;
+  // const cesnoredName = `${name[0]}***${name[user.username.length - 1]}`;
   return (
     <div className="relative flex h-fit rounded-xl border border-[#d8d8d8] px-2.5 py-4">
       <div className="px- w-16 space-y-1">
         <Image
-          src={user.avatarUrl}
+          src={review.user.avatarUrl}
           alt="Profile image"
           width={100}
           height={100}
           className="h-11 w-11 rounded-full object-cover"
         />
         <span className="text-xs text-main-secondary">
-          {cesnoredName.toUpperCase()}
+          {/* {cesnoredName.toUpperCase()} */}
+          {user.username}
         </span>
       </div>
       <div className="flex flex-1 flex-col justify-between overflow-hidden px-1.5 leading-5">
@@ -45,7 +47,7 @@ export default function ReviewCard({
             edit={false}
           />
           <div className="flex items-center gap-x-2">
-            <ColorWheel colors={colors} size={24} />
+            {/* <ColorWheel colors={colors} size={24} /> */}
           </div>
           <div className="flex items-center gap-x-2">
             <Image
