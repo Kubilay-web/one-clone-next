@@ -117,11 +117,11 @@ const AddressDetails: FC<AddressDetailsProps> = ({
         title: data?.id
           ? "Shipping address has been updated."
           : `Congratulations! Shipping address is now created.`,
+        duration: 3000,
       });
 
       // Refresh data
       router.refresh();
-      setShow(false);
     } catch (error: any) {
       // Handling form submission errors
       toast({

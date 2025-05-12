@@ -8,7 +8,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role{
+enum Role {
   USER
   ADMIN
   SELLER
@@ -43,6 +43,8 @@ model User {
 
   cart Cart? @relation("UserCart")
   shippingAddresses ShippingAddress[] @relation("UserShippingAddresses")
+
+  orders Order[] @relation("UserOrders")
 
   @@map("users")
 }
@@ -201,7 +203,7 @@ model SubCategory {
 }
 
 
-enum StoreStatus{
+enum StoreStatus {
   PENDING
   ACTIVE
   BANNED
@@ -240,6 +242,7 @@ model Store {
   shippingRates ShippingRate[] @relation("StoreShippingRates")
   followers UserFollowingStore[]
   cartItems CartItem[] @relation("CartItemToStore")
+  orderGroups OrderGroup[] @relation("OrderGroupToStore")
 
   @@index([userId])
 
@@ -264,7 +267,7 @@ model UserFollowingStore {
 
 
 
-enum ShippingFeeMethod{
+enum ShippingFeeMethod {
   ITEM
   WEIGHT
   FIXED
@@ -610,11 +613,13 @@ firstName String
 lastName String
 phone String
 address1 String
-address2 String
+address2 String?
 state String
 city String
 zip_code String
 default Boolean @default(false)
+
+orders Order[] @relation("ShippingAddressToOrder")
 
 userId String
 user User @relation("UserShippingAddresses",fields: [userId],references: [id])
@@ -629,6 +634,122 @@ updatedAt DateTime @default(now()) @updatedAt
 
 @@index([countryId])
 @@index([userId])
+}
+
+
+enum OrderStatus {
+  Pending
+  Confirmed
+  Processing
+  Shipped
+  OutforDelivery
+  Delivered
+  Cancelled
+  Failed
+  Refunded
+  Returned
+  PartiallyShipped
+  OnHold
+}
+
+
+enum PaymentStatus {
+  Pending
+  Paid
+  Failed
+  Declined
+  Cancelled
+  Refunded
+  PartiallyRefunded
+  Chargeback
+}
+
+
+model Order{
+id                    String   @id @default(cuid()) @map("_id")
+shippingFees Float
+subTotal Float
+total Float
+
+groups OrderGroup[] @relation("OrderGroupToOrder")
+
+orderStatus OrderStatus @default(Pending)
+paymentStatus PaymentStatus @default(Pending)
+
+shippingAddressId String
+shippingAddress ShippingAddress @relation("ShippingAddressToOrder",fields: [shippingAddressId],references: [id])
+
+userId String
+user User @relation("UserOrders",fields: [userId],references: [id])
+
+
+
+
+createdAt DateTime @default(now())
+updatedAt DateTime @default(now()) @updatedAt
+
+@@index([shippingAddressId])
+@@index([userId])
+
+}
+
+
+model OrderGroup{
+id                    String   @id @default(cuid()) @map("_id")
+status OrderStatus @default(Pending)
+
+
+items OrderItem[] @relation("OrderItemToGroup")
+
+shippingService String
+shippingDeliveryMin Int
+shippingDeliveryMax Int
+shippingFees Float
+subTotal Float
+total Float
+
+orderId String
+order Order @relation("OrderGroupToOrder",fields: [orderId],references: [id])
+
+storeId String
+store Store @relation("OrderGroupToStore",fields: [storeId],references: [id])
+
+
+createdAt DateTime @default(now())
+updatedAt DateTime @default(now()) @updatedAt
+
+@@index([orderId])
+@@index([storeId])
+
+}
+
+
+model OrderItem {
+id                    String   @id @default(cuid()) @map("_id")
+
+productId String
+variantId String
+sizeId String
+
+productSlug String
+variantSlug String
+sku String
+name String
+image String
+size String
+quantity Int @default(1)
+shippingFee Float @default(0)
+price Float
+totalPrice Float
+
+orderGroupId String
+orderGroup OrderGroup @relation("OrderItemToGroup",fields: [orderGroupId],references: [id],onDelete:Cascade)
+
+
+createdAt DateTime @default(now())
+updatedAt DateTime @default(now()) @updatedAt
+
+@@index([orderGroupId])
 }
 
 

@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { Dispatch, FC, SetStateAction, useState } from "react";
 import Modal from "../modal";
 import AddressDetails from "./address-details";
+import AddressList from "./address-list";
 interface Props {
   countries: Country[];
   addresses: UserShippingAddressType[];
@@ -22,7 +23,14 @@ const UserShippingAddresses: FC<Props> = ({
     <div className="w-full bg-white px-6 py-4">
       <div className="relative flex flex-col text-sm">
         <h1 className="mb-3 text-lg font-bold">Shipping Addresses</h1>
-        {addresses && addresses.length > 0 && <div>Address</div>}
+        {addresses && addresses.length > 0 && (
+          <AddressList
+            addresses={addresses}
+            countries={countries}
+            selectedAddress={selectedAddress}
+            setSelectedAddress={setSelectedAddress}
+          />
+        )}
         <div
           onClick={() => setShow(true)}
           className="ml-8 mt-4 cursor-pointer text-orange-background"
@@ -31,7 +39,7 @@ const UserShippingAddresses: FC<Props> = ({
           <span className="text-sm">Add new address</span>
         </div>
         <Modal title="Add new Address" show={show} setShow={setShow}>
-          <AddressDetails countries={countries} />
+          <AddressDetails countries={countries} setShow={setShow} />
         </Modal>
       </div>
     </div>
