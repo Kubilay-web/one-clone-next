@@ -4,7 +4,10 @@ import { PrismaClient, ShippingAddress } from "@prisma/client";
 import { validateRequest } from "@/auth";
 import { CartProductType } from "@/lib/types";
 import { getCookie } from "cookies-next";
-import { getShippingDetails } from "./product";
+import {
+  getDeliveryDetailsForStoreByCountry,
+  getShippingDetails,
+} from "./product";
 import { cookies } from "next/headers";
 
 // Prisma client
@@ -526,6 +529,8 @@ export const placeOrder = async (
     }),
   );
 
+  console.log("validated--->", validatedCartItems);
+
   // Define the type for grouped items by store
   type GroupedItems = { [storeId: string]: typeof validatedCartItems };
 
@@ -535,6 +540,8 @@ export const placeOrder = async (
     acc[item.storeId].push(item);
     return acc;
   }, {} as GroupedItems);
+
+  console.log("groupedItems--->", groupedItems);
 
   // Create the order
   const order = await prisma.order.create({
@@ -581,7 +588,7 @@ export const placeOrder = async (
         status: "Pending",
         subTotal: groupedTotalPrice - groupShippingFees,
         shippingFees: groupShippingFees,
-        total: totalAfterDiscount,
+        total: groupedTotalPrice,
         shippingService: shippingService || "International Delivery",
         shippingDeliveryMin: deliveryTimeMin || 7,
         shippingDeliveryMax: deliveryTimeMax || 30,
@@ -611,7 +618,7 @@ export const placeOrder = async (
     }
 
     // Update order totals
-    orderTotalPrice += totalAfterDiscount;
+    orderTotalPrice += groupedTotalPrice;
     orderShippingFee += groupShippingFees;
   }
 
@@ -627,16 +634,32 @@ export const placeOrder = async (
     },
   });
 
-  // Delete cart
-  /*
   await prisma.cart.delete({
     where: {
       id: cartId,
     },
   });
-  */
 
   return {
     orderId: order.id,
   };
+};
+
+export const emptyUserCart = async () => {
+  try {
+    // Ensure the user is authenticated
+    const { user } = await validateRequest();
+    if (!user) throw new Error("Unauthenticated.");
+
+    const userId = user.id;
+
+    const res = await prisma.cart.delete({
+      where: {
+        userId,
+      },
+    });
+    if (res) return true;
+  } catch (error) {
+    throw error;
+  }
 };

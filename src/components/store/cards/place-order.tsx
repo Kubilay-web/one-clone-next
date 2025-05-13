@@ -4,6 +4,9 @@ import { Button } from "../ui/button";
 import FastDelivery from "./product/fast-delivery";
 import { SecurityPrivacyCard } from "../product-page/returns-security-privacy-card";
 import toast from "react-hot-toast";
+import { emptyUserCart, placeOrder } from "@/queries/user";
+import { useCartStore } from "@/cart-store/useCartStore";
+import { useRouter } from "next/navigation";
 
 interface Props {
   shippingFees: number;
@@ -20,9 +23,16 @@ const PlaceOrderCard: FC<Props> = ({
   shippingAddress,
   cartId,
 }) => {
+  const { push } = useRouter();
+  const emptyCart = useCartStore((state) => state.emptyCart);
   const handlePlaceOrder = async () => {
     if (!shippingAddress) {
       toast.error("Select a shipping address first.");
+    } else {
+      const order = await placeOrder(shippingAddress, cartId);
+      if (order) emptyCart();
+      await emptyUserCart();
+      push(`/order/${order.orderId}`);
     }
   };
 
