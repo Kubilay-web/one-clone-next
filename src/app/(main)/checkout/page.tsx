@@ -5,6 +5,7 @@ import React from "react";
 import db from "@/lib/db";
 import CheckoutContainer from "@/components/store/checkout-page/container";
 import { getUserShippingAddresses } from "@/queries/user";
+import Header from "@/components/store/layout/header/header";
 
 export default async function CheckoutPage() {
   const { user } = await validateRequest();
@@ -27,14 +28,17 @@ export default async function CheckoutPage() {
     orderBy: { name: "desc" },
   });
   return (
-    <div className="min-h-screen bg-[#f4f4f4]">
-      <div className="max-w-container mx-auto px-2 py-5">
-        <CheckoutContainer
-          cart={cart}
-          countries={countries}
-          addresses={addresses}
-        />
+    <>
+      <Header />
+      <div className="min-h-[calc(100vh-65px)] bg-[#f4f4f4]">
+        <div className="mx-auto max-w-container px-2 py-4">
+          <CheckoutContainer
+            cart={cart}
+            countries={countries}
+            addresses={addresses}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

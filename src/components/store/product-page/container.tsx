@@ -123,6 +123,43 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
       : stock;
   }, [cartItems, productId, variantId, sizeId, stock]);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const addCart = useCartStore((state) => state.addToCart);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const setCart = useCartStore((state) => state.setCart);
+
+  // Keeping cart state updated
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      // Check if the "cart" key was changed in localStorage
+      if (event.key === "cart") {
+        try {
+          const parsedValue = event.newValue
+            ? JSON.parse(event.newValue)
+            : null;
+
+          // Check if parsedValue and state are valid and then update the cart
+          if (
+            parsedValue &&
+            parsedValue.state &&
+            Array.isArray(parsedValue.state.cart)
+          ) {
+            setCart(parsedValue.state.cart);
+          }
+        } catch (error) {}
+      }
+    };
+
+    // Attach the event listener
+    window.addEventListener("storage", handleStorageChange);
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   return (
     <div className="relative">
       <div className="w-full xl:flex xl:gap-4">

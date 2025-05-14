@@ -94,10 +94,14 @@ const CartProduct: FC<Props> = ({
     }
 
     // Subtract the previous shipping total for this product before updating
+    // if (stock > 0) {
+    //   setTotalShipping(
+    //     (prevTotal) => prevTotal - shippingInfo.totalFee + totalFee,
+    //   );
+    // }
+
     if (stock > 0) {
-      setTotalShipping(
-        (prevTotal) => prevTotal - shippingInfo.totalFee + totalFee,
-      );
+      setTotalShipping(totalFee);
     }
 
     // Update state

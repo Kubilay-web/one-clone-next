@@ -19,10 +19,7 @@ export default async function Layout({
   return (
     <SessionProvider value={session}>
       <div>
-        <Header />
-        <CategoriesHeader />
         <div>{children}</div>
-        <div className="h-96"></div>
         <Footer />
         <Toaster position="top-center" />
       </div>

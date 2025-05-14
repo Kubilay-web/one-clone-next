@@ -91,44 +91,6 @@ export const UserInfo = async () => {
   }
 };
 
-export const addToWishlist = async (
-  productId: string,
-  variantId: string,
-  sizeId?: string,
-) => {
-  // Ensure the user is authenticated
-  const { user } = await validateRequest();
-
-  if (!user) throw new Error("Unauthenticated.");
-
-  const userId = user.id;
-
-  try {
-    const existingWIshlistItem = await prisma.wishlist.findFirst({
-      where: {
-        userId,
-        productId,
-        variantId,
-      },
-    });
-
-    if (existingWIshlistItem) {
-      throw new Error("Product is already in the wishlist");
-    }
-
-    return await prisma.wishlist.create({
-      data: {
-        userId,
-        productId,
-        variantId,
-        sizeId,
-      },
-    });
-  } catch (error) {
-    throw error;
-  }
-};
-
 export const saveUserCart = async (
   cartProducts: CartProductType[],
 ): Promise<boolean> => {
@@ -659,6 +621,156 @@ export const emptyUserCart = async () => {
       },
     });
     if (res) return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateCartWithLatest = async (
+  cartProducts: CartProductType[],
+): Promise<CartProductType[]> => {
+  // Fetch product, variant, and size data from the database for validation
+  const validatedCartItems = await Promise.all(
+    cartProducts.map(async (cartProduct) => {
+      const { productId, variantId, sizeId, quantity } = cartProduct;
+
+      // Fetch the product, variant, and size from the database
+      const product = await prisma.product.findUnique({
+        where: {
+          id: productId,
+        },
+        include: {
+          store: true,
+          freeShipping: {
+            include: {
+              eligableCountries: true,
+            },
+          },
+          variants: {
+            where: {
+              id: variantId,
+            },
+            include: {
+              sizes: {
+                where: {
+                  id: sizeId,
+                },
+              },
+              images: true,
+            },
+          },
+        },
+      });
+
+      if (
+        !product ||
+        product.variants.length === 0 ||
+        product.variants[0].sizes.length === 0
+      ) {
+        throw new Error(
+          `Invalid product, variant, or size combination for productId ${productId}, variantId ${variantId}, sizeId ${sizeId}`,
+        );
+      }
+
+      const variant = product.variants[0];
+      const size = variant.sizes[0];
+
+      // Calculate Shipping details
+      // const countryCookie = getCookie("userCountry", { cookies });
+
+      const countryCookie = await getCookie("userCountry", { cookies });
+
+      let details = {
+        shippingService: product.store.defaultShippingService,
+        shippingFee: 0,
+        extraShippingFee: 0,
+        isFreeShipping: false,
+        deliveryTimeMin: 0,
+        deliveryTimeMax: 0,
+      };
+
+      if (countryCookie) {
+        const country = JSON.parse(countryCookie);
+        const temp_details = await getShippingDetails(
+          product.shippingFeeMethod,
+          country,
+          product.store,
+          product.freeShipping,
+        );
+
+        if (typeof temp_details !== "boolean") {
+          details = temp_details;
+        }
+      }
+
+      const price = size.discount
+        ? size.price - (size.price * size.discount) / 100
+        : size.price;
+
+      const validated_qty = Math.min(quantity, size.quantity);
+
+      return {
+        productId,
+        variantId,
+        productSlug: product.slug,
+        variantSlug: variant.slug,
+        sizeId,
+        sku: variant.sku,
+        name: product.name,
+        variantName: variant.variantName,
+        image: variant.images[0].url,
+        variantImage: variant.variantImage,
+        stock: size.quantity,
+        weight: variant.weight,
+        shippingMethod: product.shippingFeeMethod,
+        size: size.size,
+        quantity: validated_qty,
+        price,
+        shippingService: details.shippingService,
+        shippingFee: details.shippingFee,
+        extraShippingFee: details.extraShippingFee,
+        deliveryTimeMin: details.deliveryTimeMin,
+        deliveryTimeMax: details.deliveryTimeMax,
+        isFreeShipping: details.isFreeShipping,
+      };
+    }),
+  );
+  return validatedCartItems;
+};
+
+export const addToWishlist = async (
+  productId: string,
+  variantId: string,
+  sizeId?: string,
+) => {
+  // Ensure the user is authenticated
+  const { user } = await validateRequest();
+
+  if (!user) throw new Error("Unauthenticated.");
+
+  const userId = user.id;
+
+  try {
+    const existingWIshlistItem = await prisma.wishlist.findFirst({
+      where: {
+        userId,
+        productId,
+        variantId,
+      },
+    });
+
+    if (existingWIshlistItem) {
+      throw new Error("Product is already in the wishlist");
+    }
+
+    return await prisma.wishlist.create({
+      data: {
+        userId,
+        productId,
+        variantId,
+        sizeId,
+      },
+    });
   } catch (error) {
     throw error;
   }

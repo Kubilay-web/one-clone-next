@@ -14,7 +14,7 @@ interface Props {
   sizeId?: string | undefined;
   sizes: SimplifiedSize[];
   isCard?: boolean;
-  handleChange: (property: keyof CartProductType, value: any) => void;
+  handleChange?: (property: keyof CartProductType, value: any) => void;
   weight?: number;
 }
 

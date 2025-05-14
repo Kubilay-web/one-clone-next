@@ -9,24 +9,23 @@ import VariantSwitcher from "./variant-switcher";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/store/ui/button";
 import { Heart } from "lucide-react";
-// import ProductPrice from "../../product-page/product-info/product-price";
-// import { addToWishlist } from "@/queries/user";
 import toast from "react-hot-toast";
 import ProductPrice from "../../product-page/product-info/product-price";
+import { addToWishlist } from "@/queries/user";
 
 export default function ProductCard({ product }: { product: ProductType }) {
   const { name, slug, rating, sales, variantImages, variants, id } = product;
   const [variant, setVariant] = useState<VariantSimplified>(variants[0]);
   const { variantSlug, variantName, images, sizes } = variant;
 
-  // const handleaddToWishlist = async () => {
-  //   try {
-  //     const res = await addToWishlist(id, variant.variantId);
-  //     if (res) toast.success("Product successfully added to wishlist.");
-  //   } catch (error: any) {
-  //     toast.error(error.toString());
-  //   }
-  // };
+  const handleaddToWishlist = async () => {
+    try {
+      const res = await addToWishlist(id, variant.variantId);
+      if (res) toast.success("Product successfully added to wishlist.");
+    } catch (error: any) {
+      toast.error(error.toString());
+    }
+  };
 
   return (
     <div>
@@ -63,8 +62,7 @@ export default function ProductCard({ product }: { product: ProductType }) {
               </div>
             )}
             {/* Price */}
-            <ProductPrice sizes={sizes} isCard />
-            {/* <ProductPrice sizes={sizes} isCard handleChange={() => {}} /> */}
+            <ProductPrice sizes={sizes} isCard handleChange={() => {}} />
           </Link>
         </div>
         <div className="absolute -left-[1px] z-30 hidden w-[calc(100%+2px)] space-y-2 rounded-b-3xl border border-t-0 bg-white px-4 pb-4 shadow-xl group-hover:block">
@@ -83,7 +81,7 @@ export default function ProductCard({ product }: { product: ProductType }) {
             <Button
               variant="black"
               size="icon"
-              // onClick={() => handleaddToWishlist()}
+              onClick={() => handleaddToWishlist()}
             >
               <Heart className="w-5" />
             </Button>

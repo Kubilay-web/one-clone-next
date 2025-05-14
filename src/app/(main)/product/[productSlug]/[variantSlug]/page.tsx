@@ -12,6 +12,8 @@ import StoreProducts from "@/components/store/product-page/store-products";
 import ProductReviews from "@/components/store/product-page/reviews/product-reviews";
 import AddReview from "@/components/store/product-page/reviews/add-review";
 import getProductReviews from "@/queries/review";
+import Header from "@/components/store/layout/header/header";
+import CategoriesHeader from "@/components/store/layout/categories-header/categories-header";
 
 interface PageProps {
   params: { productSlug: string; variantSlug: string };
@@ -71,6 +73,8 @@ export default async function ProductVariantPage({
 
   return (
     <div>
+      <Header />
+      <CategoriesHeader />
       <div className="mx-auto max-w-[1650px] overflow-x-hidden p-4">
         <ProductPageContainer productData={productData} sizeId={sizeId}>
           {relatedProducts.products && (
