@@ -50,6 +50,8 @@ const CheckoutContainer: FC<Props> = ({
     }
   }, [activeCountry]);
 
+  console.log("----store--->", cartData.coupon);
+
   return (
     <div className="flex">
       <div className="my-3 flex-1">
@@ -71,6 +73,7 @@ const CheckoutContainer: FC<Props> = ({
                 <CheckoutProductCard
                   key={product.variantId}
                   product={product}
+                  isDiscounted={cartData.coupon?.storeId === product.storeId}
                 />
               );
             })}
@@ -78,11 +81,9 @@ const CheckoutContainer: FC<Props> = ({
         </div>
       </div>
       <PlaceOrderCard
-        cartId={cart.id}
         shippingAddress={selectedAddress}
-        shippingFees={cartData.shippingFees}
-        subTotal={cartData.subTotal}
-        total={cartData.total}
+        setCartData={setCartData}
+        cartData={cartData}
       />
     </div>
   );

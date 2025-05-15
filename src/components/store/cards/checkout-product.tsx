@@ -11,6 +11,7 @@ export default function CheckoutProductCard({
   isDiscounted: boolean;
 }) {
   const { productSlug, variantSlug, sizeId, shippingFee } = product;
+  console.log("----->", isDiscounted);
   return (
     <div className="bordet-t-[#ebebeb] select-none border-t bg-white px-6">
       <div className="py-4">

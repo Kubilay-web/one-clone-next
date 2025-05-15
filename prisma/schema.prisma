@@ -46,9 +46,32 @@ model User {
 
   orders Order[] @relation("UserOrders")
   wishlist Wishlist[] @relation("WishlistToUser")
+  payments PaymentDetails[] @relation("PaymentDetailsToUser")
+  couponRelations CouponToUser[]
 
   @@map("users")
+
 }
+
+
+
+model CouponToUser {
+  id        String  @id @default(cuid()) @map("_id")
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  couponId  String
+  coupon    Coupon  @relation(fields: [couponId], references: [id])
+
+  @@unique([userId, couponId])
+  @@index([userId])
+  @@index([couponId])
+}
+
+
+
+
+
+
 
 model Session {
   id        String   @id @map("_id") // MongoDB'deki _id'yi haritalamak için @map("_id")
@@ -678,6 +701,11 @@ enum PaymentStatus {
   Chargeback
 }
 
+enum PaymentMethod {
+  Paypal
+  Stripe
+}
+
 
 model Order{
 id                    String   @id @default(cuid()) @map("_id")
@@ -689,6 +717,10 @@ groups OrderGroup[] @relation("OrderGroupToOrder")
 
 orderStatus OrderStatus @default(Pending)
 paymentStatus PaymentStatus @default(Pending)
+
+paymentMethod PaymentMethod?  
+paymentDetails PaymentDetails? @relation("PaymentDetailsToOrder")
+
 
 shippingAddressId String
 shippingAddress ShippingAddress @relation("ShippingAddressToOrder",fields: [shippingAddressId],references: [id])
@@ -729,13 +761,68 @@ storeId String
 store Store @relation("OrderGroupToStore",fields: [storeId],references: [id])
 
 
+couponId String?
+coupon Coupon? @relation("CouponToOrderGroup",fields: [couponId],references: [id])
+
+
 createdAt DateTime @default(now())
 updatedAt DateTime @default(now()) @updatedAt
 
 @@index([orderId])
 @@index([storeId])
-
+@@index([couponId])
 }
+
+
+
+
+enum ProductStatus {
+  /// Product has been added to the order but no action taken yet
+  Pending
+
+  /// Product is being prepared (picked, packed, or manufactured)
+  Processing
+
+  /// Product is packed and ready for shipment
+  ReadyForShipment
+
+  /// Product has been shipped
+  Shipped
+
+  /// Product has been delivered to the customer
+  Delivered
+
+  /// Product order has been canceled
+  Canceled
+
+  /// Product has been returned by the customer
+  Returned
+
+  /// Product cost has been refunded
+  Refunded
+
+  /// Delivery attempt failed, product may return to warehouse
+  FailedDelivery
+
+  /// Product is on hold (e.g., stock issues, verification required)
+  OnHold
+
+  /// Product is delayed due to stock unavailability
+  Backordered
+
+  /// Some units of the product were shipped, but the order is not yet complete
+  PartiallyShipped
+
+  /// Customer requested an exchange for the product
+  ExchangeRequested
+
+  /// Product is awaiting customer pickup (for pickup orders)
+  AwaitingPickup
+}
+
+
+
+
 
 
 model OrderItem {
@@ -758,6 +845,8 @@ totalPrice Float
 
 orderGroupId String
 orderGroup OrderGroup @relation("OrderItemToGroup",fields: [orderGroupId],references: [id],onDelete:Cascade)
+
+status ProductStatus @default(Pending)
 
 
 createdAt DateTime @default(now())
@@ -804,7 +893,10 @@ model Coupon {
 
 
   storeId String
-  store Store @relation("CouponToStore",fields: [storeId],references: [id],onDelete: Cascade) 
+  store Store @relation("CouponToStore",fields: [storeId],references: [id],onDelete: Cascade)
+
+  orders OrderGroup[] @relation("CouponToOrderGroup")
+  userRelations CouponToUser[]
 
 
   carts Cart[] @relation("CouponToCart")
@@ -818,6 +910,33 @@ model Coupon {
 
 }
 
+
+
+model PaymentDetails {
+  
+  id                    String   @id @default(cuid()) @map("_id")
+
+  paymentInetntId String
+  paymentMethod String
+  status String
+  amount Float
+  currency String
+
+
+  orderId String @unique
+  order Order @relation("PaymentDetailsToOrder",fields: [orderId],references: [id],onDelete: Cascade) 
+
+  userId String
+  user User @relation("PaymentDetailsToUser",fields: [userId],references: [id],onDelete: Cascade)
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+
+  @@index([userId])
+}
 
 
 

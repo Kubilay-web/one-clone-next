@@ -364,12 +364,14 @@ export const placeOrder = async (
     },
     include: {
       cartItems: true,
+      coupon: true,
     },
   });
 
   if (!cart) throw new Error("Cart not found.");
 
   const cartItems = cart.cartItems;
+  const cartCoupon = cart.coupon; // The coupon, if it exists
 
   // Fetch product, variant, and size data from the database for validation
   const validatedCartItems = await Promise.all(
@@ -493,8 +495,6 @@ export const placeOrder = async (
     }),
   );
 
-  console.log("validated--->", validatedCartItems);
-
   // Define the type for grouped items by store
   type GroupedItems = { [storeId: string]: typeof validatedCartItems };
 
@@ -504,8 +504,6 @@ export const placeOrder = async (
     acc[item.storeId].push(item);
     return acc;
   }, {} as GroupedItems);
-
-  console.log("groupedItems--->", groupedItems);
 
   // Create the order
   const order = await prisma.order.create({
@@ -542,8 +540,17 @@ export const placeOrder = async (
         shippingAddress.countryId,
       );
 
+    // Check coupon store
+    const check = storeId === cartCoupon?.storeId;
+
+    // Calculate discount based on coupon
+    let discountedAmount = 0;
+    if (check && cartCoupon) {
+      discountedAmount = (groupedTotalPrice * cartCoupon.discount) / 100;
+    }
+
     // Calculate the total after applying the discount
-    const totalAfterDiscount = groupedTotalPrice;
+    const totalAfterDiscount = groupedTotalPrice - discountedAmount;
     // Create an OrderGroup for this store
     const orderGroup = await prisma.orderGroup.create({
       data: {
@@ -552,10 +559,11 @@ export const placeOrder = async (
         status: "Pending",
         subTotal: groupedTotalPrice - groupShippingFees,
         shippingFees: groupShippingFees,
-        total: groupedTotalPrice,
+        total: totalAfterDiscount,
         shippingService: shippingService || "International Delivery",
         shippingDeliveryMin: deliveryTimeMin || 7,
         shippingDeliveryMax: deliveryTimeMax || 30,
+        couponId: check && cartCoupon ? cartCoupon?.id : null,
       },
     });
 
@@ -582,7 +590,7 @@ export const placeOrder = async (
     }
 
     // Update order totals
-    orderTotalPrice += groupedTotalPrice;
+    orderTotalPrice += totalAfterDiscount;
     orderShippingFee += groupShippingFees;
   }
 
@@ -598,11 +606,11 @@ export const placeOrder = async (
     },
   });
 
-  await prisma.cart.delete({
-    where: {
-      id: cartId,
-    },
-  });
+  // await prisma.cart.delete({
+  //   where: {
+  //     id: cartId,
+  //   },
+  // });
 
   return {
     orderId: order.id,
