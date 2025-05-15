@@ -1,5 +1,10 @@
 import { type ClassValue, clsx } from "clsx";
-import { formatDate, formatDistanceToNowStrict } from "date-fns";
+import {
+  differenceInDays,
+  differenceInHours,
+  formatDate,
+  formatDistanceToNowStrict,
+} from "date-fns";
 import { twMerge } from "tailwind-merge";
 import ColorThief from "colorthief";
 import { PrismaClient } from "@prisma/client";
@@ -251,3 +256,20 @@ export function censorName(firstName: string, lastName: string): CensorReturn {
     fullName: censoredFullName,
   };
 }
+
+export const getTimeUntil = (
+  targetDate: string,
+): { days: number; hours: number } => {
+  // Convert the date string to a Date object
+  const target = new Date(targetDate);
+  const now = new Date();
+
+  // Ensure the target date is in the future
+  if (target <= now) return { days: 0, hours: 0 };
+
+  // Calculate days and hours left
+  const totalDays = differenceInDays(target, now);
+  const totalHours = differenceInHours(target, now) % 24;
+
+  return { days: totalDays, hours: totalHours };
+};

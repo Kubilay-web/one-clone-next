@@ -244,6 +244,8 @@ model Store {
   followers UserFollowingStore[]
   cartItems CartItem[] @relation("CartItemToStore")
   orderGroups OrderGroup[] @relation("OrderGroupToStore")
+  coupons Coupon[] @relation("CouponToStore")
+
 
   @@index([userId])
 
@@ -569,6 +571,9 @@ id                    String   @id @default(cuid()) @map("_id")
 userId String @unique
 user User @relation("UserCart",fields: [userId],references: [id],onDelete:Cascade)
 
+couponId String?
+coupon Coupon? @relation("CouponToCart",fields: [couponId],references: [id])
+
 cartItems CartItem[] @relation("CartToCartItem")
 shippingFees Float @default(0)
 subTotal Float
@@ -578,6 +583,8 @@ total Float
 
 createdAt DateTime @default(now())
 updatedAt DateTime @default(now()) @updatedAt
+
+@@index([couponId])
 }
 
 
@@ -784,6 +791,31 @@ id                    String   @id @default(cuid()) @map("_id")
   @@index([productId])
   @@index([variantId])
   @@index([sizeId])
+}
+
+
+
+model Coupon {
+  id                    String   @id @default(cuid()) @map("_id")
+  code String @unique
+  startDate String
+  endDate String
+  discount Int
+
+
+  storeId String
+  store Store @relation("CouponToStore",fields: [storeId],references: [id],onDelete: Cascade) 
+
+
+  carts Cart[] @relation("CouponToCart")
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  @@index([storeId])
+
 }
 
 
