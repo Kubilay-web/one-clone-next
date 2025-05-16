@@ -2,6 +2,7 @@
 import client from "@/lib/elasticsearch";
 import { NextResponse } from "next/server";
 
+// Ürün tipi tanımlaması
 interface Product {
   name: string;
 }
@@ -18,8 +19,9 @@ export async function GET(req: Request) {
   }
 
   try {
+    // Elasticsearch sorgusu
     const response = await client.search<{ _source: Product }>({
-      index: "products",
+      index: "products", // Elasticsearch index adını kontrol edin
       body: {
         query: {
           match: {

@@ -32,16 +32,16 @@ export default function Search() {
     }
   };
 
-  // Arama inputu değiştikçe öneri almak
   const handleInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
 
+    // Eğer browse sayfasında değilseniz ve input 2 karakterden fazla ise arama yapıyoruz
     if (pathname === "/browse") return;
 
     if (value.length >= 2) {
       try {
-        // API çağrısını yalnızca client-side yapıyoruz
+        // API'yi yalnızca client-side çağırıyoruz
         const res = await fetch(`/api/search-products?search=${value}`);
         const data = await res.json();
         setSuggestions(data);
@@ -54,7 +54,7 @@ export default function Search() {
   };
 
   useEffect(() => {
-    // Sayfa yüklendiğinde, URL parametresinde arama varsa, searchQuery'yi buna göre ayarla
+    // Sayfa yüklendiğinde URL'deki arama parametresine göre searchQuery'yi ayarla
     if (search_query_url) {
       setSearchQuery(search_query_url);
     }
