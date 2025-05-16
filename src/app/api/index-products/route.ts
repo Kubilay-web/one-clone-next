@@ -3,7 +3,7 @@ import client from "@/lib/elasticsearch";
 import { NextResponse } from "next/server";
 
 // POST handler for indexing products and variants to Elasticsearch
-export async function POST() {
+export async function getStaticProps() {
   try {
     // Fetch products and their variants with images where order = 1 from the database using Prisma
     const products = await db.product.findMany({
