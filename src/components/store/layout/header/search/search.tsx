@@ -8,6 +8,7 @@ export default function Search() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const params = new URLSearchParams(searchParams);
+  console.log("params-->", params);
   const { push, replace } = useRouter();
 
   const search_query_url = params.get("search");
@@ -49,6 +50,8 @@ export default function Search() {
       setSuggestions([]);
     }
   };
+
+  console.log("suggestions-->", suggestions);
 
   return (
     <div className="relative flex-1 lg:w-full">

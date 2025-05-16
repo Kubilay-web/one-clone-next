@@ -508,3 +508,9 @@ export type OrderGroupWithItemsType = OrderGroup & {
   };
   coupon: Coupon | null;
 };
+
+export interface SearchResult {
+  name: string;
+  link: string;
+  image: string;
+}

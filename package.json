@@ -10,6 +10,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^9.0.1",
     "@hookform/resolvers": "^3.9.0",
     "@lucia-auth/adapter-prisma": "^4.0.1",
     "@paypal/react-paypal-js": "^8.8.3",
