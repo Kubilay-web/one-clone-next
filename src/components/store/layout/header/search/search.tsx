@@ -2,13 +2,13 @@
 import { SearchResult } from "@/lib/types";
 import { Search as SearchIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
 import SearchSuggestions from "./suggestions";
+
 export default function Search() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const params = new URLSearchParams(searchParams);
-  console.log("params-->", params);
   const { push, replace } = useRouter();
 
   const search_query_url = params.get("search");
@@ -21,10 +21,8 @@ export default function Search() {
   const handleSubmit = (e: any) => {
     e.preventDefault();
     if (pathname !== "/browse") {
-      // We are not in browse page
       push(`/browse?search=${searchQuery}`);
     } else {
-      // We are in browse page
       if (!searchQuery) {
         params.delete("search");
       } else {
@@ -34,6 +32,7 @@ export default function Search() {
     }
   };
 
+  // Arama inputu değiştikçe öneri almak
   const handleInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
@@ -42,16 +41,24 @@ export default function Search() {
 
     if (value.length >= 2) {
       try {
+        // API çağrısını yalnızca client-side yapıyoruz
         const res = await fetch(`/api/search-products?search=${value}`);
         const data = await res.json();
         setSuggestions(data);
-      } catch (error) {}
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+      }
     } else {
       setSuggestions([]);
     }
   };
 
-  console.log("suggestions-->", suggestions);
+  useEffect(() => {
+    // Sayfa yüklendiğinde, URL parametresinde arama varsa, searchQuery'yi buna göre ayarla
+    if (search_query_url) {
+      setSearchQuery(search_query_url);
+    }
+  }, [search_query_url]);
 
   return (
     <div className="relative flex-1 lg:w-full">
