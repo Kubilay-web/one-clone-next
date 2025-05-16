@@ -1,7 +1,8 @@
+// app/api/search-products/route.ts
 import client from "@/lib/elasticsearch";
 import { NextResponse } from "next/server";
 
-// Define product type
+// Ürün tipini tanımla
 interface Product {
   name: string;
 }
@@ -12,34 +13,36 @@ export async function GET(req: Request) {
 
   if (!q || typeof q !== "string") {
     return NextResponse.json(
-      {
-        message: "Invalid search query",
-      },
+      { message: "Invalid search query" },
       { status: 400 },
     );
   }
 
   try {
-    // Query Elasticsearch with improved types
+    // Elasticsearch'e sorgu yap
     const response = await client.search<{ _source: Product }>({
-      index: "products",
+      index: "products", // Elasticsearch index adı
       body: {
         query: {
           match: {
-            // match is more efficient for typical searches
+            // Arama sorgusunu kullanarak ürün ismini eşleştir
             name: q,
           },
         },
       },
     });
 
-    // Extract the results
+    // Elasticsearch yanıtından sonuçları çıkart
     const results = response.hits.hits.map((hit) => hit._source);
 
-    // Return results as a JSON response
+    // Sonuçları JSON formatında döndür
     return NextResponse.json(results);
   } catch (error: any) {
-    // Log the error and return a response
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    // Hata durumunda, hata mesajını JSON formatında dön
+    console.error("Error occurred while querying Elasticsearch:", error);
+    return NextResponse.json(
+      { message: error.message || "An error occurred" },
+      { status: 500 },
+    );
   }
 }
