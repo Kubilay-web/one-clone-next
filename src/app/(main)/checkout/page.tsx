@@ -19,6 +19,11 @@ export default async function CheckoutPage() {
     },
     include: {
       cartItems: true,
+      coupon: {
+        include: {
+          store: true,
+        },
+      },
     },
   });
 

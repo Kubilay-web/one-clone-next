@@ -7,7 +7,7 @@ import ProductInfo from "./product-info/product-info";
 import ShipTo from "./shipping/ship-to";
 import ShippingDetails from "./shipping/shipping-details";
 import ReturnPrivacySecurityCard from "./returns-security-privacy-card";
-import { isProductValidToAdd } from "@/lib/utils";
+import { isProductValidToAdd, updateProductHistory } from "@/lib/utils";
 import QuantitySelector from "./quantity-selector";
 import SocialShare from "../shared/social-share";
 import { ProductVariantImage } from "@prisma/client";
@@ -24,7 +24,8 @@ interface Props {
 const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
   if (!productData) return null;
 
-  const { images, shippingDetails, sizes, productId, variantId } = productData;
+  const { images, shippingDetails, sizes, productId, variantId, variantSlug } =
+    productData;
 
   if (typeof shippingDetails === "boolean") return null;
 
@@ -109,6 +110,8 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
       description: "Product add to cart.",
     });
   };
+
+  updateProductHistory(variantId);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const maxQty = useMemo(() => {
