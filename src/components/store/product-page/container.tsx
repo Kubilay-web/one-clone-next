@@ -14,6 +14,7 @@ import { ProductVariantImage } from "@prisma/client";
 import { useCartStore } from "@/cart-store/useCartStore";
 import { useToast } from "@/components/ui/use-toast";
 import useFromStore from "@/hooks/useFromStore";
+import { setCookie } from "cookies-next";
 
 interface Props {
   productData: ProductPageDataType;
@@ -162,6 +163,11 @@ const ProductPageContainer: FC<Props> = ({ productData, sizeId, children }) => {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
+
+  setCookie(`viewedProduct_${productId}`, "true", {
+    maxAge: 3600,
+    path: "/",
+  });
 
   return (
     <div className="relative">

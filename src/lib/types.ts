@@ -560,3 +560,19 @@ export type UserPaymentType = Prisma.PromiseReturnType<
 export type ProductWishlistType = Prisma.PromiseReturnType<
   typeof getUserWishlist
 >["wishlist"][0];
+
+export type FiltersQueryType = {
+  search: string;
+  category: string;
+  subCategory: string;
+  offer: string;
+  size: string;
+  sort: string;
+  minPrice: string;
+  maxPrice: string;
+  color: string;
+};
+
+export type CatgegoryWithSubsType = Category & {
+  subCategories: SubCategory[];
+};

@@ -28,7 +28,7 @@ interface Props {
   reviews: ReviewWithImageType[];
   variantsInfo: VariantInfoType[];
   numReviews: number;
-  // reviewsProduct: Review[];
+  reviewsProduct: Review[];
 }
 const defaultData = {
   ratingStatistics: [
@@ -54,7 +54,7 @@ const ProductReviews: FC<Props> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [filterLoading, setFilterLoading] = useState<boolean>(true);
 
-  const [data, setData] = useState<ReviewWithImageType[]>([]);
+  const [data, setData] = useState<ReviewWithImageType[]>(reviews);
 
   console.log("data-->", data);
 
@@ -129,7 +129,18 @@ const ProductReviews: FC<Props> = ({
             </h2>
           </div>
 
-          <div>
+          <div className="mt-6 space-y-4">
+            <h2 className="text-xl font-bold">Customer Reviews</h2>
+            {reviewsProduct.length > 0 ? (
+              reviewsProduct.map((review) => (
+                <ReviewCard key={review.id} review={review} />
+              ))
+            ) : (
+              <p>No reviews yet. Be the first to review this product!</p>
+            )}
+          </div>
+
+          {/* <div>
             <h2 className="mb-4 text-xl font-bold">Customer Reviews</h2>
             <div className="space-y-4">
               {reviewsProduct.length > 0 ? (
@@ -180,15 +191,15 @@ const ProductReviews: FC<Props> = ({
                 <p>No reviews yet. Be the first to review this product!</p>
               )}
             </div>
-          </div>
+          </div> */}
 
           {/* Statistics */}
-          {/* <div className="w-full">
+          <div className="w-full">
             <div className="flex flex-col items-center gap-4 md:flex-row">
               <RatingCard rating={rating} />
               <RatingStatisticsCard statistics={ratingStatistics} />
             </div>
-          </div> */}
+          </div>
 
           <>
             {/* <div className="space-y-6">
@@ -199,9 +210,9 @@ const ProductReviews: FC<Props> = ({
                 stats={statistics}
               />
               <ReviewsSort sort={sort} setSort={setSort} />
-            </div>
+            </div> */}
 
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {/* <div className="mt-6 grid gap-4 md:grid-cols-2">
               {data?.length > 0 ? (
                 <>
                   <div className="flex flex-col gap-3">
@@ -222,22 +233,21 @@ const ProductReviews: FC<Props> = ({
               ) : (
                 <>No Reviews yet.</>
               )}
-            </div> */}
+            </div>  */}
 
-            {/* Reviews */}
-            {/* {!filterLoading ? (
+            {!filterLoading ? (
               <div className="mt-6 grid gap-4 md:grid-cols-2">
-                {data?.length > 0 ? (
+                {reviewsProduct?.length > 0 ? (
                   <>
                     <div className="flex flex-col gap-3">
-                      {data
+                      {reviewsProduct
                         ?.slice(0, half)
                         .map((review) => (
                           <ReviewCard key={review.id} review={review} />
                         ))}
                     </div>
                     <div className="flex flex-col gap-3">
-                      {data
+                      {reviewsProduct
                         ?.slice(half)
                         .map((review) => (
                           <ReviewCard key={review.id} review={review} />
@@ -249,25 +259,25 @@ const ProductReviews: FC<Props> = ({
                 )}
               </div>
             ) : (
-              <div className="flex h-24 w-full items-center justify-center">
+              <div className="h-13 flex w-full items-center justify-center">
                 <DotLoader color="#f5f5f5" />
               </div>
             )}
-            {data?.length >= pageSize && (
+            {reviewsProduct?.length >= pageSize && (
               <Pagination
                 page={page}
                 totalPages={
                   filters.rating || filters.hasImages
-                    ? data?.length / pageSize
+                    ? reviewsProduct?.length / pageSize
                     : 1 / pageSize
                 }
                 setPage={setPage}
               />
-            )} */}
+            )}
           </>
         </div>
       )}
-      {/* <div className="mt-10">
+      <div className="mt-4">
         <ReviewDetails
           productId={productId}
           setReviews={setData}
@@ -276,7 +286,7 @@ const ProductReviews: FC<Props> = ({
           // setStatistics={setStatistics}
           setAverageRating={setAverageRating}
         />
-      </div> */}
+      </div>
     </div>
   );
 };

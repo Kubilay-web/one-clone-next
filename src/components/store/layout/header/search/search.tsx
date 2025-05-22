@@ -41,7 +41,6 @@ export default function Search() {
 
     if (value.length >= 2) {
       try {
-        // API'yi yalnızca client-side çağırıyoruz
         const res = await fetch(`/api/search-products?search=${value}`);
         const data = await res.json();
         setSuggestions(data);
@@ -54,7 +53,6 @@ export default function Search() {
   };
 
   useEffect(() => {
-    // Sayfa yüklendiğinde URL'deki arama parametresine göre searchQuery'yi ayarla
     if (search_query_url) {
       setSearchQuery(search_query_url);
     }

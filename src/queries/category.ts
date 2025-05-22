@@ -84,7 +84,7 @@ export async function upsertCategory(
 }
 
 // Tüm alt kategorileri alma fonksiyonu
-export const getAllCategories = async () => {
+export const getAllCategories = async (storeUrl: string) => {
   try {
     const categories = await prisma.category.findMany({
       orderBy: {

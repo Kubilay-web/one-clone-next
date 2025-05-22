@@ -31,7 +31,7 @@ export default function ReviewCard({
           <div className="h-11 w-11 rounded-full bg-gray-200" />
         )}
         <span className="text-xs text-main-secondary">
-          {username || "Anonim"}
+          {review.user.displayName || "Anonim"}
         </span>
       </div>
 
