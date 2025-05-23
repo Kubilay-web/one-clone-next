@@ -318,3 +318,66 @@ export const upsertShippingRate = async (
     throw error;
   }
 };
+
+export const getStoreOrders = async (storeUrl: string) => {
+  try {
+    // Retrieve current user
+    const { user } = await validateRequest();
+
+    // Check if user is authenticated
+    if (!user) throw new Error("Unauthenticated.");
+
+    // Verify seller permission
+    if (user.role !== "SELLER")
+      throw new Error(
+        "Unauthorized Access: Seller Privileges Required for Entry.",
+      );
+
+    // Get store id using url
+    const store = await prisma.store.findUnique({
+      where: {
+        url: storeUrl,
+      },
+    });
+
+    if (!store) throw new Error("Store not found.");
+
+    if (user.id !== store.userId) {
+      throw new Error("You don't have persmission to access this store.");
+    }
+
+    const orders = await prisma.orderGroup.findMany({
+      where: {
+        storeId: store.id,
+      },
+      include: {
+        items: true,
+        coupon: true,
+        order: {
+          select: {
+            paymentStatus: true,
+
+            shippingAddress: {
+              include: {
+                country: true,
+                user: {
+                  select: {
+                    email: true,
+                  },
+                },
+              },
+            },
+            paymentDetails: true,
+          },
+        },
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+    return orders;
+  } catch (error) {
+    throw error;
+  }
+};
