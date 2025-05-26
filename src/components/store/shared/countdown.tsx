@@ -20,7 +20,7 @@ const Countdown: FC<Props> = ({ targetDate, home_style }) => {
   });
 
   useEffect(() => {
-    const targetTime = new Date(targetDate).getTime();
+    const targetTime = new Date("2025-06-06T00:00:00").getTime();
     const calculatetTimeLeft = () => {
       const now = new Date().getTime();
       const difference = targetTime - now;

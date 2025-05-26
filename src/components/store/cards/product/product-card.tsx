@@ -31,7 +31,7 @@ export default function ProductCard({ product }: { product: ProductType }) {
     <div>
       <div
         className={cn(
-          "group relative w-[190px] rounded-t-3xl border border-transparent bg-white p-4 transition-all duration-75 ease-in-out hover:border-border hover:shadow-xl min-[480px]:w-[225px]",
+          "group relative ml-5 w-[190px] rounded-t-3xl border border-transparent bg-white p-4 transition-all duration-75 ease-in-out hover:border-border hover:shadow-xl min-[480px]:w-[225px]",
           {
             "": true,
           },

@@ -56,12 +56,14 @@ export default function ProductCardClean({
           </div>
           <div className="rating h-4">
             <StarRatings
-              count={5}
-              size={18}
-              color="#e2dfdf"
-              value={product.rating}
-              isHalf
-              edit={false}
+              rating={product.rating}
+              starRatedColor="#FFD804"
+              starEmptyColor="#e2dfdf"
+              starHoverColor="#FFD804"
+              numberOfStars={5}
+              name="rating"
+              starDimension="12px"
+              starSpacing="2px"
             />
             ({numReviews})
           </div>

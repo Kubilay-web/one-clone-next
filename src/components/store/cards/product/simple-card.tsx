@@ -9,16 +9,16 @@ export default function ProductCardSimple({
 }) {
   return (
     <Link href={`/product/${product.slug}?variant=${product.variantSlug}`}>
-      <div className="w-[120px] h-[170px] relative flex flex-col rounded-md items-center justify-between p-2">
+      <div className="relative flex h-[170px] w-[120px] flex-col items-center justify-between rounded-md p-2">
         <Image
           src={product.image}
           alt=""
           width={200}
           height={200}
-          className="min-h-[125px] max-h-[125px] object-cover rounded-md align-middle shadow-lg"
+          className="max-h-[125px] min-h-[125px] rounded-md object-cover align-middle shadow-lg"
         />
         <div className="absolute bottom-6 mt-2 space-y-2">
-          <div className="py-1.5 px-2 bg-[#ff4747] text-white font-bold text-sm rounded-lg">
+          <div className="rounded-lg bg-[#ff4747] px-2 py-1.5 text-sm font-bold text-white">
             ${product.price?.toFixed(2)}
           </div>
         </div>
