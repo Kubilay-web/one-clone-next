@@ -5,6 +5,8 @@ import prisma from "@/lib/prisma";
 import {
   CountryWithShippingRatesType,
   StoreDefaultShippingType,
+  StoreStatus,
+  StoreType,
 } from "@/lib/types";
 import { ShippingRate, User } from "@prisma/client";
 
@@ -380,4 +382,250 @@ export const getStoreOrders = async (storeUrl: string) => {
   } catch (error) {
     throw error;
   }
+};
+
+export const applySeller = async (store: StoreType) => {
+  try {
+    // Get current user
+    const { user } = await validateRequest();
+
+    // Ensure user is authenticated
+    if (!user) throw new Error("Unauthenticated.");
+
+    // Ensure store data is provided
+    if (!store) throw new Error("Please provide store data.");
+
+    // Check if store with same name, email,url, or phone number already exists
+    const existingStore = await prisma.store.findFirst({
+      where: {
+        AND: [
+          {
+            OR: [
+              { name: store.name },
+              { email: store.email },
+              { phone: store.phone },
+              { url: store.url },
+            ],
+          },
+        ],
+      },
+    });
+
+    // If a store with same name, email, or phone number already exists, throw an error
+    if (existingStore) {
+      let errorMessage = "";
+      if (existingStore.name === store.name) {
+        errorMessage = "A store with the same name already exists";
+      } else if (existingStore.email === store.email) {
+        errorMessage = "A store with the same email already exists";
+      } else if (existingStore.phone === store.phone) {
+        errorMessage = "A store with the same phone number already exists";
+      } else if (existingStore.url === store.url) {
+        errorMessage = "A store with the same URL already exists";
+      }
+      throw new Error(errorMessage);
+    }
+
+    // Upsert store details into the database
+    const storeDetails = await prisma.store.create({
+      data: {
+        ...store,
+        defaultShippingService:
+          store.defaultShippingService || "International Delivery",
+        returnPolicy: store.returnPolicy || "Return in 30 days.",
+        userId: user.id,
+      },
+    });
+
+    return storeDetails;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAllStores = async () => {
+  try {
+    // Get current user
+    const { user } = await validateRequest();
+
+    // Ensure user is authenticated
+    if (!user) throw new Error("Unauthenticated.");
+
+    // Verify admin permission
+    if (user.role !== "ADMIN") {
+      throw new Error(
+        "Unauthorized Access: Admin Privileges Required to View Stores.",
+      );
+    }
+
+    // Fetch all stores from the database
+    const stores = await prisma.store.findMany({
+      include: {
+        user: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return stores;
+  } catch (error) {
+    // Log and re-throw any errors
+    throw error;
+  }
+};
+
+export const deleteStore = async (storeId: string) => {
+  try {
+    // Kullanıcıyı doğrula
+    const { user } = await validateRequest();
+    if (!user) throw new Error("Giriş yapılmamış.");
+    if (user.role !== "ADMIN") {
+      throw new Error("Yetkisiz erişim: Yalnızca yöneticiler.");
+    }
+
+    if (!storeId) throw new Error("Lütfen mağaza ID'si sağlayın.");
+
+    // Önce ilişkili shippingRates verilerini sil
+    await prisma.shippingRate.deleteMany({
+      where: {
+        storeId: storeId,
+      },
+    });
+
+    // Gerekirse diğer ilişkili verileri de sil (örneğin ürünler, sepet öğeleri vs.)
+    await prisma.product.deleteMany({
+      where: {
+        storeId: storeId,
+      },
+    });
+
+    // Ardından mağazayı sil
+    const response = await prisma.store.delete({
+      where: {
+        id: storeId,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateStoreStatus = async (
+  storeId: string,
+  status: StoreStatus,
+) => {
+  // Retrieve current user
+  const { user } = await validateRequest();
+
+  // Check if user is authenticated
+  if (!user) throw new Error("Unauthenticated.");
+
+  // Verify admin permission
+  if (user.role !== "ADMIN")
+    throw new Error(
+      "Unauthorized Access: Admin Privileges Required for Entry.",
+    );
+
+  const store = await prisma.store.findUnique({
+    where: {
+      id: storeId,
+    },
+  });
+
+  // Verify seller ownership
+  if (!store) {
+    throw new Error("Store not found !");
+  }
+
+  // Retrieve the order to be updated
+  const updatedStore = await prisma.store.update({
+    where: {
+      id: storeId,
+    },
+    data: {
+      status,
+    },
+  });
+
+  // Update the user role
+  if (store.status === "PENDING" && updatedStore.status === "ACTIVE") {
+    await prisma.user.update({
+      where: {
+        id: updatedStore.userId,
+      },
+      data: {
+        role: "SELLER",
+      },
+    });
+  }
+
+  return updatedStore.status;
+};
+
+const checkIfUserFollowingStore = async (
+  storeId: string,
+  userId: string | undefined,
+) => {
+  let isUserFollowingStore = false;
+  if (userId) {
+    const storeFollowersInfo = await prisma.store.findUnique({
+      where: {
+        id: storeId,
+      },
+      select: {
+        followers: {
+          where: {
+            id: userId,
+          },
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (storeFollowersInfo && storeFollowersInfo.followers.length > 0) {
+      isUserFollowingStore = true;
+    }
+  }
+  return isUserFollowingStore;
+};
+
+export const getStorePageDetails = async (storeUrl: string) => {
+  const { user } = await validateRequest();
+
+  // Veritabanından mağaza bilgilerini al
+  const store = await prisma.store.findUnique({
+    where: {
+      url: storeUrl,
+      status: "PENDING",
+    },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      logo: true,
+      cover: true,
+      averageRating: true,
+      _count: {
+        select: {
+          followers: true,
+        },
+      },
+    },
+  });
+
+  let isUserFollowingStore = false;
+
+  if (user && store) {
+    isUserFollowingStore = await checkIfUserFollowingStore(store.id, user.id);
+  }
+
+  // Mağaza bulunamazsa hata fırlat
+  if (!store) {
+    throw new Error(`"${storeUrl}" URL'sine sahip mağaza bulunamadı.`);
+  }
+
+  return { ...store, isUserFollowingStore };
 };

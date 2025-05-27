@@ -73,7 +73,6 @@ export default function ProductCard({ product }: { product: ProductType }) {
             setVariant={setVariant}
             selectedVariant={variant}
           />
-          {/* Action buttons */}
           <div className="flex-items flex gap-x-1">
             <Button>
               <Link href={`/product/${slug}/${variantSlug}`}>Add to cart</Link>
