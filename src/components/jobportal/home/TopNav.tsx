@@ -5,10 +5,18 @@ import Link from "next/link";
 import { useSession } from "@/app/(main)/SessionProvider";
 import { logout } from "@/app/(auth)/actions";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export default function TopNav() {
   const { user } = useSession();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
 
   return (
     <>
@@ -33,7 +41,15 @@ export default function TopNav() {
           {user ? (
             <>
               {user?.rolejob === "CANDIDATE" ? (
-                <Link className="nav-link" href={`/dashboard/candidate`}>
+                <Link className="nav-link" href={`/dashboard/job/candidate`}>
+                  {user?.username}({user.rolejob})
+                </Link>
+              ) : (
+                ""
+              )}
+
+              {user?.rolejob === "ADMIN" ? (
+                <Link className="nav-link" href={`/dashboard/job/admin`}>
                   {user?.username}({user.rolejob})
                 </Link>
               ) : (
@@ -41,7 +57,7 @@ export default function TopNav() {
               )}
 
               {user?.rolejob === "COMPANY" ? (
-                <Link className="nav-link" href={`/dashboard/company`}>
+                <Link className="nav-link" href={`/dashboard/job/company`}>
                   {user?.username}({user.rolejob})
                 </Link>
               ) : (

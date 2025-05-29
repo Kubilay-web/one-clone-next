@@ -6,8 +6,6 @@ import SessionProvider from "@/app/(main)/SessionProvider";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-import "bootstrap-material-design/dist/css/bootstrap-material-design.min.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import NewsLetter from "@/components/jobportal/home/NewsLetter";
 import Footer from "@/components/jobportal/home/Footer";
 

@@ -2,7 +2,14 @@
 "use client";
 import Image from "next/image";
 import JobSearchForm from "./JobSearch";
+import { useEffect } from "react";
 export default function HeroSection() {
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
   return (
     <div className="hero-section-job">
       <Image

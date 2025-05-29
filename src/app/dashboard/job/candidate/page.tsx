@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useSession } from "@/app/(main)/SessionProvider";
 import Link from "next/link";
-
+import Head from "next/head";
 export default function Candidate() {
   const { user } = useSession();
   const [profileComplete, setProfileComplete] = useState(false);
@@ -50,6 +50,13 @@ export default function Candidate() {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
 
   return (
     <>

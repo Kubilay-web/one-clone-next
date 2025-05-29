@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { useEffect } from "react";
 import Slider from "react-slick";
 const profiles = [
   {
@@ -147,6 +148,13 @@ export default function ClientSaid() {
       },
     ],
   };
+
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
 
   return (
     <div className="sliderContainer-job slider-container m-5">

@@ -1,6 +1,7 @@
 // pages/index.js
 "use client";
 import Image from "next/image";
+import { useEffect } from "react";
 
 const dummyData = [
   {
@@ -70,6 +71,12 @@ const dummyData = [
 ];
 
 export default function Home() {
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
   return (
     <div>
       {" "}

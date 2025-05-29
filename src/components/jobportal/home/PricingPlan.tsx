@@ -2,6 +2,8 @@
 
 "use client";
 
+import { useEffect } from "react";
+
 const plans = [
   {
     title: "Basic",
@@ -21,6 +23,12 @@ const plans = [
 ];
 
 export default function PricingPlan() {
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
   return (
     <div className="pricingPlans-job">
       <span className="border-1 rounded border p-2 text-lg">Pricing Plans</span>

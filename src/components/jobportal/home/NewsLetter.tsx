@@ -1,8 +1,14 @@
 // components/SubscribeForm.js
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function SubscribeForm() {
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
   return (
     <div className="subscribe-container m-4 p-2">
       <div className="left">

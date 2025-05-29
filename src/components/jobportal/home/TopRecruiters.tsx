@@ -3,7 +3,7 @@
 
 // TopRecruiters.js
 
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 // recruitersData.js
 
@@ -93,6 +93,12 @@ const recruitersData = [
 ];
 
 export default function TopRecruiters() {
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
   return (
     <>
       {" "}

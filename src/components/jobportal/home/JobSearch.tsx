@@ -1,6 +1,6 @@
 // JobSearchForm.js
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function JobSearchForm() {
   const [industry, setIndustry] = useState("");
@@ -12,6 +12,12 @@ export default function JobSearchForm() {
     console.log({ industry, location, keyword });
   };
 
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
   return (
     <form onSubmit={handleSubmit} className="job-search-form">
       <div className="form-group-job">

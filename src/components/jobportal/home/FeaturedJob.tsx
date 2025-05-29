@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 const dummyData = [
   {
     category: "Software Development",
@@ -221,6 +221,13 @@ export default function FeaturedJob() {
   const toggleShowAllCategories = () => {
     setShowAllCategories(!showAllCategories);
   };
+
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
   return (
     <div
       style={{

@@ -1,6 +1,6 @@
 // PopularJobsSection.js
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaBriefcase,
   FaDesktop,
@@ -32,6 +32,13 @@ export default function PopularJobsSection() {
     { name: "Healthcare", icon: FaMedkit },
     { name: "Business", icon: FaUserTie },
   ];
+
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
 
   return (
     <div className="popular-jobs-section-job m-5">

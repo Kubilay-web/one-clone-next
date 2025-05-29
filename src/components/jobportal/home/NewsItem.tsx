@@ -16,6 +16,13 @@ const Home = () => {
     setBlogs(data);
   };
 
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
+
   return (
     <div className="container-job mt-5">
       <h1 style={{ textAlign: "center", marginBottom: "30px" }}>All Blogs</h1>

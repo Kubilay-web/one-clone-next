@@ -33,6 +33,13 @@ export default function Register() {
     router.push(`/checkout/?id=${id}`);
   };
 
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
+
   return (
     <main>
       <div className="container">
