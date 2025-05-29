@@ -95,7 +95,7 @@ export default function Admin() {
           <div className="col-md-6">
             <div className="card mb-4">
               <div className="card-body">
-                <h5 className="card-title">Orders Count:: </h5>
+                <h5 className="card-title">Orders Count: </h5>
                 <p className="card-text">{ordersCount}</p>
               </div>
             </div>

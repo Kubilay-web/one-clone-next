@@ -1,4 +1,5 @@
 import { validateRequest } from "@/auth";
+import CompanyNav from "@/components/nav/company/CompanyNav";
 import { redirect } from "next/navigation";
 
 export default async function Layout({
@@ -10,5 +11,11 @@ export default async function Layout({
 
   if (user?.rolejob !== "COMPANY") redirect("/");
 
-  return <div>{children}</div>;
+  return (
+    <div>
+      <CompanyNav />
+
+      {children}
+    </div>
+  );
 }

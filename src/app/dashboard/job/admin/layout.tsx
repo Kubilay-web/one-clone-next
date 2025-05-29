@@ -1,6 +1,8 @@
 import { validateRequest } from "@/auth";
 import { redirect } from "next/navigation";
-import AdminNav from "@/components/nav/candidatenav/CandidateNav";
+import AdminNav from "@/components/nav/adminnav/AdminNav";
+import TopNav from "@/components/jobportal/home/TopNav";
+import { Toaster } from "react-hot-toast";
 
 export default async function Layout({
   children,
@@ -13,8 +15,10 @@ export default async function Layout({
 
   return (
     <div>
+      <TopNav />
       <AdminNav />
       {children}
+      <Toaster position="top-right" /> {/* veya istediğiniz pozisyon */}
     </div>
   );
 }
