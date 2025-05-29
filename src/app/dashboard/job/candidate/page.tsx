@@ -72,7 +72,7 @@ export default function Candidate() {
                 Please complete your profile {user?.username}
                 <Link
                   className="nav-link mt-2"
-                  href="/dashboard/candidate/myprofile"
+                  href="/dashboard/candidate/my-profile"
                 >
                   🌀 Edit Profile
                 </Link>
@@ -103,7 +103,7 @@ export default function Candidate() {
         </div>
       </div>
       <hr />
-      <p className="text-center">recet applied jobs</p>
+      <p className="text-center">recent applied jobs</p>
       <div className="container">
         <div className="row d-flex justify-content-center align-items-center h-auto">
           <div className="col bg-light p-5 shadow">

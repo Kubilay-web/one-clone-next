@@ -17,12 +17,13 @@ export default function CandidateNav() {
         <Link
           className="nav-link"
           style={{
-            color: pathname === "/dashboard/candidate" ? "white" : "black",
-            fontWeight: pathname === "/dashboard/candidate" ? "bold" : "normal",
+            color: pathname === "/dashboard/job/candidate" ? "white" : "black",
+            fontWeight:
+              pathname === "/dashboard/job/candidate" ? "bold" : "normal",
             backgroundColor:
-              pathname === "/dashboard/candidate" ? "green" : "transparent",
+              pathname === "/dashboard/job/candidate" ? "green" : "transparent",
           }}
-          href="/dashboard/candidate"
+          href="/dashboard/job/candidate"
         >
           Candidate
         </Link>
@@ -31,15 +32,19 @@ export default function CandidateNav() {
           className="nav-link"
           style={{
             color:
-              pathname === "/dashboard/candidate/myprofile" ? "white" : "black",
+              pathname === "/dashboard/job/candidate/my-profile"
+                ? "white"
+                : "black",
             fontWeight:
-              pathname === "/dashboard/candidate/myprofile" ? "bold" : "normal",
+              pathname === "/dashboard/job/candidate/my-profile"
+                ? "bold"
+                : "normal",
             backgroundColor:
-              pathname === "/dashboard/candidate/myprofile"
+              pathname === "/dashboard/job/candidate/my-profile"
                 ? "green"
                 : "transparent",
           }}
-          href="/dashboard/candidate/myprofile"
+          href="/dashboard/job/candidate/my-profile"
         >
           My Profile
         </Link>
@@ -48,15 +53,19 @@ export default function CandidateNav() {
           className="nav-link"
           style={{
             color:
-              pathname === "/dashboard/candidate/myjobs" ? "white" : "black",
+              pathname === "/dashboard/job/candidate/myjobs"
+                ? "white"
+                : "black",
             fontWeight:
-              pathname === "/dashboard/candidate/myjobs" ? "bold" : "normal",
+              pathname === "/dashboard/job/candidate/myjobs"
+                ? "bold"
+                : "normal",
             backgroundColor:
-              pathname === "/dashboard/candidate/myjobs"
+              pathname === "/dashboard/job/candidate/myjobs"
                 ? "green"
                 : "transparent",
           }}
-          href="/dashboard/candidate/myjobs"
+          href="/dashboard/job/candidate/myjobs"
         >
           Applied Jobs
         </Link>
@@ -65,15 +74,19 @@ export default function CandidateNav() {
           className="nav-link"
           style={{
             color:
-              pathname === "/dashboard/candidate/savedjobs" ? "white" : "black",
+              pathname === "/dashboard/job/candidate/savedjobs"
+                ? "white"
+                : "black",
             fontWeight:
-              pathname === "/dashboard/candidate/savedjobs" ? "bold" : "normal",
+              pathname === "/dashboard/job/candidate/savedjobs"
+                ? "bold"
+                : "normal",
             backgroundColor:
-              pathname === "/dashboard/candidate/savedjobs"
+              pathname === "/dashboard/job/candidate/savedjobs"
                 ? "green"
                 : "transparent",
           }}
-          href="/dashboard/candidate/savedjobs"
+          href="/dashboard/job/candidate/savedjobs"
         >
           Saved Jobs
         </Link>
@@ -82,19 +95,19 @@ export default function CandidateNav() {
           className="nav-link"
           style={{
             color:
-              pathname === "/dashboard/candidate/deleteaccount"
+              pathname === "/dashboard/job/candidate/deleteaccount"
                 ? "white"
                 : "black",
             fontWeight:
-              pathname === "/dashboard/candidate/deleteaccount"
+              pathname === "/dashboard/job/candidate/deleteaccount"
                 ? "bold"
                 : "normal",
             backgroundColor:
-              pathname === "/dashboard/candidate/deleteaccount"
+              pathname === "/dashboard/job/candidate/deleteaccount"
                 ? "green"
                 : "transparent",
           }}
-          href="/dashboard/candidate/deleteaccount"
+          href="/dashboard/job/candidate/deleteaccount"
         >
           Delete Account
         </Link>
@@ -103,15 +116,19 @@ export default function CandidateNav() {
           className="nav-link"
           style={{
             color:
-              pathname === "/dashboard/candidate/logout" ? "white" : "black",
+              pathname === "/dashboard/job/candidate/logout"
+                ? "white"
+                : "black",
             fontWeight:
-              pathname === "/dashboard/candidate/logout" ? "bold" : "normal",
+              pathname === "/dashboard/job/candidate/logout"
+                ? "bold"
+                : "normal",
             backgroundColor:
-              pathname === "/dashboard/candidate/logout"
+              pathname === "/dashboard/job/candidate/logout"
                 ? "green"
                 : "transparent",
           }}
-          href="/dashboard/candidate/logout"
+          href="/dashboard/job/candidate/logout"
         >
           Logout
         </Link>
