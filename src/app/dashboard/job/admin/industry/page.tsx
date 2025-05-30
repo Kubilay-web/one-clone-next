@@ -2,8 +2,8 @@
 
 import { useIndustryStore } from "@/app/job-portal-store/industry";
 import { useEffect } from "react";
-import IndustryCreate from "@/components/industry/IndustryCreate";
-import IndustryList from "@/components/industry/IndustryList";
+import IndustryCreate from "@/components/jobportal/admin/industry/IndustryCreate";
+import IndustryList from "@/components/jobportal/admin/industry/IndustryList";
 
 export default function Industries() {
   useEffect(() => {

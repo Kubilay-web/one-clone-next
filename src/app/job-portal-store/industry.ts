@@ -53,7 +53,7 @@ export const useIndustryStore = create<IndustryStore>((set, get) => ({
   fetchIndustriesPublic: async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/industry`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/industry`,
       );
       const data = await res.json();
       if (!res.ok) {
@@ -83,7 +83,6 @@ export const useIndustryStore = create<IndustryStore>((set, get) => ({
       if (!res.ok) {
         toast.error(data.err);
       } else {
-        toast.success("Industry created");
         set({
           name: "",
           industries: [data, ...industries],
@@ -113,7 +112,6 @@ export const useIndustryStore = create<IndustryStore>((set, get) => ({
       if (!res.ok) {
         toast.error(data.err);
       } else {
-        toast.success("Industry updated");
         set({
           industries: industries.map((i) => (i.id === data.id ? data : i)),
           updatingIndustry: null,
@@ -141,7 +139,6 @@ export const useIndustryStore = create<IndustryStore>((set, get) => ({
       if (!res.ok) {
         toast.error(data.err);
       } else {
-        toast.success("Industry deleted");
         set({
           industries: industries.filter((i) => i.id !== updatingIndustry.id),
           updatingIndustry: null,

@@ -1,6 +1,6 @@
 import { validateRequest } from "@/auth";
 import { redirect } from "next/navigation";
-import AdminNav from "@/components/nav/adminnav/AdminNav";
+import AdminNav from "@/components/jobportal/nav/adminnav/AdminNav";
 import TopNav from "@/components/jobportal/home/TopNav";
 import { Toaster } from "react-hot-toast";
 

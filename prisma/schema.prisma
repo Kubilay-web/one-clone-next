@@ -961,5 +961,53 @@ model Industry {
 
 
 
+model Organization {
+  id                    String   @id @default(cuid()) @map("_id")
+  name  String @unique @db.String
+  slug  String @db.String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("organizations") 
+}
+
+
+
+model Team {
+  id                    String   @id @default(cuid()) @map("_id")
+  name      String   @unique @db.String
+  slug      String   @db.String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("teams")
+}
+
+
+
+model CountryJob {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String   @unique @db.String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  states    State[]  @relation("CountryStates")
+
+  @@map("countries")
+}
+
+model State {
+  id         String      @id @default(cuid()) @map("_id")
+  statename  String      @unique @db.String
+  countryId  String      @map("countryId")
+  country    CountryJob  @relation("CountryStates", fields: [countryId], references: [id])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@map("states")
+}
+
+
 
 
