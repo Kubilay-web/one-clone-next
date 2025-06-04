@@ -965,7 +965,6 @@ model Organization {
   id                    String   @id @default(cuid()) @map("_id")
   name  String @unique @db.String
   slug  String @db.String
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -993,6 +992,7 @@ model CountryJob {
   updatedAt DateTime @updatedAt
 
   states    State[]  @relation("CountryStates")
+  cities    City[]   @relation("CountryCities") 
 
   @@map("countries")
 }
@@ -1002,11 +1002,66 @@ model State {
   statename  String      @unique @db.String
   countryId  String      @map("countryId")
   country    CountryJob  @relation("CountryStates", fields: [countryId], references: [id])
+  cities     City[]      @relation("StateCities") 
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
   @@map("states")
 }
+
+
+model City {
+  id         String      @id @default(cuid()) @map("_id")
+  name       String  
+  stateId    String? 
+  countryId  String?  
+  state      State?   @relation("StateCities", fields: [stateId], references: [id]) 
+  country    CountryJob? @relation("CountryCities", fields: [countryId], references: [id]) 
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt 
+
+  @@map("cities") 
+}
+
+
+
+model Language {
+  id         String      @id @default(cuid()) @map("_id")
+  name      String   @db.String
+  slug      String   @unique @db.String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt 
+}
+
+
+
+model Skill {
+  id         String      @id @default(cuid()) @map("_id")
+  name      String   @unique @db.String
+  slug      String   @db.String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt 
+}
+
+
+
+model Profession {
+  id         String      @id @default(cuid()) @map("_id")
+  name      String   @unique  
+  slug      String   @unique 
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt 
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

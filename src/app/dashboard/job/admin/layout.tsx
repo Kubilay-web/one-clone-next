@@ -18,7 +18,7 @@ export default async function Layout({
       <TopNav />
       <AdminNav />
       {children}
-      <Toaster position="top-right" /> {/* veya istediğiniz pozisyon */}
+      <Toaster position="top-right" />
     </div>
   );
 }

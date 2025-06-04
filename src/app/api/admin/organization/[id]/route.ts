@@ -2,37 +2,36 @@ import { NextResponse } from "next/server";
 import slugify from "slugify";
 import db from "@/lib/db";
 
-// PUT: Update organization
+// PUT: Update language
 export async function PUT(req: Request, context: { params: { id: string } }) {
   try {
     const { id } = context.params;
     const body = await req.json();
 
-    const updatedOrganization = await db.organization.update({
+    const updatedLanguage = await db.language.update({
       where: { id },
-
       data: {
-        name: body.name,
-        slug: slugify(body.name, { lower: true }),
+        ...body,
+        slug: slugify(body.name, { lower: true }), // Generate slug from the name
       },
     });
 
-    return NextResponse.json(updatedOrganization);
+    return NextResponse.json(updatedLanguage);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
 
-// DELETE: Remove organization
+// DELETE: Remove language
 export async function DELETE(_: Request, context: { params: { id: string } }) {
   try {
     const { id } = context.params;
 
-    const deletedOrganization = await db.organization.delete({
+    const deletedLanguage = await db.language.delete({
       where: { id },
     });
 
-    return NextResponse.json(deletedOrganization);
+    return NextResponse.json(deletedLanguage);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

@@ -59,6 +59,7 @@
     "@tiptap/starter-kit": "^2.4.0",
     "@tremor/react": "^3.18.7",
     "@uploadthing/react": "^6.7.2",
+    "antd": "^5.25.4",
     "arctic": "^1.9.1",
     "bootstrap": "^5.3.6",
     "bootstrap-material-design": "^4.1.3",

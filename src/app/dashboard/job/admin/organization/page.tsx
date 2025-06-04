@@ -12,7 +12,7 @@ export default function Industries() {
       </div>
       <div className="row mt-5">
         <div className="col">
-          <p className="lead mb-4"> organization name </p>
+          <p className="lead mb-4">Organization Name </p>
           <OrganizationList />
         </div>
       </div>

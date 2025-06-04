@@ -10,7 +10,7 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
       where: { id },
       data: {
         statename: body.statename,
-        countryId: body.countryId, // Eğer ülke de değişecekse
+        countryId: body.countryId,
       },
     });
 
