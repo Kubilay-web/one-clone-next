@@ -196,7 +196,7 @@ export default function AdminNav() {
           href="/dashboard/job/admin/profession"
           className="nav-link"
         >
-          Add Profssion
+          Add Profession
         </Link>
       </nav>
 

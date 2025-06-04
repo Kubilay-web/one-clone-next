@@ -1,6 +1,6 @@
 import { validateRequest } from "@/auth";
 import { redirect } from "next/navigation";
-import CandidateNav from "@/components/nav/candidatenav/CandidateNav";
+import CandidateNav from "@/components/jobportal/nav/candidatenav/CandidateNav";
 
 export default async function Layout({
   children,
