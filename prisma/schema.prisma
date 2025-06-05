@@ -1055,6 +1055,77 @@ model Profession {
 
 
 
+model Jobtype {
+  id         String      @id @default(cuid()) @map("_id")
+  name      String 
+  slug      String   @unique
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt 
+}
+
+
+
+model Salarytype {
+  id         String      @id @default(cuid()) @map("_id")
+  name      String   @db.String
+  slug      String   @unique @db.String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Jobcategory {
+  id        String   @id @default(cuid()) @map("_id")
+  icon      String
+  name      String   @db.String
+  slug      String   @unique @db.String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+model Educationid {
+  id        String   @id @default(cuid()) @map("_id")
+  name  String @db.String
+  slug  String @unique @db.String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+model Tag {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String @unique @db.String
+  slug      String @unique @db.String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Jobrole {
+  id        String   @id @default(cuid()) @map("_id")
+  name  String @unique
+  slug  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

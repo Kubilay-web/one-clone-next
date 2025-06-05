@@ -2,23 +2,25 @@ import { NextResponse } from "next/server";
 import db from "@/lib/db";
 import slugify from "slugify";
 
-export async function PUT(req, context) {
-  const { id } = context.params; // Extract the id from the URL params
-  const body = await req.json(); // Parse the request body
+export async function PUT(req: Request, context: { params: { id: string } }) {
+  const { id } = context.params;
+  const body = await req.json();
+  const { name } = body;
 
   try {
-    // Update the profession using Prisma
-    const updatingProfession = await db.profession.update({
-      where: { id }, // Match the profession by ID
+    // Update existing profession by ID
+    const updatedProfession = await db.profession.update({
+      where: { id },
       data: {
-        ...body,
-        slug: slugify(body.name, { lower: true }), // Generate the slug from the name
+        name,
+        slug: slugify(name, { lower: true }),
+        updatedAt: new Date(), // Opsiyonel: Eğer modelinizde varsa
       },
     });
 
-    return NextResponse.json(updatingProfession); // Return the updated profession
+    return NextResponse.json(updatedProfession);
   } catch (err) {
-    return NextResponse.json({ err: err.message }, { status: 500 }); // Handle errors
+    return NextResponse.json({ err: err.message }, { status: 500 });
   }
 }
 

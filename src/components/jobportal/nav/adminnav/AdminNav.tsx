@@ -284,20 +284,20 @@ export default function AdminNav() {
         <Link
           style={{
             color:
-              pathname === "/dashboard/job/admin/job_categories"
+              pathname === "/dashboard/job/admin/jobcategories"
                 ? "white"
                 : "black",
             fontWeight:
-              pathname === "/dashboard/job/admin/job_categories"
+              pathname === "/dashboard/job/admin/jobcategories"
                 ? "bold"
                 : "normal",
             backgroundColor:
-              pathname === "/dashboard/job/admin/job_categories"
+              pathname === "/dashboard/job/admin/jobcategories"
                 ? "green"
                 : "transparent",
             // Add any additional styles for the active state here
           }}
-          href="/dashboard/job/admin/job_categories"
+          href="/dashboard/job/admin/jobcategories"
           className="nav-link"
         >
           Job_categories
@@ -324,16 +324,16 @@ export default function AdminNav() {
         <Link
           style={{
             color:
-              pathname === "/dashboard/job/admin/job_type" ? "white" : "black",
+              pathname === "/dashboard/job/admin/jobtype" ? "white" : "black",
             fontWeight:
-              pathname === "/dashboard/job/admin/job_type" ? "bold" : "normal",
+              pathname === "/dashboard/job/admin/jobtype" ? "bold" : "normal",
             backgroundColor:
-              pathname === "/dashboard/job/admin/job_type"
+              pathname === "/dashboard/job/admin/jobtype"
                 ? "green"
                 : "transparent",
             // Add any additional styles for the active state here
           }}
-          href="/dashboard/job/admin/job_type"
+          href="/dashboard/job/admin/jobtype"
           className="nav-link"
         >
           Jobtype
