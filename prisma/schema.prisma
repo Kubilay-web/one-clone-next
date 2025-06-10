@@ -58,6 +58,7 @@ model User {
 
   @@map("users")
 
+  Company Company[]
 }
 
 
@@ -483,6 +484,8 @@ model Country{
 
   createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
+
+  Company Company[]
 }
 
 
@@ -957,6 +960,8 @@ model Industry {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+
+  Company Company[]
 }
 
 
@@ -969,6 +974,7 @@ model Organization {
   updatedAt DateTime @updatedAt
 
   @@map("organizations") 
+  Company Company[]
 }
 
 
@@ -981,6 +987,7 @@ model Team {
   updatedAt DateTime @updatedAt
 
   @@map("teams")
+  Company Company[]
 }
 
 
@@ -1007,6 +1014,7 @@ model State {
   updatedAt  DateTime    @updatedAt
 
   @@map("states")
+  Company Company[]
 }
 
 
@@ -1021,6 +1029,7 @@ model City {
   updatedAt  DateTime @updatedAt 
 
   @@map("cities") 
+  Company Company[]
 }
 
 
@@ -1111,6 +1120,69 @@ model Jobrole {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+
+
+model JobexperienceId {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String   @unique
+  slug      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("jobexperience_id") // MongoDB koleksiyon ismi
+}
+
+
+
+
+model Company {
+  id                 String   @id @default(cuid()) @map("_id")
+  userId             String
+  name               String
+  slug               String   @unique
+  bio                String?
+  vision             String?
+  logoPublicId       String   @default("")
+  logoSecureUrl      String   @default("")
+  bannerPublicId     String   @default("")
+  bannerSecureUrl    String   @default("")
+
+  // Diğer alanlar isteğe bağlı yapıldı çünkü frontend'te kullanılmıyor:
+  industryTypeId      String? 
+  organizationTypeId  String? 
+  teamTypeId          String?
+  email               String?  @unique
+  phone               String?
+  establishmentDate   DateTime?
+  website             String?
+  totalViews          Int      @default(0)
+  address             String?
+  cityId              String?
+  stateId             String?
+  countryId           String?
+  mapLink             String?
+  isProfileVerified   Boolean  @default(false)
+  documentVerifiedAt  DateTime?
+  profileCompletion   Boolean  @default(false)
+  visibility          Boolean  @default(false)
+
+  // İlişkiler de optional
+  user              User     @relation(fields: [userId], references: [id])
+  industryType      Industry? @relation(fields: [industryTypeId], references: [id])
+  organizationType  Organization? @relation(fields: [organizationTypeId], references: [id])
+  teamType          Team?     @relation(fields: [teamTypeId], references: [id])
+  city              City?     @relation(fields: [cityId], references: [id])
+  state             State?    @relation(fields: [stateId], references: [id])
+  country           Country?  @relation(fields: [countryId], references: [id])
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+
+
+
 
 
 

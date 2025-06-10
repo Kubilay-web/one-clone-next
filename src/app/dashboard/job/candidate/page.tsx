@@ -19,9 +19,12 @@ export default function Candidate() {
 
   const checkProfileCompletion = async () => {
     try {
-      const response = await fetch(`${process.env.API}/candidate/dash`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/candidate/dash`,
+        {
+          method: "GET",
+        },
+      );
 
       const data = await response.json();
 
@@ -38,7 +41,9 @@ export default function Candidate() {
 
   const fetchJobs = async () => {
     try {
-      const response = await fetch(`${process.env.API}/candidate/myjob`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/candidate/myjob`,
+      );
       const data = await response.json();
 
       if (!response.ok) {

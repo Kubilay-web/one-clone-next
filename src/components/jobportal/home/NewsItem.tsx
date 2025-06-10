@@ -11,7 +11,7 @@ const Home = () => {
   }, []);
 
   const fetchBlogs = async () => {
-    const res = await fetch(`${process.env.API}/blog`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/blog`);
     const data = await res.json();
     setBlogs(data);
   };

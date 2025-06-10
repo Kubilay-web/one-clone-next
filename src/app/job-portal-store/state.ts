@@ -39,6 +39,7 @@ export const useStateStore = create<StateStore>((set, get) => ({
   setStatename: (name) => set({ statename: name }),
   setSelectedCountryId: (id) => set({ selectedCountryId: id }),
   setUpdatingState: (state) => set({ updatingState: state }),
+  setStates: (states) => set({ states }),
 
   fetchStates: async () => {
     try {

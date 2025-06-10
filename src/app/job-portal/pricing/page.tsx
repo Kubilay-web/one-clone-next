@@ -14,7 +14,7 @@ export default function Register() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${process.env.API}/plan`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/plan`);
 
       const data = await response.json();
 

@@ -1,103 +1,115 @@
 "use client";
 
-import { useSession } from "@/app/(main)/SessionProvider";
 import Link from "next/link";
-import { useQueryClient } from "@tanstack/react-query";
-import { logout } from "@/app/(auth)/actions";
-import { useEffect } from "react";
-
-// Role-based redirection in Next.js can be implemented to
-// ensure that users are directed to appropriate pages based
-//  on their roles or permissions. This is commonly done
-//   in web
-
-export default function TopNav() {
-  const { user } = useSession();
-  const queryClient = useQueryClient(); // Burada useQueryClient doğru şekilde kullanılıyor
-
-  useEffect(() => {
-    import("bootstrap/dist/css/bootstrap.min.css");
-    import(
-      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
-    );
-  }, []);
-
+import { usePathname } from "next/navigation";
+export default function CompanyNav() {
+  const pathname = usePathname();
   return (
     <>
-      <nav className="nav justify-content-between shadow">
-        <Link className="nav-link mt-2" href="/">
-          Home
+      <nav className="nav justify-content-center mb-3">
+        {/* Company Links */}
+        <Link
+          className="nav-link"
+          style={{
+            color: pathname === "/dashboard/job/company" ? "white" : "black",
+            fontWeight:
+              pathname === "/dashboard/job/company" ? "bold" : "normal",
+            backgroundColor:
+              pathname === "/dashboard/job/company" ? "green" : "transparent",
+          }}
+          href="/dashboard/job/company"
+        >
+          Company
         </Link>
-        <div className="d-flex align-items-center">
-          <Link className="nav-link" href="/companies">
-            Companies
-          </Link>
-          <Link className="nav-link" href="/candidates">
-            Candidates
-          </Link>
-          <Link className="nav-link" href="/jobs">
-            Search jobs
-          </Link>
-          <Link className="nav-link" href="/pricing">
-            Pricing
-          </Link>
 
-          {user ? (
-            <>
-              {user?.rolejob === "CANDIDATE" ? (
-                <Link
-                  className="nav-link"
-                  href={`/dashboard/job/${user?.rolejob}`}
-                >
-                  {user?.username}({user?.rolejob})
-                </Link>
-              ) : (
-                ""
-              )}
+        <Link
+          className="nav-link"
+          style={{
+            color:
+              pathname === "/dashboard/job/company/profile" ? "white" : "black",
+            fontWeight:
+              pathname === "/dashboard/job/company/profile" ? "bold" : "normal",
+            backgroundColor:
+              pathname === "/dashboard/job/company/profile"
+                ? "green"
+                : "transparent",
+          }}
+          href="/dashboard/job/company/profile"
+        >
+          Profile
+        </Link>
 
-              {user?.rolejob === "ADMIN" ? (
-                <Link
-                  className="nav-link"
-                  href={`/dashboard/job/${user?.rolejob}`}
-                >
-                  {user?.username}({user?.rolejob})
-                </Link>
-              ) : (
-                ""
-              )}
+        <Link
+          className="nav-link"
+          style={{
+            color:
+              pathname === "/dashboard/job/company/job" ? "white" : "black",
+            fontWeight:
+              pathname === "/dashboard/job/company/job" ? "bold" : "normal",
+            backgroundColor:
+              pathname === "/dashboard/job/company/job"
+                ? "green"
+                : "transparent",
+          }}
+          href="/dashboard/job/company/job"
+        >
+          Create Jobs
+        </Link>
 
-              {user?.rolejob === "COMPANY" ? (
-                <Link
-                  className="nav-link"
-                  href={`/dashboard/job/${user?.rolejob}`}
-                >
-                  {user?.username}({user?.rolejob})
-                </Link>
-              ) : (
-                ""
-              )}
+        <Link
+          className="nav-link"
+          style={{
+            color:
+              pathname === "/dashboard/job/company/companyjob"
+                ? "white"
+                : "black",
+            fontWeight:
+              pathname === "/dashboard/job/company/companyjob"
+                ? "bold"
+                : "normal",
+            backgroundColor:
+              pathname === "/dashboard/job/company/companyjob"
+                ? "green"
+                : "transparent",
+          }}
+          href="/dashboard/job/company/companyjob"
+        >
+          All Jobs
+        </Link>
 
-              <a
-                className="nav-link pointer-job"
-                onClick={() => {
-                  queryClient.clear();
-                  logout();
-                }}
-              >
-                Logout
-              </a>
-            </>
-          ) : (
-            <>
-              <Link className="nav-link" href="/login">
-                Login
-              </Link>
-              <Link className="nav-link" href="/register">
-                Register
-              </Link>
-            </>
-          )}
-        </div>
+        <Link
+          className="nav-link"
+          style={{
+            color:
+              pathname === "/dashboard/job/company/orders" ? "white" : "black",
+            fontWeight:
+              pathname === "/dashboard/job/company/orders" ? "bold" : "normal",
+            backgroundColor:
+              pathname === "/dashboard/job/company/orders"
+                ? "green"
+                : "transparent",
+          }}
+          href="/dashboard/job/company/orders"
+        >
+          Orders
+        </Link>
+
+        <Link
+          className="nav-link"
+          style={{
+            color:
+              pathname === "/dashboard/job/company/orders" ? "white" : "black",
+            fontWeight:
+              pathname === "/dashboard/job/company/orders" ? "bold" : "normal",
+            backgroundColor:
+              pathname === "/dashboard/job/company/orders"
+                ? "green"
+                : "transparent",
+          }}
+          href="/dashboard/job/company/orders"
+        >
+          Orders
+        </Link>
       </nav>
     </>
   );

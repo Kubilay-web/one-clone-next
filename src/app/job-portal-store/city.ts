@@ -22,6 +22,7 @@ interface CityStore {
   setSelectedCountryId: (countryId: string) => void;
   setSelectedStateId: (stateId: string) => void;
   setUpdatingCity: (city: City | null) => void;
+  setCities: (cities: City[]) => void;
 
   fetchCities: () => Promise<void>;
   fetchStates: () => Promise<void>;
@@ -47,6 +48,7 @@ export const useCityStore = create<CityStore>((set, get) => ({
   setSelectedCountryId: (countryId) => set({ selectedCountryId: countryId }),
   setSelectedStateId: (stateId) => set({ selectedStateId: stateId }),
   setUpdatingCity: (city) => set({ updatingCity: city }),
+  setCities: (cities) => set({ cities }),
 
   // Fetch Cities
   fetchCities: async () => {

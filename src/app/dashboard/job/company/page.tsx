@@ -15,7 +15,9 @@ export default function Company() {
 
   const checkProfileCompletion = async () => {
     try {
-      const response = await fetch(`${process.env.API}/company/dash`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/company/dash`,
+      );
 
       const data = await response.json();
 
@@ -51,7 +53,7 @@ export default function Company() {
                 Please complete your profile {user?.username}
                 <Link
                   className="nav-link mt-2"
-                  href="/dashboard/company/profile"
+                  href="/dashboard/job/company/profile"
                 >
                   Edit Profile
                 </Link>

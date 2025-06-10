@@ -20,7 +20,9 @@ export default function Admin() {
 
   const fetchdetails = async () => {
     try {
-      const response = await fetch(`${process.env.API}/admin/details`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/details`,
+      );
 
       const data = await response.json();
 

@@ -1,5 +1,6 @@
 import { validateRequest } from "@/auth";
 import CompanyNav from "@/components/jobportal/nav/company/CompanyNav";
+import TopNav from "@/components/jobportal/nav/TopNav";
 import { redirect } from "next/navigation";
 
 export default async function Layout({
@@ -13,6 +14,7 @@ export default async function Layout({
 
   return (
     <div>
+      <TopNav />
       <CompanyNav />
 
       {children}
