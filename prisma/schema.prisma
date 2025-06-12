@@ -486,6 +486,8 @@ model Country{
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
 
   Company Company[]
+
+  Jobs Jobs[]
 }
 
 
@@ -1015,6 +1017,7 @@ model State {
 
   @@map("states")
   Company Company[]
+  Jobs Jobs[]
 }
 
 
@@ -1030,6 +1033,7 @@ model City {
 
   @@map("cities") 
   Company Company[]
+  Jobs Jobs[]
 }
 
 
@@ -1050,6 +1054,8 @@ model Skill {
   slug      String   @db.String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt 
+
+  Jobskill Jobskill[]
 }
 
 
@@ -1070,6 +1076,8 @@ model Jobtype {
   slug      String   @unique
   createdAt DateTime @default(now()) 
   updatedAt DateTime @updatedAt 
+
+  Jobs Jobs[]
 }
 
 
@@ -1080,6 +1088,8 @@ model Salarytype {
   slug      String   @unique @db.String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Jobs Jobs[]
 }
 
 
@@ -1090,6 +1100,8 @@ model Jobcategory {
   slug      String   @unique @db.String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Jobs Jobs[]
 }
 
 
@@ -1100,6 +1112,8 @@ model Educationid {
   slug  String @unique @db.String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Jobs Jobs[]
 }
 
 
@@ -1110,6 +1124,8 @@ model Tag {
   slug      String @unique @db.String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+   jobtags   Jobtag[]
 }
 
 
@@ -1119,6 +1135,8 @@ model Jobrole {
   slug  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Jobs Jobs[]
 }
 
 
@@ -1131,6 +1149,7 @@ model JobexperienceId {
   updatedAt DateTime @updatedAt
 
   @@map("jobexperience_id") // MongoDB koleksiyon ismi
+  Jobs Jobs[]
 }
 
 
@@ -1138,7 +1157,7 @@ model JobexperienceId {
 
 model Company {
   id                 String   @id @default(cuid()) @map("_id")
-  userId             String
+  userId             String @unique
   name               String
   slug               String   @unique
   bio                String?
@@ -1148,7 +1167,6 @@ model Company {
   bannerPublicId     String   @default("")
   bannerSecureUrl    String   @default("")
 
-  // Diğer alanlar isteğe bağlı yapıldı çünkü frontend'te kullanılmıyor:
   industryTypeId      String? 
   organizationTypeId  String? 
   teamTypeId          String?
@@ -1167,7 +1185,7 @@ model Company {
   profileCompletion   Boolean  @default(false)
   visibility          Boolean  @default(false)
 
-  // İlişkiler de optional
+
   user              User     @relation(fields: [userId], references: [id])
   industryType      Industry? @relation(fields: [industryTypeId], references: [id])
   organizationType  Organization? @relation(fields: [organizationTypeId], references: [id])
@@ -1178,7 +1196,162 @@ model Company {
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+
+  Jobs Jobs[]
+
+  Benfits Benfits[]
 }
+
+
+enum SalaryMode {
+  range
+  custom
+}
+
+
+enum JobStatus {
+  active
+  expired
+  pending
+}
+
+enum ApplyOn {
+  app
+  email
+  custom_url
+}
+
+
+model Jobs {
+  id                 String   @id @default(cuid()) @map("_id")
+  company           Company?   @relation(fields: [companyId], references: [id])
+  companyId         String?    
+
+  job_category      Jobcategory? @relation(fields: [jobCategoryId], references: [id])
+  jobCategoryId     String?     
+
+  job_role          Jobrole?   @relation(fields: [jobRoleId], references: [id])
+  jobRoleId         String?   
+
+  job_experience    JobexperienceId? @relation(fields: [jobExperienceId], references: [id])
+  jobExperienceId   String?         
+
+  education         Educationid? @relation(fields: [educationId], references: [id])
+  educationId       String?      
+
+  job_type          Jobtype?    @relation(fields: [jobTypeId], references: [id])
+  jobTypeId         String?     
+
+  salary_type       Salarytype? @relation(fields: [salaryTypeId], references: [id])
+  salaryTypeId      String?     
+
+  title             String      @unique
+  slug              String      @unique
+  vacancies         String      @unique
+
+  min_salary        Int         @default(0)
+  max_salary        Int         @default(0)
+  custom_salary     Int         @default(0)
+
+  deadline          DateTime?
+
+  description       String?
+
+  status            JobStatus   @default(pending)
+
+  apply_on          ApplyOn     @default(app)
+  apply_email       String?
+  apply_url         String?
+
+  featured          Boolean     @default(false)
+  highlight         Boolean     @default(false)
+
+  fetaured_until    DateTime?
+  highlight_until   DateTime?
+
+  jobcount          Int         @default(0)
+  total_views       Int         @default(0)
+
+  city              City?       @relation(fields: [cityId], references: [id])
+  cityId            String?    
+
+  state             State?      @relation(fields: [stateId], references: [id])
+  stateId           String?
+
+  country           Country?    @relation(fields: [countryId], references: [id])
+  countryId         String?   
+
+  address           String?
+
+  salary_mode       SalaryMode  @default(custom)
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  jobtags   Jobtag[]
+
+  Job_benfits Job_benfits[]
+
+  Jobskill Jobskill[]
+}
+
+
+model Jobtag {
+ id                 String   @id @default(cuid()) @map("_id")
+
+  job       Jobs     @relation(fields: [jobId], references: [id])
+  jobId     String  
+
+  tag       Tag      @relation(fields: [tagId], references: [id])
+  tagId     String   
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Benfits {
+   id                 String   @id @default(cuid()) @map("_id")
+
+  company    Company?  @relation(fields: [companyId], references: [id])
+  companyId  String?   
+
+  name       String[]  @db.String
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  Job_benfits Job_benfits[]
+}
+
+
+model Job_benfits {
+  id                 String   @id @default(cuid()) @map("_id")
+
+  job         Jobs     @relation(fields: [jobId], references: [id])
+  jobId       String   
+
+  benfit      Benfits  @relation(fields: [benfitsId], references: [id])
+  benfitsId   String   
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model Jobskill {
+   id                 String   @id @default(cuid()) @map("_id")
+
+  job        Jobs     @relation(fields: [jobId], references: [id])
+  jobId      String   
+
+  skill      Skill    @relation(fields: [skillId], references: [id])
+  skillId    String 
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
 
 
 

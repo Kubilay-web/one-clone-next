@@ -51,7 +51,7 @@ export const useSkillStore = create<SkillStore>((set, get) => ({
 
   fetchSkillsPublic: async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/skill`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/skill`);
       const data = await res.json();
       if (!res.ok) {
         toast.error(data.err);

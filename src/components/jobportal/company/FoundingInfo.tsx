@@ -133,22 +133,21 @@ export default function FoundingInfo() {
       }
 
       const data = await response.json();
-      console.log("datax", data);
 
       setAddress(data.address || "");
-      setMap(data.map_link || "");
-      setSelectedOrganization(data.organization_type_id || "");
-      setSelectedTeam(data.team_type_id || "");
-      setSelectedIndustry(data.industry_type_id || "");
+      setMap(data.mapLink || "");
+      setSelectedOrganization(data.organizationTypeId || "");
+      setSelectedTeam(data.teamTypeId || "");
+      setSelectedIndustry(data.industryTypeId || "");
       setStartDate(
-        data?.establishment_date ? new Date(data.establishment_date) : null,
+        data?.establishmentDate ? new Date(data.establishmentDate) : null,
       );
       setEmail(data.email || "");
       setContact(data.phone || "");
       setWebsite(data.website || "");
-      setSelectedCity(data?.city || "");
-      setSelectedCountry(data?.country || "");
-      setSelectedState(data?.state || "");
+      setSelectedCity(data.cityId || "");
+      setSelectedCountry(data.countryId || "");
+      setSelectedState(data.stateId || "");
     } catch (error) {
       console.log(error);
       toast.error("Failed to load company data");
@@ -156,40 +155,47 @@ export default function FoundingInfo() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    try {
-      e.preventDefault();
-      setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
+    // Prepare the data to be sent to the API
+    const dataToSend = {
+      industryTypeId: selectedIndustry,
+      organizationTypeId: selectedOrganization,
+      teamTypeId: selectedTeam,
+      establishmentDate: startDate ? startDate.toISOString() : null,
+      website,
+      email,
+      phone: contact,
+      countryId: selectedCountry,
+      stateId: selectedState,
+      cityId: selectedCity,
+      address,
+      mapLink: map,
+    };
+
+    console.log("Sending data:", dataToSend); // Log the data being sent
+
+    try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/company/foundinginfo`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            startDate,
-            email,
-            selectedCountry,
-            selectedState,
-            selectedCity,
-            selectedIndustry,
-            selectedOrganization,
-            selectedTeam,
-            map,
-            address,
-            website,
-            contact,
-          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataToSend),
         },
       );
 
       const data = await response.json();
       if (!response.ok) {
-        toast.error(data.err);
+        toast.error(data.err || "Failed to save data");
       } else {
         toast.success("Changes saved successfully");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error); // Log error for debugging
       toast.error("An error occurred");
     } finally {
       setLoading(false);

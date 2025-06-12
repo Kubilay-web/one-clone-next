@@ -48,13 +48,11 @@ export async function GET() {
       "countryId",
     ];
 
-    // const profileComplete = requiredFields.every(
-    //   (field) =>
-    //     company[field as keyof typeof company] !== null &&
-    //     company[field as keyof typeof company] !== "",
-    // );
-
-    const profileComplete = true;
+    const profileComplete = requiredFields.every(
+      (field) =>
+        company[field as keyof typeof company] !== null &&
+        company[field as keyof typeof company] !== "",
+    );
 
     return NextResponse.json({ profileComplete });
   } catch (error: any) {
