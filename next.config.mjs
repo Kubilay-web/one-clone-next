@@ -3,6 +3,7 @@ const nextConfig = {
   experimental: {
     staleTimes: {
       dynamic: 30,
+      missingSuspenseWithCSRBailout: false,
     },
   },
   serverExternalPackages: ["@node-rs/argon2"],
