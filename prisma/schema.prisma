@@ -487,7 +487,6 @@ model Country{
 
   Company Company[]
 
-  Jobs Jobs[]
 }
 
 
@@ -1003,7 +1002,10 @@ model CountryJob {
   states    State[]  @relation("CountryStates")
   cities    City[]   @relation("CountryCities") 
 
+
+
   @@map("countries")
+  Jobs Jobs[]
 }
 
 model State {
@@ -1278,7 +1280,7 @@ model Jobs {
   state             State?      @relation(fields: [stateId], references: [id])
   stateId           String?
 
-  country           Country?    @relation(fields: [countryId], references: [id])
+  country           CountryJob?    @relation(fields: [countryId], references: [id])
   countryId         String?   
 
   address           String?
@@ -1293,6 +1295,8 @@ model Jobs {
   Job_benfits Job_benfits[]
 
   Jobskill Jobskill[]
+
+
 }
 
 

@@ -1,18 +1,33 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import db from "@/lib/db";
-import { validateRequest } from "@/auth";
 import slugify from "slugify";
 
-export async function POST(req: NextRequest) {
-  const { user } = await validateRequest();
+export async function GET() {
+  try {
+    const jobs = await db.jobs.findMany({
+      include: {
+        job_category: { select: { name: true } },
+        company: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
 
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(jobs);
+  } catch (error) {
+    console.error("GET error:", error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "An error occurred" },
+      { status: 500 },
+    );
   }
+}
 
+export async function POST(req: Request) {
   const body = await req.json();
 
   const {
+    highlight,
+    featured,
     title,
     isSalaryRange,
     deadline,
@@ -36,9 +51,9 @@ export async function POST(req: NextRequest) {
     skills,
     applicationReceived,
     description,
-    highlight,
-    featured,
   } = body;
+
+  console.log("body", body);
 
   try {
     const job = await db.jobs.create({
@@ -47,64 +62,92 @@ export async function POST(req: NextRequest) {
         slug: slugify(title),
         deadline: new Date(deadline),
         vacancies: totalVacancies,
+        company: {
+          connect: { id: selectedCompany },
+        },
+        job_category: {
+          connect: { id: selectedJobCategory },
+        },
+        country: {
+          connect: { id: selectedCountry },
+        },
+        state: {
+          connect: { id: selectedState },
+        },
+        city: {
+          connect: { id: selectedCity },
+        },
         address,
-        min_salary: parseInt(minSalary || "0"),
-        max_salary: parseInt(maxSalary || "0"),
-        custom_salary: parseInt(customSalary || "0"),
+        min_salary: minSalary ? parseInt(minSalary, 10) : undefined,
+        max_salary: maxSalary ? parseInt(maxSalary, 10) : undefined,
+        custom_salary: customSalary ? parseInt(customSalary, 10) : undefined,
+        salary_type: {
+          connect: { id: selectedSalaryType },
+        },
+        job_experience: {
+          connect: { id: experience },
+        },
+        job_role: {
+          connect: { id: jobRole },
+        },
+        education: {
+          connect: { id: education },
+        },
+        job_type: {
+          connect: { id: jobType },
+        },
         apply_on: applicationReceived,
         description,
-        highlight,
-        featured,
+        highlight: Boolean(highlight),
+        featured: Boolean(featured),
         salary_mode: isSalaryRange ? "range" : "custom",
         status: "active",
-        company: { connect: { id: selectedCompany } },
-        job_category: { connect: { id: selectedJobCategory } },
-        country: { connect: { id: selectedCountry } },
-        state: { connect: { id: selectedState } },
-        city: { connect: { id: selectedCity } },
-        salary_type: { connect: { id: selectedSalaryType } },
-        education: { connect: { id: education } },
-        job_experience: { connect: { id: experience } },
-        job_role: { connect: { id: jobRole } },
-        job_type: { connect: { id: jobType } },
       },
     });
 
-    for (const tagId of tags) {
-      await db.jobtag.create({
+    // Job tags
+    if (tags && tags.length > 0) {
+      await db.jobtag.createMany({
+        data: tags.map((tagId: string) => ({
+          jobId: job.id,
+          tagId,
+        })),
+      });
+    }
+
+    // Benefits
+    if (benefits) {
+      const createdBenefit = await db.benfits.create({
         data: {
-          job: { connect: { id: job.id } },
-          tag: { connect: { id: tagId } },
+          companyId: selectedCompany,
+          name: benefits,
+        },
+      });
+
+      await db.job_benfits.create({
+        data: {
+          jobId: job.id,
+          benfitsId: createdBenefit.id,
         },
       });
     }
 
-    const benfit = await db.benfits.create({
-      data: {
-        company: { connect: { id: selectedCompany } },
-        name: benefits,
-      },
-    });
-
-    await db.job_benfits.create({
-      data: {
-        job: { connect: { id: job.id } },
-        benfit: { connect: { id: benfit.id } },
-      },
-    });
-
-    for (const skillId of skills) {
-      await db.jobskill.create({
-        data: {
-          job: { connect: { id: job.id } },
-          skill: { connect: { id: skillId } },
-        },
+    // Job Skills
+    if (skills && skills.length > 0) {
+      await db.jobskill.createMany({
+        data: skills.map((skillId: string) => ({
+          jobId: job.id,
+          skillId,
+        })),
       });
     }
 
     return NextResponse.json({ success: "Job created successfully" });
-  } catch (err) {
-    console.error("Job creation error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: any) {
+    console.error("POST error:", err);
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "An error occurred" },
+      { status: 500 },
+    );
   }
 }

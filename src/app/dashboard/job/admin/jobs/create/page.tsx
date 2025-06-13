@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import ReactQuill from "react-quill-new";
+import ReactQuillEditor from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { Select } from "antd";
 import { DatePicker } from "antd";
@@ -17,8 +17,11 @@ import { useJobtypeStore } from "@/app/job-portal-store/jobtype";
 import { useJobexperienceStore } from "@/app/job-portal-store/jobexperiences";
 import { useSalarytypeStore } from "@/app/job-portal-store/salarytype";
 import { useTagStore } from "@/app/job-portal-store/tag";
+import dynamic from "next/dynamic";
 
 const { Option } = Select;
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const ben = [
   "Job",
@@ -85,8 +88,6 @@ export default function Jobs() {
   const { salarytypes, fetchSalarytypesPublic } = useSalarytypeStore();
   const { skills: allSkills, fetchSkillsPublic } = useSkillStore();
   const { tags: allTags, fetchTagsPublic } = useTagStore();
-
-  console.log("jobcategories", jobcategories);
 
   useEffect(() => {
     fetchJobexperiencePublic();
@@ -254,29 +255,29 @@ export default function Jobs() {
         !tags ||
         !benefits ||
         !skills ||
-        !applicationReceived ||
-        (isSalaryRange && (!minSalary || !maxSalary)) ||
-        (!isSalaryRange && !customSalary)
+        !applicationReceived
       ) {
         toast.error("Please fill all the fields");
         return;
       }
 
       setLoading(true);
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/jobs/create`,
         {
           method: "POST",
-          headers: { "Content-type": "application/json" },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            title,
             highlight,
             featured,
-            title,
-            isSalaryRange,
             deadline,
             totalVacancies,
             selectedCompany,
             selectedJobCategory,
+            isSalaryRange,
+            salary_mode: isSalaryRange ? "range" : "custom",
             selectedCountry,
             selectedState,
             selectedCity,
@@ -290,7 +291,7 @@ export default function Jobs() {
             jobRole,
             jobType,
             tags,
-            benefits,
+            benefits: benefits.join(", "), // Convert list to comma-separated string
             skills,
             applicationReceived,
             description,
@@ -299,10 +300,12 @@ export default function Jobs() {
       );
 
       const data = await response.json();
+
       if (!response.ok) {
-        toast.error(data.err);
+        toast.error(data.error || "Something went wrong");
       } else {
-        toast.success(data.success);
+        toast.success("Job created successfully!");
+        resetForm();
       }
     } catch (error) {
       console.error(error);
@@ -310,6 +313,35 @@ export default function Jobs() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Form resetleme fonksiyonu
+  const resetForm = () => {
+    setTitle("");
+    setDeadline("");
+    setTotalVacancies("");
+    setSelectedCompany("");
+    setSelectedJobCategory("");
+    setSelectedCountry("");
+    setSelectedState("");
+    setSelectedCity("");
+    setAddress("");
+    setIsSalaryRange(true);
+    setMinSalary("");
+    setMaxSalary("");
+    setCustomSalary("");
+    setSelectedSalaryType("");
+    setExperience("");
+    setJobRole("");
+    setEducation("");
+    setJobType("");
+    setTags([]);
+    setBenefits([]);
+    setSkills([]);
+    setApplicationReceived("");
+    setHighlight(false);
+    setFeatured(false);
+    setDescription("");
   };
 
   useEffect(() => {
@@ -392,7 +424,7 @@ export default function Jobs() {
                         >
                           <option value="">Select Company</option>
                           {allcompany.map((company) => (
-                            <option key={company._id} value={company._id}>
+                            <option key={company.id} value={company.id}>
                               {company.name}
                             </option>
                           ))}
@@ -890,7 +922,7 @@ export default function Jobs() {
                     <div className="col-md-12">
                       <div className="form-group">
                         <label>Description</label>
-                        <ReactQuill
+                        <ReactQuillEditor
                           value={description}
                           onChange={handleDescriptionChange}
                           modules={{ toolbar: true }}
