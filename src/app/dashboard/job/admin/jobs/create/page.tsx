@@ -21,7 +21,7 @@ import dynamic from "next/dynamic";
 
 const { Option } = Select;
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 const ben = [
   "Job",
