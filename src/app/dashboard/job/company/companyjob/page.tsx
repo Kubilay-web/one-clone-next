@@ -1,59 +1,63 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { useSession } from "@/app/(main)/SessionProvider";
-import Link from "next/link";
-import Head from "next/head";
-export default function Candidate() {
-  const { user } = useSession();
-  const [profileComplete, setProfileComplete] = useState(false);
-  const [applied, setApplied] = useState("");
+import { useRouter } from "next/navigation";
 
-  const [saved, setSaved] = useState("");
+export default function Company() {
   const [jobs, setJobs] = useState([]);
-
+  const router = useRouter();
   useEffect(() => {
-    fetchJobs();
-    checkProfileCompletion();
+    fetchData();
   }, []);
 
-  const checkProfileCompletion = async () => {
+  const fetchData = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/candidate/dash`,
-        {
-          method: "GET",
-        },
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/company/jobs/create`,
       );
-
       const data = await response.json();
-
-      if (response.ok) {
-        console.log("xffffxx", data);
-        setProfileComplete(data.profileComplete);
-        setApplied(data.appliedjob);
-        setSaved(data.jobbookmark);
+      if (!response.ok) {
+        toast.error(data.err);
+      } else {
+        setJobs(data);
       }
     } catch (error) {
-      console.error("Error checking profile completion:", error);
+      console.log(error);
+
+      toast.error("an error occurred while fetching");
     }
   };
 
-  const fetchJobs = async () => {
+  const handleEdit = (id) => {
+    router.push(`/dashboard/job/company/jobdetails/?id=${id}`);
+  };
+
+  const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/candidate/myjob`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/company/jobs/create/${id}`,
+        {
+          method: "DELETE",
+        },
       );
-      const data = await response.json();
 
       if (!response.ok) {
         toast.error(data.err);
-      }
+      } else {
+        toast.success("job deleted");
 
-      setJobs(data);
-    } catch (err) {
-      console.log(err);
+        fetchData();
+      }
+    } catch (error) {
+      toast.error(error);
+      console.log(error);
     }
+  };
+
+  const handleApplication = (id) => {
+    // Handle application action
+    toast.success(`Apply for job with ID: ${id}`);
   };
 
   useEffect(() => {
@@ -64,52 +68,9 @@ export default function Candidate() {
   }, []);
 
   return (
-    <>
+    <main>
       <div className="container">
-        <div className="row">
-          <div className="col">
-            <p className="lead">Candidate Dashboard</p>
-            <hr />
-            {profileComplete ? (
-              <p>Profile is complete {user?.username}</p>
-            ) : (
-              <p>
-                Please complete your profile {user?.username}
-                <Link
-                  className="nav-link mt-2"
-                  href="/dashboard/candidate/my-profile"
-                >
-                  🌀 Edit Profile
-                </Link>
-              </p>
-            )}
-            <hr /> <hr />
-            <div className="container">
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="card mb-4">
-                    <div className="card-body">
-                      <h5 className="card-title">Appllied Jobs</h5>
-                      <p className="card-text">{applied}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="card mb-4">
-                    <div className="card-body">
-                      <h5 className="card-title">saved jobs</h5>
-                      <p className="card-text">{saved}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr />
-      <p className="text-center">Recent Applied Jobs</p>
-      <div className="container">
+        {JSON.stringify({ jobs }, null, 4)}
         <div className="row d-flex justify-content-center align-items-center h-auto">
           <div className="col bg-light p-5 shadow">
             <div style={{ overflowX: "auto" }}>
@@ -125,7 +86,7 @@ export default function Candidate() {
                         borderBottom: "1px solid #ddd",
                       }}
                     >
-                      Company
+                      Picture
                     </th>
                     <th
                       style={{
@@ -136,7 +97,7 @@ export default function Candidate() {
                         borderBottom: "1px solid #ddd",
                       }}
                     >
-                      salary
+                      Title
                     </th>
                     <th
                       style={{
@@ -147,7 +108,7 @@ export default function Candidate() {
                         borderBottom: "1px solid #ddd",
                       }}
                     >
-                      date{" "}
+                      Category Name
                     </th>
                     <th
                       style={{
@@ -158,9 +119,30 @@ export default function Candidate() {
                         borderBottom: "1px solid #ddd",
                       }}
                     >
-                      status
+                      Deadline
                     </th>
-
+                    <th
+                      style={{
+                        padding: "12px 15px",
+                        backgroundColor: "#f2f2f2",
+                        fontWeight: "bold",
+                        textAlign: "left",
+                        borderBottom: "1px solid #ddd",
+                      }}
+                    >
+                      Status
+                    </th>
+                    <th
+                      style={{
+                        padding: "12px 15px",
+                        backgroundColor: "#f2f2f2",
+                        fontWeight: "bold",
+                        textAlign: "left",
+                        borderBottom: "1px solid #ddd",
+                      }}
+                    >
+                      Applications
+                    </th>
                     <th
                       style={{
                         padding: "12px 15px",
@@ -187,7 +169,7 @@ export default function Candidate() {
                           }}
                         >
                           <img
-                            src={job.job_id.company_id.logo.secure_url}
+                            src={job?.company.logoSecureUrl}
                             style={{
                               height: "50px",
                               width: "50px",
@@ -195,10 +177,8 @@ export default function Candidate() {
                             }}
                           />
                           <br />
-
-                          {job.job_id.company_id.name}
+                          {job?.companyId.name}
                         </td>
-
                         <td
                           style={{
                             padding: "12px 15px",
@@ -206,22 +186,8 @@ export default function Candidate() {
                             textAlign: "left",
                           }}
                         >
-                          ${" "}
-                          {job.job_id.salary_mode === "range"
-                            ? `${job.job_id.min_salary} - ${job.job_id.max_salary}`
-                            : job.job_id.custom_salary}
+                          {job.title}
                         </td>
-
-                        <td
-                          style={{
-                            padding: "1px 10px",
-                            borderBottom: "1px solid #ddd",
-                            textAlign: "left",
-                          }}
-                        >
-                          {new Date(job.createdAt).toLocaleDateString()}
-                        </td>
-
                         <td
                           style={{
                             padding: "12px 15px",
@@ -229,7 +195,25 @@ export default function Candidate() {
                             textAlign: "left",
                           }}
                         >
-                          {job.job_id.status === "pending" ? (
+                          {job.job_category.name}
+                        </td>
+                        <td
+                          style={{
+                            padding: "12px 15px",
+                            borderBottom: "1px solid #ddd",
+                            textAlign: "left",
+                          }}
+                        >
+                          {new Date(job.deadline).toLocaleDateString()}
+                        </td>
+                        <td
+                          style={{
+                            padding: "12px 15px",
+                            borderBottom: "1px solid #ddd",
+                            textAlign: "left",
+                          }}
+                        >
+                          {job.status === "pending" ? (
                             <span
                               style={{
                                 display: "inline-block",
@@ -264,7 +248,16 @@ export default function Candidate() {
                             textAlign: "left",
                           }}
                         >
-                          <Link
+                          {job?.jobcount} applications
+                        </td>
+                        <td
+                          style={{
+                            padding: "12px 15px",
+                            borderBottom: "1px solid #ddd",
+                            textAlign: "left",
+                          }}
+                        >
+                          <button
                             style={{
                               marginRight: "8px",
                               backgroundColor: "#007bff",
@@ -273,10 +266,35 @@ export default function Candidate() {
                               padding: "8px 16px",
                               borderRadius: "4px",
                             }}
-                            href={`/company/${job?.job_id?.company_id?.slug}`}
+                            onClick={() => handleEdit(job?.id)}
                           >
-                            View
-                          </Link>
+                            Edit
+                          </button>
+                          <button
+                            style={{
+                              backgroundColor: "#dc3545",
+                              color: "#fff",
+                              border: "none",
+                              padding: "8px 16px",
+                              borderRadius: "4px",
+                            }}
+                            onClick={() => handleDelete(job?.id)}
+                          >
+                            Delete
+                          </button>
+                          <button
+                            style={{
+                              marginLeft: "8px",
+                              backgroundColor: "#007bff",
+                              color: "#fff",
+                              border: "none",
+                              padding: "8px 16px",
+                              borderRadius: "4px",
+                            }}
+                            onClick={() => handleApplication(job?.id)}
+                          >
+                            Application
+                          </button>
                         </td>
                       </tr>
                     );
@@ -287,6 +305,6 @@ export default function Candidate() {
           </div>
         </div>
       </div>
-    </>
+    </main>
   );
 }

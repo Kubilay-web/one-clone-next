@@ -1202,6 +1202,8 @@ model Company {
   Jobs Jobs[]
 
   Benfits Benfits[]
+
+  UserPlan UserPlan[]
 }
 
 
@@ -1354,6 +1356,46 @@ model Jobskill {
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+
+
+model Plan {
+  id               String   @id @default(cuid()) @map("_id")
+  leble            String     @map("label") 
+  price            Float
+  joblimit         Int        @map("job_limit")
+  featuredjoblimit Int        @map("featured_job_limit")
+  highlightjoblimit Int       @map("highlight_job_limit")
+  recommended      Boolean    @default(false)
+  frontendshow     Boolean    @default(false) @map("frontend_show")
+  profileverify    Boolean    @default(false) @map("profile_verify")
+  home             Boolean    @default(false)
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+
+  userPlans UserPlan[]
+
+  @@map("plans")
+}
+
+
+
+model UserPlan {
+  id                 String  @id @default(cuid()) @map("_id")
+  companyId         String   @map("company_id")
+  planId            String   @map("plan_id")
+  jobLimit          Int      @map("job_limit") @default(0)
+  featuredJobLimit  Int      @map("featured_job_limit") @default(0)
+  highlightJobLimit Int      @map("highlight_job_limit") @default(0)
+  profileVerify     Int      @map("profile_verify") @default(0)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id])
+  plan    Plan    @relation(fields: [planId], references: [id])
+
+  @@map("userplans")
 }
 
 

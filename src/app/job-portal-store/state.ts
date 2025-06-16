@@ -22,7 +22,7 @@ interface StateStore {
   setStatename: (name: string) => void;
   setSelectedCountryId: (id: string) => void;
   setUpdatingState: (state: State | null) => void;
-
+  setStates: (name: string) => void;
   fetchStates: () => Promise<void>;
   fetchStatesPublic: () => Promise<void>;
   createState: () => Promise<void>;

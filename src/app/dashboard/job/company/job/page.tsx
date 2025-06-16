@@ -261,7 +261,7 @@ export default function Jobs() {
       setLoading(true);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/jobs/create`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/company/jobs/create`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

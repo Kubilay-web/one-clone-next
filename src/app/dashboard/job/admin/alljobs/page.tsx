@@ -2,355 +2,292 @@
 
 import { useState, useEffect } from "react";
 import { Switch } from "antd";
-
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
+interface Job {
+  id: string;
+  title: string;
+  slug: string;
+  vacancies: string;
+  min_salary: number;
+  max_salary: number;
+  custom_salary: number;
+  deadline?: string;
+  description?: string;
+  status: "pending" | "active" | "inactive";
+  apply_on: "app" | "email" | "custom_url";
+  apply_email?: string;
+  apply_url?: string;
+  featured: boolean;
+  highlight: boolean;
+  featured_until?: string;
+  highlight_until?: string;
+  jobcount: number;
+  total_views: number;
+  address?: string;
+  salary_mode: "range" | "custom";
+  createdAt: string;
+  updatedAt: string;
+  company?: {
+    id: string;
+    name: string;
+    logoSecureUrl?: string;
+  };
+  job_category?: {
+    id: string;
+    name: string;
+  };
+  job_role?: {
+    id: string;
+    name: string;
+  };
+  job_experience?: {
+    id: string;
+    name: string;
+  };
+  education?: {
+    id: string;
+    name: string;
+  };
+  job_type?: {
+    id: string;
+    name: string;
+  };
+  salary_type?: {
+    id: string;
+    name: string;
+  };
+  city?: {
+    id: string;
+    name: string;
+  };
+  state?: {
+    id: string;
+    name: string;
+  };
+  country?: {
+    id: string;
+    name: string;
+  };
+}
+
 export default function Alljobs() {
   const router = useRouter();
-
-  const [switchStates, setSwitchStates] = useState({});
-  const [jobs, setJobs] = useState([]);
+  const [switchStates, setSwitchStates] = useState<Record<string, boolean>>({});
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchData();
-  }, []);
-  const fetchData = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/jobs/create`,
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        toast.error(data.err);
-      } else {
-        setJobs(data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const handleDelete = async (job) => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/jobs/create/${job}`,
-        {
-          method: "DELETE",
-        },
-      );
-      if (!response.ok) {
-        toast.error(data.err);
-      } else {
-        fetchData();
-        toast.success("job deleted");
-      }
-    } catch (error) {}
-  };
-
-  const handleEdit = (job) => {
-    router.push(`/dashboard/admin/jobdetails/?id=${job}`);
-  };
-
-  const handleSwitchChange = async (value, jobId) => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/status`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-
-          body: JSON.stringify({ value, jobId }),
-        },
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        toast.error(data.err);
-      }
-
-      setSwitchStates((p) => ({
-        ...p,
-        [jobId]: value,
-      }));
-
-      fetchData();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
     import("bootstrap/dist/css/bootstrap.min.css");
     import(
       "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
     );
   }, []);
 
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/jobs/create`,
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch jobs");
+      }
+
+      const data = await response.json();
+      setJobs(data);
+
+      // Initialize switch states
+      const initialSwitchStates = data.reduce(
+        (acc: Record<string, boolean>, job: Job) => {
+          acc[job.id] = job.status === "active";
+          return acc;
+        },
+        {},
+      );
+      setSwitchStates(initialSwitchStates);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to fetch jobs",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (jobId: string) => {
+    if (!confirm("Are you sure you want to delete this job?")) return;
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/jobs/create/${jobId}`,
+        { method: "DELETE" },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete job");
+      }
+
+      toast.success("Job deleted successfully");
+      fetchData();
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete job",
+      );
+    }
+  };
+
+  const handleEdit = (jobId: string) => {
+    router.push(`/dashboard/job/jobdetails/?id=${jobId}`);
+  };
+
+  const handleSwitchChange = async (checked: boolean, jobId: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/status`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ value: checked, jobId }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update job status");
+      }
+
+      setSwitchStates((prev) => ({ ...prev, [jobId]: checked }));
+      toast.success(
+        `Job ${checked ? "activated" : "deactivated"} successfully`,
+      );
+    } catch (error) {
+      console.error("Error updating job status:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update job status",
+      );
+      // Revert switch state on error
+      setSwitchStates((prev) => ({ ...prev, [jobId]: !checked }));
+    }
+  };
+
+  const getStatusBadge = (status: string, deadline?: string) => {
+    if (status === "pending") {
+      return <span className="badge bg-warning text-dark">Pending</span>;
+    }
+
+    const isActive = deadline ? new Date(deadline) > new Date() : false;
+    return (
+      <span className={`badge ${isActive ? "bg-success" : "bg-danger"}`}>
+        {isActive ? "Active" : "Expired"}
+      </span>
+    );
+  };
+
+  const formatSalary = (job: Job) => {
+    if (job.salary_mode === "range") {
+      return `$${job.min_salary} - $${job.max_salary}`;
+    }
+    return `$${job.custom_salary}`;
+  };
+
+  if (loading) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: "50vh" }}
+      >
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <main>
+    <main className="py-4">
       <div className="container">
-        <div className="row d-flex justify-content-center align-items-center h-auto">
-          <div className="col p-5 shadow">
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
+        <div className="row d-flex justify-content-center">
+          <div className="col-lg-12 rounded bg-white p-4 shadow">
+            <div className="table-responsive">
+              <table className="table-hover table">
+                <thead className="table-light">
                   <tr>
-                    {" "}
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      Picture
-                    </th>
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      Title
-                    </th>
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      Category Name
-                    </th>
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      Deadline
-                    </th>
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      Status
-                    </th>
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      Salary
-                    </th>
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      Approve
-                    </th>
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      Actions
-                    </th>
+                    <th>Picture</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                    <th>Salary</th>
+                    <th>Approve</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {jobs &&
-                    jobs.map((job, index) => {
-                      const isActive = new Date(job.deadline) > new Date();
-                      return (
-                        <tr key={index} style={{ cursor: "pointer" }}>
-                          <td
-                            style={{
-                              padding: "12px 15px",
-                              borderBottom: "1px solid #ddd",
-                              textAlign: "left",
-                            }}
-                          >
+                  {jobs.length > 0 ? (
+                    jobs.map((job) => (
+                      <tr key={job.id}>
+                        <td>
+                          {job.company?.logoSecureUrl && (
                             <img
-                              src={job?.company?.logoSecureUrl}
+                              src={job.company.logoSecureUrl}
+                              alt={job.company.name}
+                              className="rounded-circle me-2"
                               style={{
-                                height: "50px",
                                 width: "50px",
-                                borderRadius: "50%",
+                                height: "50px",
+                                objectFit: "cover",
                               }}
                             />
-                            <br />
-
-                            {job?.company?.name}
-                          </td>
-
-                          <td
-                            style={{
-                              padding: "12px 15px",
-                              borderBottom: "1px solid #ddd",
-                              textAlign: "left",
-                            }}
-                          >
-                            {job?.title}
-                          </td>
-                          <td
-                            style={{
-                              padding: "12px 15px",
-                              borderBottom: "1px solid #ddd",
-                              textAlign: "left",
-                            }}
-                          >
-                            {job?.job_category?.name}
-                          </td>
-                          <td
-                            style={{
-                              padding: "12px 15px",
-                              borderBottom: "1px solid #ddd",
-                              textAlign: "left",
-                            }}
-                          >
-                            {new Date(job.deadline).toLocaleDateString()}
-                          </td>
-
-                          <td
-                            style={{
-                              padding: "12px 15px",
-                              borderBottom: "1px solid #ddd",
-                              textAlign: "left",
-                            }}
-                          >
-                            {job?.status === "pending" ? (
-                              <span
-                                style={{
-                                  display: "inline-block",
-                                  padding: "4px 8px",
-                                  borderRadius: "4px",
-                                  backgroundColor: "#ffc107",
-                                  color: "#212529",
-                                }}
-                              >
-                                pending
-                              </span>
-                            ) : (
-                              <span
-                                style={{
-                                  display: "inline-block",
-                                  padding: "4px 8px",
-                                  borderRadius: "4px",
-                                  backgroundColor: isActive
-                                    ? "#4caf50"
-                                    : "#f44336",
-                                  color: "#fff",
-                                }}
-                              >
-                                {isActive ? "Active" : "Expired"}
-                              </span>
-                            )}
-                          </td>
-
-                          <td
-                            style={{
-                              padding: "12px 15px",
-                              borderBottom: "1px solid #ddd",
-                              textAlign: "left",
-                            }}
-                          >
-                            ${" "}
-                            {job?.salary_mode === "range"
-                              ? `${job?.min_salary} - ${job?.max_salary}`
-                              : job?.custom_salary}
-                          </td>
-
-                          <td
-                            style={{
-                              padding: "12px 15px",
-                              borderBottom: "1px solid #ddd",
-                              textAlign: "left",
-                            }}
-                          >
-                            <div style={{ padding: "1px" }}>
-                              <Switch
-                                defaultChecked={
-                                  job?.status == "active" ? true : false
-                                }
-                                checked={switchStates[job?._id]}
-                                onChange={(value) =>
-                                  handleSwitchChange(value, job?._id)
-                                }
-                              />
-                              {/* <p>{switchStates[job?._id] ? 'On' : 'Off'}</p> */}
-                              {/* <p>{switchStates[job._id] ? '' : ''}</p> */}
-                            </div>
-                          </td>
-
-                          <td
-                            style={{
-                              padding: "10px 10px",
-                              borderBottom: "1px solid #ddd",
-                              textAlign: "left",
-                            }}
-                          >
+                          )}
+                          {job.company?.name || "N/A"}
+                        </td>
+                        <td>{job.title}</td>
+                        <td>{job.job_category?.name || "N/A"}</td>
+                        <td>
+                          {job.deadline
+                            ? new Date(job.deadline).toLocaleDateString()
+                            : "N/A"}
+                        </td>
+                        <td>{getStatusBadge(job.status, job.deadline)}</td>
+                        <td>{formatSalary(job)}</td>
+                        <td>
+                          <Switch
+                            checked={switchStates[job.id] || false}
+                            onChange={(checked) =>
+                              handleSwitchChange(checked, job.id)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <div className="d-flex gap-2">
                             <button
-                              style={{
-                                marginRight: "8px",
-                                backgroundColor: "#007bff",
-                                color: "#fff",
-                                border: "none",
-                                padding: "8px 16px",
-                                borderRadius: "4px",
-                              }}
-                              onClick={() => handleEdit(job?._id)}
+                              className="btn btn-primary btn-sm"
+                              onClick={() => handleEdit(job.id)}
                             >
                               Edit
                             </button>
                             <button
-                              style={{
-                                margin: "2px",
-                                backgroundColor: "#dc3545",
-                                color: "#fff",
-                                border: "none",
-                                padding: "8px 16px",
-                                borderRadius: "4px",
-                              }}
-                              onClick={() => handleDelete(job?._id)}
+                              className="btn btn-danger btn-sm"
+                              onClick={() => handleDelete(job.id)}
                             >
                               Delete
                             </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={8} className="py-4 text-center">
+                        No jobs found
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

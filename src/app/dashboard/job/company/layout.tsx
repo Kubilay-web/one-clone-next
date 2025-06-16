@@ -2,6 +2,7 @@ import { validateRequest } from "@/auth";
 import CompanyNav from "@/components/jobportal/nav/company/CompanyNav";
 import TopNav from "@/components/jobportal/nav/TopNav";
 import { redirect } from "next/navigation";
+import { Toaster } from "react-hot-toast";
 
 export default async function Layout({
   children,
@@ -16,7 +17,7 @@ export default async function Layout({
     <div>
       <TopNav />
       <CompanyNav />
-
+      <Toaster position="top-center" />
       {children}
     </div>
   );
