@@ -59,6 +59,7 @@ model User {
   @@map("users")
 
   Company Company[]
+  Candidate Candidate[]
 }
 
 
@@ -485,8 +486,7 @@ model Country{
   createdAt DateTime @default(now()) // CreatedAt zamanını otomatik olarak ayarlıyoruz
   updatedAt DateTime @updatedAt // UpdatedAt otomatik olarak güncelleniyor
 
-  Company Company[]
-
+ 
 }
 
 
@@ -1006,6 +1006,8 @@ model CountryJob {
 
   @@map("countries")
   Jobs Jobs[]
+  Candidate Candidate[]
+  Company Company[]
 }
 
 model State {
@@ -1020,6 +1022,7 @@ model State {
   @@map("states")
   Company Company[]
   Jobs Jobs[]
+  Candidate Candidate[]
 }
 
 
@@ -1036,6 +1039,7 @@ model City {
   @@map("cities") 
   Company Company[]
   Jobs Jobs[]
+  Candidate Candidate[]
 }
 
 
@@ -1194,7 +1198,7 @@ model Company {
   teamType          Team?     @relation(fields: [teamTypeId], references: [id])
   city              City?     @relation(fields: [cityId], references: [id])
   state             State?    @relation(fields: [stateId], references: [id])
-  country           Country?  @relation(fields: [countryId], references: [id])
+  country           CountryJob?  @relation(fields: [countryId], references: [id])
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -1397,6 +1401,101 @@ model UserPlan {
 
   @@map("userplans")
 }
+
+
+
+enum Gender {
+  male
+  female
+}
+
+enum MaritalStatus {
+  married
+  single
+}
+
+enum Status {
+  available
+  not_available
+}
+
+
+
+model Candidate {
+  id                 String  @id @default(cuid()) @map("_id")
+  user               User?    @relation(fields: [userId], references: [id])
+  userId             String? @unique 
+
+  professionIds      String[]
+
+  experience_lable   String?
+
+  skill_id           String[]
+
+  image_public_id    String?
+  image_secure_url   String?
+
+  title              String?
+  full_name          String?
+  slug               String?
+  email              String?
+  phone_one          String?
+  phone_two          String?
+  birth_date         DateTime?
+  website            String?
+  cv                 String?
+  bio                String?
+
+  gender             Gender?
+  marital_status     MaritalStatus?
+  address            String?
+
+  city               City?    @relation(fields: [cityId], references: [id])
+  cityId             String?  
+
+  state              State?   @relation(fields: [stateId], references: [id])
+  stateId            String?  
+
+  country            CountryJob? @relation(fields: [countryId], references: [id])
+  countryId          String?  
+
+  status             Status?
+  profile_completion Boolean  @default(false)
+  visibility         Boolean  @default(false)
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  CandidateSkill CandidateSkill[]
+
+  CandidateLanguage CandidateLanguage[]
+}
+
+
+
+model CandidateSkill {
+  id                 String  @id @default(cuid()) @map("_id")
+  candidateId String   
+  skillIds    String[] 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+}
+
+
+model CandidateLanguage {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  candidateId  String   
+  langIds      String[] 
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  candidate    Candidate @relation(fields: [candidateId], references: [id])
+}
+
+
+
 
 
 

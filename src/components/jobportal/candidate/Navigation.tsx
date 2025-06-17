@@ -3,8 +3,8 @@
 import Link from "next/link";
 
 import { useEffect, useState } from "react";
-// import Basic from "./Basic.tsx";
-// import Profile from "./Profile";
+import Basic from "@/components/jobportal/candidate/Basic";
+import Profile from "./Profile";
 
 // import AccountSettings from "./AccountSettings";
 
@@ -84,7 +84,7 @@ export default function Navigation() {
           role="tabpanel"
           aria-labelledby="nav-home-tab"
         >
-          {/* <Basic /> */}
+          <Basic />
         </div>
 
         <div
@@ -93,7 +93,7 @@ export default function Navigation() {
           role="tabpanel"
           aria-labelledby="nav-profile-tab"
         >
-          {/* <Profile /> */}
+          <Profile />
         </div>
 
         <div

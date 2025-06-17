@@ -1,5 +1,5 @@
 "use client";
-// import Navigation from "@/components/candidate/Navigation";
+import Navigation from "@/components/jobportal/candidate/Navigation";
 import { useEffect } from "react";
 export default function Profile() {
   useEffect(() => {
@@ -13,9 +13,9 @@ export default function Profile() {
     <div className="container">
       <div className="row">
         <div className="col">
-          <p className="lead">profiles</p>
+          <p className="lead">Profiles</p>
           <hr />
-          {/* <Navigation /> */}
+          <Navigation />
         </div>
       </div>
     </div>
