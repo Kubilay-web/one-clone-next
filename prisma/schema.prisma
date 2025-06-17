@@ -1469,6 +1469,10 @@ model Candidate {
   CandidateSkill CandidateSkill[]
 
   CandidateLanguage CandidateLanguage[]
+
+  Experience Experience[]
+
+  JobEducation JobEducation[]
 }
 
 
@@ -1492,6 +1496,38 @@ model CandidateLanguage {
   updatedAt    DateTime @updatedAt
 
   candidate    Candidate @relation(fields: [candidateId], references: [id])
+}
+
+
+model Experience {
+  id                 String  @id @default(cuid()) @map("_id")
+  candidate_id      String    
+  candidate         Candidate @relation(fields: [candidate_id], references: [id])
+  company           String
+  department        String
+  designation       String
+  start             DateTime?
+  end               DateTime?
+  responsibilities  String
+  currently_working Boolean?   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+
+
+model JobEducation {
+  id                 String  @id @default(cuid()) @map("_id")
+  candidate   Candidate  @relation(fields: [candidate_id], references: [id])
+  candidate_id String
+
+  level       String
+  degree      String
+  year        String? 
+  notes       String
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 

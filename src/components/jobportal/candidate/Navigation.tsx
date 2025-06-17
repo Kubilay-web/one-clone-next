@@ -8,7 +8,7 @@ import Profile from "./Profile";
 
 // import AccountSettings from "./AccountSettings";
 
-// import ExperienceEdu from "./ExperienceEdu";
+import ExperienceEdu from "./ExperienceEdu";
 
 export default function Navigation() {
   const [activeTab, setActiveTab] = useState("nav-home");
@@ -102,7 +102,7 @@ export default function Navigation() {
           role="tabpanel"
           aria-labelledby="nav-contact-tab"
         >
-          {/* <ExperienceEdu /> */}
+          <ExperienceEdu />
         </div>
 
         <div
