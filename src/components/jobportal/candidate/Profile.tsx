@@ -122,6 +122,13 @@ export default function Profile() {
     p.name.toLowerCase().includes(searchKeyward.toLowerCase()),
   );
 
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
+
   return (
     <main>
       <div className="container">

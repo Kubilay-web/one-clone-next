@@ -1,13 +1,10 @@
-// components/Navigation.js
 "use client";
 import Link from "next/link";
 
 import { useEffect, useState } from "react";
 import Basic from "@/components/jobportal/candidate/Basic";
 import Profile from "./Profile";
-
-// import AccountSettings from "./AccountSettings";
-
+import AccountSettings from "./AccountSettings";
 import ExperienceEdu from "./ExperienceEdu";
 
 export default function Navigation() {
@@ -111,7 +108,7 @@ export default function Navigation() {
           role="tabpanel"
           aria-labelledby="nav-contact-tab"
         >
-          {/* <AccountSettings /> */}
+          <AccountSettings />
         </div>
       </div>
     </div>

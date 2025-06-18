@@ -5,7 +5,7 @@ import { validateRequest } from "@/auth";
 export async function GET() {
   const { user } = await validateRequest();
 
-  if (!user?.email) {
+  if (!user) {
     return NextResponse.json({ err: "Unauthorized" }, { status: 401 });
   }
 
@@ -25,24 +25,24 @@ export async function GET() {
     });
 
     if (!candidate) {
-      return NextResponse.json({ err: false }); // profil tamamlanmamış gibi davran
+      return NextResponse.json({ err: false });
     }
 
     // Başvuru ve kaydedilen iş sayılarını al
-    const appliedjob = await db.applyjob.count({
-      where: { candidate_id: candidate.id },
-    });
+    // const appliedjob = await db.applyjob.count({
+    //   where: { candidate_id: candidate.id },
+    // });
 
-    const jobbookmark = await db.jobbookmark.count({
-      where: { candidate_id: candidate.id },
-    });
+    // const jobbookmark = await db.jobbookmark.count({
+    //   where: { candidate_id: candidate.id },
+    // });
 
     // Profil tam mı?
     const profileComplete = Object.values(candidate).every(
       (field) => field !== undefined && field !== "",
     );
 
-    return NextResponse.json({ profileComplete, jobbookmark, appliedjob });
+    return NextResponse.json({ profileComplete });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ err: err.message }, { status: 500 });
