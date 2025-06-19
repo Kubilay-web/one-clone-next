@@ -8,6 +8,7 @@ import "slick-carousel/slick/slick-theme.css";
 
 import NewsLetter from "@/components/jobportal/home/NewsLetter";
 import Footer from "@/components/jobportal/home/Footer";
+import TopNav from "@/components/jobportal/home/TopNav";
 
 export default async function Layout({
   children,

@@ -1208,6 +1208,10 @@ model Company {
   Benfits Benfits[]
 
   UserPlan UserPlan[]
+
+  OrderJob OrderJob[]
+
+  Userplan Userplan[]
 }
 
 
@@ -1381,6 +1385,8 @@ model Plan {
   userPlans UserPlan[]
 
   @@map("plans")
+  OrderJob OrderJob[]
+  Userplan Userplan[]
 }
 
 
@@ -1547,6 +1553,54 @@ model SiteSettings {
  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+
+enum PaymentStatusJob {
+  paid
+  unpaid
+}
+
+
+model OrderJob {
+ id                 String  @id @default(cuid()) @map("_id")
+  company_id       String
+  plan_id          String
+
+  package_name     String
+  transaction_id   String
+  order_id         String
+  payment_provider String
+  amount           String
+  paid_in_currency String
+  default_amount   String
+  payment_status   PaymentStatusJob?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  company          Company  @relation(fields: [company_id], references: [id])
+  plan             Plan     @relation(fields: [plan_id], references: [id])
+}
+
+
+
+model Userplan {
+ id                 String  @id @default(cuid()) @map("_id")
+  company_id           String
+  plan_id              String
+
+  job_limit            Int
+  featured_job_limit   Int
+  highlight_job_limit  Int
+  profile_verify       Int      @default(0)
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  company              Company  @relation(fields: [company_id], references: [id])
+  plan                 Plan     @relation(fields: [plan_id], references: [id])
+}
+
 
 
 

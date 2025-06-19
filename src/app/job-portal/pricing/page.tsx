@@ -32,7 +32,7 @@ export default function Register() {
   };
 
   const redirectToCheckout = (id) => {
-    router.push(`/checkout/?id=${id}`);
+    router.push(`/job-portal/checkout/?id=${id}`);
   };
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function Register() {
                 <div className="spacer">&nbsp;</div>
                 <div className="row">
                   {price.map((item) => (
-                    <div className="col-md-4" key={item._id}>
+                    <div className="col-md-4" key={item.id}>
                       <div className="pricing-table">
                         <div className="pricing-table-title">
                           <strong>
@@ -122,7 +122,7 @@ export default function Register() {
                           </ul>
                           <div className="pricing-table-button">
                             <button
-                              onClick={() => redirectToCheckout(item._id)}
+                              onClick={() => redirectToCheckout(item.id)}
                               className="btn btn-primary mr-2"
                             >
                               <span>Buy plan</span>

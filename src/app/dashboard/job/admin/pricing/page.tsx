@@ -144,7 +144,7 @@ export default function Register() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/plan/${editedItem._id}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/plan/${editedItem.id}`,
         {
           method: "PUT",
           headers: {
@@ -173,6 +173,13 @@ export default function Register() {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    import("bootstrap/dist/css/bootstrap.min.css");
+    import(
+      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+    );
+  }, []);
 
   return (
     <main>
@@ -298,11 +305,11 @@ export default function Register() {
 
             {/* Price list */}
             <section id="pricing" className="mt-5 bg-white">
-              <h2 className="mb-4 text-center">PRICING</h2>
+              <h2 className="mb-4 pt-3 text-center">PRICING</h2>
 
               <div className="row">
                 {listprice.map((item) => (
-                  <div className="col-md-4 mb-4" key={item._id}>
+                  <div className="col-md-4 mb-4 ml-2" key={item.id}>
                     <div className="pricing-table rounded border p-3">
                       <div className="pricing-table-title mb-3">
                         {item.recommended && (
@@ -360,7 +367,7 @@ export default function Register() {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(item._id)}
+                          onClick={() => handleDelete(item.id)}
                           className="btn btn-danger"
                         >
                           Delete
