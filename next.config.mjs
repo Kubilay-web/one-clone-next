@@ -4,6 +4,7 @@ const nextConfig = {
     staleTimes: {
       dynamic: 30,
     },
+    esmExternals: "loose",
   },
   serverExternalPackages: ["@node-rs/argon2"],
   images: {

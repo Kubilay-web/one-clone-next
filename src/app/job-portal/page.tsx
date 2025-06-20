@@ -6,6 +6,7 @@ import LearnMore from "@/components/jobportal/home/LearnMore";
 import CounterSection from "@/components/jobportal/home/CounterSection";
 import TopRecruiters from "@/components/jobportal/home/TopRecruiters";
 import PricingPlan from "@/components/jobportal/home/PricingPlan";
+import Pricing from "@/app/job-portal/pricing/page";
 import JobLoc from "@/components/jobportal/home/JobLoc";
 import ClientSaid from "@/components/jobportal/home/ClientSaid";
 import NewsItem from "@/components/jobportal/home/NewsItem";
@@ -22,7 +23,8 @@ export default function page() {
       <LearnMore />
       <CounterSection />
       <TopRecruiters />
-      <PricingPlan />
+      <Pricing />
+      {/* <PricingPlan /> */}
       <JobLoc />
       <ClientSaid />
       <NewsItem />

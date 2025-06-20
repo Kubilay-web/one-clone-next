@@ -1,77 +1,100 @@
+// app/api/company/paypalpayment/[id]/route.ts
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
-const paypal = require("@paypal/checkout-server-sdk");
 
-// PayPal environment configuration
-let clientId = process.env.PAYPAL_CLIENT_ID;
-let clientSecret = process.env.PAYPAL_CLIENT_SECRET;
-
-// Sandbox environment (for production, use LiveEnvironment)
-let environment = new paypal.core.SandboxEnvironment(clientId, clientSecret);
-let client = new paypal.core.PayPalHttpClient(environment);
-
-// Create a function to handle the PayPal order request
-const createOrder = async (plan) => {
-  // Construct a request object and set desired parameters
-  let request = new paypal.orders.OrdersCreateRequest();
-  request.requestBody({
-    intent: "CAPTURE",
-    purchase_units: [
-      {
-        reference_id: plan.id,
-        amount: {
-          currency_code: "USD",
-          value: plan.price.toString(), // PayPal expects value as a string
-        },
-      },
-    ],
-    application_context: {
-      return_url: "http://localhost:3000/dashboard/company/success",
-      cancel_url: "http://localhost:3000/dashboard/company/cancel",
-    },
-  });
-
-  // Execute the PayPal order creation request and return the approval URL
+export async function POST(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
   try {
-    const response = await client.execute(request);
-    console.log("PayPal Response =>", response); // Log the full response to debug
+    const { id } = params;
 
-    // Check if response.result and response.result.links are defined
-    if (
-      response.result &&
-      Array.isArray(response.result.links) &&
-      response.result.links.length > 1
-    ) {
-      console.log("PayPal Order =>", response.result.links);
-      return response.result.links[1].href; // Approval URL is usually at index 1
-    } else {
-      throw new Error("PayPal response does not contain valid links.");
-    }
-  } catch (err) {
-    console.log("Error creating PayPal order =>", err);
-    throw new Error(err.message);
-  }
-};
-
-// Handle the POST request in the Next.js API route
-export async function POST(req, context) {
-  try {
-    // Fetch the plan from the database using Prisma
+    // 1. Get the plan from database
     const plan = await db.plan.findUnique({
-      where: { id: context.params.id },
+      where: { id },
     });
 
     if (!plan) {
-      return NextResponse.json({ error: "Plan not found" });
+      return NextResponse.json({ error: "Plan not found" }, { status: 404 });
     }
 
-    // Create PayPal order
-    const approvalUrl = await createOrder(plan);
+    // 2. Get PayPal access token
+    const auth = Buffer.from(
+      `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`,
+    ).toString("base64");
 
-    // Return the approval URL to the client
-    return NextResponse.json({ id: approvalUrl });
-  } catch (err) {
-    console.log("Error =>", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    const tokenResponse = await fetch(
+      `${process.env.PAYPAL_ENVIRONMENT === "production" ? "https://api.paypal.com" : "https://api-m.sandbox.paypal.com"}/v1/oauth2/token`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${auth}`,
+        },
+        body: "grant_type=client_credentials",
+      },
+    );
+
+    const tokenData = await tokenResponse.json();
+    if (!tokenData.access_token) {
+      throw new Error("Failed to get PayPal access token");
+    }
+
+    // 3. Create PayPal order
+    const orderResponse = await fetch(
+      `${process.env.PAYPAL_ENVIRONMENT === "production" ? "https://api.paypal.com" : "https://api-m.sandbox.paypal.com"}/v2/checkout/orders`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokenData.access_token}`,
+          Prefer: "return=representation",
+        },
+        body: JSON.stringify({
+          intent: "CAPTURE",
+          purchase_units: [
+            {
+              reference_id: plan.id,
+              description: `Subscription to ${plan.leble} plan`,
+              amount: {
+                currency_code: "USD",
+                value: plan.price.toString(),
+              },
+            },
+          ],
+          application_context: {
+            return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/job-portal/paypal/success?planId=${plan.id}`,
+            cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/job-portal/paypal/cancel`,
+            brand_name: "Your Job Portal",
+            user_action: "PAY_NOW",
+          },
+        }),
+      },
+    );
+
+    const orderData = await orderResponse.json();
+    const approvalLink = orderData.links.find(
+      (link: any) => link.rel === "approve",
+    )?.href;
+
+    if (!approvalLink) {
+      throw new Error("No approval link found in PayPal response");
+    }
+
+    return NextResponse.json({
+      success: true,
+      approvalUrl: approvalLink,
+      paypalOrderId: orderData.id,
+    });
+  } catch (error: any) {
+    console.error("PayPal payment error:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message || "Payment processing failed",
+        ...(process.env.NODE_ENV === "development" && { stack: error.stack }),
+      },
+      { status: 500 },
+    );
   }
 }

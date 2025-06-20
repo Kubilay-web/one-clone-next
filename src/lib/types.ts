@@ -39,7 +39,7 @@ import {
   OrderItem,
 } from "@prisma/client";
 import countries from "@/data/countries.json";
-import { getOrder } from "@/queries/order";
+import { getOrder, getOrderJob } from "@/queries/order";
 import {
   getUserOrders,
   getUserPayments,
@@ -499,6 +499,8 @@ export enum ProductStatus {
 }
 
 export type OrderFulltType = Prisma.PromiseReturnType<typeof getOrder>;
+
+export type OrderFullJobType = Prisma.PromiseReturnType<typeof getOrderJob>;
 
 export enum PaymentStatus {
   Pending = "Pending",

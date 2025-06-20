@@ -177,6 +177,7 @@ export default function CheckoutPage({ searchParams }) {
 
   const handlePaypal = async () => {
     try {
+      setLoading(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/company/paypalpayment/${id}`,
         {
@@ -187,12 +188,17 @@ export default function CheckoutPage({ searchParams }) {
       const data = await response.json();
 
       if (!response.ok) {
-        alert("error");
+        toast.error(data.error || "Payment failed");
+      } else if (data.approvalUrl) {
+        window.location.href = data.approvalUrl;
       } else {
-        router.push(data.url);
+        toast.error("No approval URL received");
       }
     } catch (err) {
-      console.log(err);
+      console.error("PayPal error:", err);
+      toast.error("Payment processing failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -235,6 +241,7 @@ export default function CheckoutPage({ searchParams }) {
               {/* Item 1 */}
               <div className="item mt-3">
                 <h6 className="text-dark">choose payment getway</h6>
+
                 <div className="payment-options">
                   {paystatus?.settings?.paypalStatus == "true" ? (
                     <button className="m-4" onClick={() => handlePaypal()}>

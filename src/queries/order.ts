@@ -167,3 +167,31 @@ export const updateOrderItemStatus = async (
 
   return updatedProduct.status;
 };
+
+export const getOrderJob = async (orderId: string) => {
+  // Retrieve current user
+  const { user } = await validateRequest();
+
+  // Check if user is authenticated
+  if (!user) throw new Error("Unauthenticated.");
+
+  // Get order details with company and plan information
+  const order = await db.orderJob.findUnique({
+    where: {
+      order_id: orderId,
+      company: {
+        userId: user.id, // This assumes Company has a userId field
+      },
+    },
+    include: {
+      company: true, // Include full company details
+      plan: true, // Include full plan details
+    },
+  });
+
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  return order;
+};

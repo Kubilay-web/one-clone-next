@@ -6,11 +6,17 @@ const PaymentSuccess = ({ searchParams }) => {
   const token = searchParams.token;
   const PayerID = searchParams.PayerID;
 
+  const [isSuccessHandled, setIsSuccessHandled] = useState(false);
+
   useEffect(() => {
     handlesuccess();
-  }, []);
+  }, [searchParams]);
 
   const handlesuccess = async () => {
+    if (isSuccessHandled) return; // Eğer işlem zaten yapıldıysa, tekrar yapma
+
+    setIsSuccessHandled(true); // İşlem yapıldığı bilgisini set et
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/company/success`,
@@ -61,9 +67,9 @@ const PaymentSuccess = ({ searchParams }) => {
       <div className="row justify-content-center">
         <div className="col-12 col-md-8 text-center">
           <div style={animatedBoxStyle}>
-            <h1 className="display-4">Payment Successful!</h1>
+            <h1 className="display-4">Ödeme Başarılı!</h1>
             <p className="lead">
-              Thank you for your payment. Your transaction was successful.
+              Ödemeniz başarılı bir şekilde alınmıştır. Teşekkür ederiz.
             </p>
             <div style={checkmarkStyle}>✔</div>
           </div>

@@ -1558,6 +1558,7 @@ model SiteSettings {
 enum PaymentStatusJob {
   paid
   unpaid
+  pending
 }
 
 

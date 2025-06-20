@@ -10,12 +10,15 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@ag-media/react-pdf-table": "^1.0.0",
+    "@david.kucsai/react-pdf-table": "^0.4.1",
     "@elastic/elasticsearch": "^9.0.1",
     "@emotion/react": "^11.14.0",
     "@hookform/resolvers": "^3.9.0",
     "@locaop/icon-picker": "^0.4.1",
     "@lucia-auth/adapter-prisma": "^4.0.1",
     "@paypal/checkout-server-sdk": "^1.0.3",
+    "@paypal/paypal-js": "^8.2.0",
     "@paypal/paypal-server-sdk": "^1.1.0",
     "@paypal/react-paypal-js": "^8.8.3",
     "@prisma/client": "^5.16.1",
