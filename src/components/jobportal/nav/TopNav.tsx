@@ -32,7 +32,7 @@ export default function TopNav() {
           <Link className="nav-link" href="/companies">
             Companies
           </Link>
-          <Link className="nav-link" href="/candidates">
+          <Link className="nav-link" href="/job-portal/candidates">
             Candidates
           </Link>
           <Link className="nav-link" href="/jobs">

@@ -3,60 +3,58 @@ import db from "@/lib/db";
 import { validateRequest } from "@/auth";
 
 export async function GET() {
-  const { user: loggedInUser } = await validateRequest();
-
-  if (!loggedInUser) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
-    const user = await db.user.findUnique({
-      where: { email: loggedInUser.email },
+    const { user } = await validateRequest();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // 1. Kullanıcıyı email ile bul
+    const users = await db.user.findUnique({
+      where: { email: user.email },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Kullanıcı bulunamadı" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const company = await db.company.findFirst({
+    // 2. Şirketi userId üzerinden bul
+    const company = await db.company.findUnique({
       where: { userId: user.id },
     });
 
     if (!company) {
-      return NextResponse.json({
-        profileComplete: false,
-        message: "Şirket bulunamadı",
-      });
+      return NextResponse.json({ error: "Company not found" }, { status: 404 });
     }
 
-    const requiredFields = [
-      "industryTypeId",
-      "organizationTypeId",
-      "teamTypeId",
-      "name",
-      "slug",
-      "logoSecureUrl",
-      "bannerSecureUrl",
-      "bio",
-      "vision",
-      "address",
-      "cityId",
-      "stateId",
-      "countryId",
-    ];
-
-    const profileComplete = requiredFields.every(
-      (field) =>
-        company[field as keyof typeof company] !== null &&
-        company[field as keyof typeof company] !== "",
+    // 3. Şirket profili tam mı kontrol et
+    const profileComplete = Object.values(company).every(
+      (val) => val !== null && val !== "",
     );
 
-    return NextResponse.json({ profileComplete });
-  } catch (error: any) {
-    console.error("API Hatası:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // 4. Pending job sayısı
+    const pendingjob = await db.jobs.count({
+      where: {
+        companyId: company.id,
+        status: "pending",
+      },
+    });
+
+    // 5. Order sayısı
+    const orders = await db.orderJob.count({
+      where: {
+        company_id: company.id,
+      },
+    });
+
+    return NextResponse.json({
+      profileComplete,
+      pendingjob,
+      orders,
+    });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

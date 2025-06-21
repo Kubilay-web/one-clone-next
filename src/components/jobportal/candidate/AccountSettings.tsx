@@ -50,9 +50,9 @@ export default function Account() {
 
       const data = await response.json();
 
-      setSelectedCity(data?.city || "");
-      setSelectedCountry(data?.country || "");
-      setSelectedState(data?.state || "");
+      setSelectedCountry(data?.country?.id || "");
+      setSelectedState(data?.state?.id || "");
+      setSelectedCity(data?.city?.id || "");
       setAddress(data?.address || "");
       setPrimaryPhone(data?.phone_one || "");
       setSecondaryPhone(data?.phone_two || "");
@@ -66,6 +66,16 @@ export default function Account() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("Submitting:", {
+      country: selectedCountry,
+      state: selectedState,
+      city: selectedCity,
+      phone_one: primaryPhone,
+      phone_two: secondaryPhone,
+      address,
+      email,
+    });
+
     try {
       setLoadings(true);
 
@@ -77,12 +87,12 @@ export default function Account() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            country: selectedCountry,
-            state: selectedState,
-            city: selectedCity,
+            countryId: selectedCountry,
+            stateId: selectedState,
+            cityId: selectedCity,
             phone_one: primaryPhone,
             phone_two: secondaryPhone,
-            address: address,
+            address,
             email,
           }),
         },

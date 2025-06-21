@@ -93,23 +93,6 @@ export default function CompanyNav() {
         >
           Orders
         </Link>
-
-        <Link
-          className="nav-link"
-          style={{
-            color:
-              pathname === "/dashboard/job/company/orders" ? "white" : "black",
-            fontWeight:
-              pathname === "/dashboard/job/company/orders" ? "bold" : "normal",
-            backgroundColor:
-              pathname === "/dashboard/job/company/orders"
-                ? "green"
-                : "transparent",
-          }}
-          href="/dashboard/job/company/orders"
-        >
-          Orders
-        </Link>
       </nav>
     </>
   );
