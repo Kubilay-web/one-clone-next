@@ -12,49 +12,70 @@ export const generateOrderPDFBlob = async (
 ): Promise<Blob> => {
   if (!order) throw new Error("Order is required to generate the PDF.");
 
-  // Define the pdf styles
   const styles = StyleSheet.create({
     page: {
-      padding: 30,
+      paddingTop: 35,
+      paddingBottom: 65,
+      paddingHorizontal: 35,
+      backgroundColor: "green",
+      color: "white",
       fontSize: 12,
     },
-    section: {
-      marginBottom: 10,
-    },
     header: {
-      fontSize: 18,
-      marginBottom: 10,
+      fontSize: 12,
+      marginBottom: 20,
       textAlign: "center",
-      fontWeight: "bold",
+      color: "white",
     },
-    groupHeader: {
+    title: {
+      fontSize: 24,
+      textAlign: "center",
+      marginBottom: 10,
+    },
+    author: {
+      fontSize: 12,
+      textAlign: "center",
+      marginBottom: 40,
+    },
+    subtitle: {
+      fontSize: 18,
+      margin: 12,
+    },
+    text: {
+      margin: 12,
       fontSize: 14,
-      marginBottom: 5,
-      fontWeight: "bold",
+      textAlign: "justify",
+    },
+    footer: {
+      padding: "100px",
+      fontSize: 18,
+      marginBottom: 20,
+      textAlign: "center",
+      color: "white",
     },
     table: {
+      display: "table",
       width: "auto",
+      marginVertical: 10,
       borderStyle: "solid",
       borderWidth: 1,
-      borderColor: "#e4e4e4",
-      marginBottom: 20,
+      borderColor: "#fff",
     },
     tableRow: {
       flexDirection: "row",
     },
     tableCell: {
-      borderWidth: 1,
-      borderColor: "#e4e4e4",
       padding: 5,
+      borderStyle: "solid",
+      borderWidth: 1,
+      borderColor: "#fff",
       flexGrow: 1,
-      overflow: "hidden", // Ensures content doesn't spill over
+      fontSize: 10,
     },
-    productName: {
-      flexGrow: 2,
-      whiteSpace: "nowrap",
-      textOverflow: "ellipsis",
-      overflow: "hidden", // Truncate long names with ellipsis
-      maxWidth: "100%", // Ensures it doesn't overflow
+    groupHeader: {
+      fontSize: 14,
+      marginBottom: 5,
+      fontWeight: "bold",
     },
   });
 
@@ -62,21 +83,57 @@ export const generateOrderPDFBlob = async (
   const OrderInvoicePdf = () => (
     <Document>
       <Page style={styles.page}>
-        <Text style={styles.header}>Order Invoice</Text>
-        {/* Order Summary */}
-        <View style={styles.section}>
-          <Text>Order ID: {order.order_id}</Text>
-          <Text>
-            Order Date: {new Date(order.createdAt).toLocaleDateString()}
-          </Text>
-          <Text>Order Status: {order.package_name}</Text>
-          <Text>Payment Status: {order.payment_status}</Text>
+        <Text style={styles.header}>~ {new Date().toLocaleString()} ~</Text>
+        <Text style={styles.title}>Seller Jobx</Text>
+        <Text style={styles.author}>Phone: xxxxxxxxxxxx</Text>
+        <Text style={styles.subtitle}>Email: jobx@gmail.com</Text>
+        <Text style={styles.subtitle}>
+          Location: Silicon Valley,{"\n"}
+          Industrial region around the southern{"\n"}
+          shores of San Francisco Bay, California, U.S.
+        </Text>
+
+        <Text style={styles.header}>~ Order Summary ~</Text>
+        <Text style={styles.title}>Order Buyer Invoice</Text>
+
+        {/* Table Header */}
+        <View style={styles.table}>
+          <View style={styles.tableRow}>
+            <Text style={styles.tableCell}>Package Name</Text>
+            <Text style={styles.tableCell}>Payment Provider</Text>
+            <Text style={styles.tableCell}>Amount</Text>
+            <Text style={styles.tableCell}>Currency</Text>
+            <Text style={styles.tableCell}>Default Amount</Text>
+            <Text style={styles.tableCell}>Payment Status</Text>
+          </View>
+
+          {/* Table Rows */}
+
+          <View style={styles.tableRow}>
+            <Text style={styles.tableCell}>{order.package_name}</Text>
+            <Text style={styles.tableCell}>{order.payment_provider}</Text>
+            <Text style={styles.tableCell}>${order.amount}</Text>
+            <Text style={styles.tableCell}>{order.paid_in_currency}</Text>
+            <Text style={styles.tableCell}>${order.default_amount}</Text>
+            <Text style={styles.tableCell}>{order.payment_status}</Text>
+          </View>
         </View>
 
-        <View>
-          <Text>Order Subtotal: ${order.default_amount}</Text>
-          <Text>Order Total: ${order.amount}</Text>
-        </View>
+        {/* Individual Order Details */}
+
+        <Text style={styles.text}>
+          <Text>Date: {new Date(order.createdAt).toLocaleString()}</Text>
+          {"\n"}
+          <Text>Order ID: {order.order_id}</Text>
+          {"\n"}
+          <Text>Transaction ID: {order.transaction_id}</Text>
+          {"\n"}
+          <Text>Payment Status: {order.payment_status}</Text>
+          {"\n"}
+          <Text>Total Paid: ${order.amount}</Text>
+        </Text>
+
+        <Text style={styles.footer}>~ Thank you for shopping with us ~</Text>
       </Page>
     </Document>
   );

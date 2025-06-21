@@ -94,9 +94,9 @@ export default function CheckoutPage({ searchParams }: { searchParams: any }) {
           textAlign: "center",
         }}
       >
-        <Button variant="outline" onClick={handleDownload}>
+        <Button variant="outline" className="mb-4" onClick={handleDownload}>
           <Download className="me-2 w-4" />
-          Export
+          Download Invoice
         </Button>
 
         {/* {details.length > 0 ? (

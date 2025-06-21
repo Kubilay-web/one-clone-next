@@ -312,7 +312,7 @@ export default function CheckoutPage({ searchParams }) {
                               )}{" "}
                             </strong>
 
-                            <h5 className="pricing-title bg-info-hover text-white">
+                            <h5 className="pricing-title bg-info-hover">
                               {item.leble}
                             </h5>
                           </div>
