@@ -1,55 +1,52 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Skeleton } from "antd";
 import Filter from "@/components/jobportal/searchfilter/Filter";
 import Card from "@/components/jobportal/jobs/Card";
 import "./style.css";
 
-export const dynamic = "force-dynamic";
+export default function Jobs({ searchParams }) {
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-async function getJobs(searchParams) {
-  const searchQuery = new URLSearchParams({
-    minSalary: searchParams.minSalary || "",
-    maxSalary: searchParams.maxSalary || "",
-    job_category_id: searchParams.jobcatid || "",
-    country: searchParams.countryid || "",
-    state: searchParams.stateid || "",
-    city: searchParams.cityid || "",
-  });
+  // useEffect ile GET işlemi
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true);
 
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/searchjobs?${searchQuery}`,
-      { method: "GET" },
-    );
+      const query = new URLSearchParams({
+        minSalary: searchParams?.minSalary || "",
+        maxSalary: searchParams?.maxSalary || "",
+        job_category_id: searchParams?.jobcatid || "",
+        country: searchParams?.countryid || "",
+        state: searchParams?.stateid || "",
+        city: searchParams?.cityid || "",
+      });
 
-    if (!response.ok) {
-      throw new Error("Couldn't find jobs");
-    }
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/searchjobs?${query}`,
+          { method: "GET" },
+        );
 
-    const data = await response.json();
-    if (!Array.isArray(data)) {
-      throw new Error("No jobs returned");
-    }
+        const data = await res.json();
 
-    return data;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
+        if (Array.isArray(data)) {
+          setJobs(data);
+        } else {
+          setJobs([]);
+        }
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+        setJobs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-// eslint-disable-next-line @next/next/no-async-client-component
-export default async function Jobs({ searchParams }) {
-  const data = await getJobs(searchParams);
-
-  if (!data) {
-    return (
-      <div className="my-5 p-5 text-center">
-        <Skeleton active />
-      </div>
-    );
-  }
+    fetchJobs();
+  }, [searchParams]);
 
   return (
     <>
@@ -58,7 +55,7 @@ export default async function Jobs({ searchParams }) {
         className="position-relative w-100"
         style={{
           height: "30vh",
-          backgroundImage: 'url("/assets/images/jobprtal/dee.jpg")',
+          backgroundImage: 'url("/assets/images/jobportal/dee.jpg")',
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -83,9 +80,18 @@ export default async function Jobs({ searchParams }) {
           {/* Job Cards */}
           <div className="col-12 col-lg-9">
             <h3 className="mb-4">Job Search Results</h3>
-            {data.length > 0 ? (
+
+            {loading ? (
               <div className="row g-4">
-                {data.map((job, index) => (
+                {[...Array(4)].map((_, i) => (
+                  <div className="col-12 col-md-6" key={i}>
+                    <Skeleton active />
+                  </div>
+                ))}
+              </div>
+            ) : jobs.length > 0 ? (
+              <div className="row g-4">
+                {jobs.map((job, index) => (
                   <div className="col-12 col-md-6" key={index}>
                     <Card jobs={job} />
                   </div>
