@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import moment from "moment";
 import toast from "react-hot-toast";
@@ -86,107 +85,96 @@ export default function JobsCard({ jobs }) {
     router.push(`/job/?slug=${jobs?.slug}`);
   };
 
-  useEffect(() => {
-    import("bootstrap/dist/css/bootstrap.min.css");
-    import(
-      "bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
-    );
-  }, []);
-
   return (
-    <div className="card mb-4 rounded border-0 p-3 shadow-sm">
-      <div className="row g-3">
-        <div className="col-md-2 d-flex align-items-start justify-content-center">
-          <img
-            src={jobs?.company_id?.logo?.secure_url || "/default-logo.png"}
-            alt="Company Logo"
-            className="img-fluid rounded-circle border"
-            style={{ width: "60px", height: "60px", objectFit: "cover" }}
-          />
-        </div>
+    <div className="mb-6 flex flex-col gap-5 rounded-2xl bg-white p-5 shadow-md transition duration-300 hover:shadow-lg md:flex-row">
+      {/* Logo */}
+      <div className="flex-shrink-0">
+        <img
+          src={jobs?.company?.logoSecureUrl || "/default-logo.png"}
+          alt="Company Logo"
+          className="h-20 w-20 rounded-full border object-cover md:h-24 md:w-24"
+        />
+      </div>
 
-        <div className="col-md-8">
-          <Link
-            href={`/company/${jobs?.company_id?.slug}`}
-            className="text-decoration-none text-dark"
-          >
-            <h5 className="fw-bold mb-1">{jobs?.company_id?.name}</h5>
-          </Link>
-
-          <p className="mb-1 text-muted">
-            <FaMapMarkerAlt className="me-1" />
-            {jobs?.country?.name || "Unknown"}
-          </p>
-
-          <h6
-            className="fw-semibold mb-2 text-primary"
-            role="button"
+      {/* Job Info */}
+      <div className="flex-grow">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h5
             onClick={handleClick}
+            className="cursor-pointer text-xl font-semibold text-blue-600 hover:underline md:text-2xl"
           >
             {jobs?.title}
-          </h6>
-
-          <div className="d-flex mb-2 flex-wrap">
-            <span className="me-3 text-muted">
-              <strong>Type:</strong> {jobs?.job_type_id?.name}
-            </span>
-            <span className="me-3 text-muted">
-              <strong>Experience:</strong> {jobs?.jobexperienceid?.name}
-            </span>
-            <span className="me-3 text-muted">
-              <strong>Posted:</strong> {moment(jobs?.createdAt).fromNow()}
-            </span>
-          </div>
-
-          <div className="d-flex mt-2 flex-wrap gap-2">
-            {skills.flatMap((skillItem) =>
-              skillItem?.skill_id?.map((s) => (
-                <span
-                  key={s?.id}
-                  className="badge bg-success text-light rounded-pill"
-                >
-                  {s?.name}
-                </span>
-              )),
-            )}
-          </div>
-
-          <div className="text-dark mt-3">
-            <strong>Salary: </strong>
-            {jobs?.salary_mode === "custom" ? (
-              <>${jobs?.custom_salary} /hr</>
-            ) : (
-              <>
-                ${jobs?.min_salary} - ${jobs?.max_salary} /hr
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="col-md-2 d-flex flex-column justify-content-between align-items-end">
-          <div className="d-flex gap-2">
-            {jobs?.featured && (
-              <span className="badge bg-primary">Featured</span>
-            )}
-            {jobs?.highlight && (
-              <span className="badge bg-warning text-dark">Highlight</span>
-            )}
-          </div>
+          </h5>
 
           <button
-            className="btn btn-outline-primary btn-sm mt-3"
             onClick={isBookmarked ? handleUnbookmark : handleBookmark}
+            className="flex items-center gap-1 text-blue-500 transition hover:text-blue-700"
           >
-            {isBookmarked ? (
-              <>
-                <FaBookmark className="me-1" /> Unbookmark
-              </>
-            ) : (
-              <>
-                <FaRegBookmark className="me-1" /> Bookmark
-              </>
-            )}
+            {isBookmarked ? <FaBookmark /> : <FaRegBookmark />}
+            <span className="hidden sm:inline">
+              {isBookmarked ? "Unbookmark" : "Bookmark"}
+            </span>
           </button>
+        </div>
+
+        <div className="mt-1 text-gray-600">
+          <span className="font-medium">{jobs?.company_id?.name}</span> ·{" "}
+          <span className="inline-flex items-center gap-1">
+            <FaMapMarkerAlt className="text-green-500" />
+            {jobs?.country?.name || "Unknown"}
+          </span>
+        </div>
+
+        <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-500">
+          <span>
+            <strong>Type:</strong> {jobs?.job_type_id?.name}
+          </span>
+          <span>
+            <strong>Experience:</strong> {jobs?.jobexperienceid?.name}
+          </span>
+          <span>
+            <strong>Posted:</strong> {moment(jobs?.createdAt).fromNow()}
+          </span>
+        </div>
+
+        {/* Skills */}
+        <div className="mt-3 flex flex-wrap gap-2">
+          {skills.flatMap((skillItem) =>
+            skillItem?.skill_id?.map((s) => (
+              <span
+                key={s?.id}
+                className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700"
+              >
+                {s?.name}
+              </span>
+            )),
+          )}
+        </div>
+
+        {/* Salary */}
+        <div className="mt-4 font-semibold text-gray-800">
+          <span>💰 Salary: </span>
+          {jobs?.salary_mode === "custom" ? (
+            <>${jobs?.custom_salary} /hr</>
+          ) : (
+            <>
+              ${jobs?.min_salary} - ${jobs?.max_salary} /hr
+            </>
+          )}
+        </div>
+
+        {/* Badges */}
+        <div className="mt-3 flex flex-wrap gap-2">
+          {jobs?.featured && (
+            <span className="rounded bg-blue-100 px-2 py-1 text-xs text-blue-700">
+              Featured
+            </span>
+          )}
+          {jobs?.highlight && (
+            <span className="rounded bg-yellow-100 px-2 py-1 text-xs text-yellow-800">
+              Highlight
+            </span>
+          )}
         </div>
       </div>
     </div>

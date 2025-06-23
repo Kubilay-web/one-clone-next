@@ -6,25 +6,31 @@ import { useRouter } from "next/navigation";
 import { useCountryStore } from "@/app/job-portal-store/country";
 import { useCityStore } from "@/app/job-portal-store/city";
 import { useStateStore } from "@/app/job-portal-store/state";
-import { useSkillStore } from "@/app/job-portal-store/skill";
+import { useIndustryStore } from "@/app/job-portal-store/industry";
+import { useOrganizationStore } from "@/app/job-portal-store/organization";
 
 export default function Filter({ searchParams }) {
   const router = useRouter();
   const activeButton = "btn  btn-raised mx-1 rounded-pill";
   const button = "btn btn-raised mx-1 rounded-pill";
   console.log("searchParams", searchParams);
-  const pathname = "/job-portal/candidates";
-  const { countryid, stateid, cityid, skillid } = searchParams;
+  const pathname = "/job-portal/companies";
+  const { countryid, stateid, cityid, industryid, organizationid } =
+    searchParams;
 
   const { fetchCountriesPublic, countries } = useCountryStore();
 
   const { fetchStatesPublic, states } = useStateStore();
   const { fetchCitiesPublic, cities } = useCityStore();
-  const { fetchSkillsPublic, skills } = useSkillStore();
+  const { fetchIndustriesPublic, industries } = useIndustryStore();
+  const { fetchOrganizationsPublic, organizations } = useOrganizationStore();
 
+  console.log("ind", industries);
+  console.log("org", organizations);
   useEffect(() => {
     fetchCountriesPublic();
-    fetchSkillsPublic();
+    fetchIndustriesPublic();
+    fetchOrganizationsPublic();
     fetchStatesPublic();
     fetchCitiesPublic();
   }, []);
@@ -54,7 +60,7 @@ export default function Filter({ searchParams }) {
           fontWeight: "bold",
         }}
       >
-        Filter Candidate
+        Filter Companies
       </p>
       <div style={{ textAlign: "center", margin: "20px 0" }}>
         <Link
@@ -313,7 +319,7 @@ export default function Filter({ searchParams }) {
         })}
       </div>
 
-      {/* skill */}
+      {/* industry */}
 
       <div style={{ textAlign: "center", margin: "20px 0" }}>
         <p
@@ -338,25 +344,25 @@ export default function Filter({ searchParams }) {
             e.currentTarget.style.backgroundColor = "transparent";
           }}
         >
-          skill
+          Industry
         </p>
       </div>
 
       <div className="row d-flex align-items-center filter-scroll mx-1">
-        {skills?.map((s) => {
-          const isActive = skillid === s.id;
+        {industries?.map((i) => {
+          const isActive = industryid === i.id;
 
           const url = {
             pathname,
 
             query: {
               ...searchParams,
-              skillid: s?.id,
+              industryid: i?.id,
             },
           };
 
           return (
-            <div key={s.id}>
+            <div key={i.id}>
               <Link
                 href={url}
                 className={isActive ? activeButton : button}
@@ -374,12 +380,89 @@ export default function Filter({ searchParams }) {
                       }
                 }
               >
-                {s.name}
+                {i?.name}
               </Link>
 
               {isActive && (
                 <span
-                  onClick={() => handleRemoveFilter("skillid")}
+                  onClick={() => handleRemoveFilter(" industryid")}
+                  className="pointer"
+                >
+                  ❌
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* organization */}
+
+      <div style={{ textAlign: "center", margin: "20px 0" }}>
+        <p
+          style={{
+            color: "green",
+            padding: "10px 20px",
+            borderRadius: "4px",
+            fontSize: "24px",
+            marginTop: "1.5rem",
+            transition: "color 0.3s ease-in-out",
+            display: "inline-block",
+            border: "2px solid green",
+            width: "100%",
+            fontWeight: "bold",
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.color = "white";
+            e.currentTarget.style.backgroundColor = "green";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.color = "green";
+            e.currentTarget.style.backgroundColor = "transparent";
+          }}
+        >
+          Organization
+        </p>
+      </div>
+
+      <div className="row d-flex align-items-center filter-scroll mx-1">
+        {organizations?.map((o) => {
+          const isActive = organizationid === o.id;
+
+          const url = {
+            pathname,
+
+            query: {
+              ...searchParams,
+              organizationid: o?.id,
+            },
+          };
+
+          return (
+            <div key={o.id}>
+              <Link
+                href={url}
+                className={isActive ? activeButton : button}
+                style={
+                  isActive
+                    ? {
+                        color: "white",
+                        backgroundColor: "green",
+                        border: "1px solid green",
+                      }
+                    : {
+                        color: "green",
+                        backgroundColor: "transparent",
+                        border: "1px solid green",
+                      }
+                }
+              >
+                {o?.name}
+              </Link>
+
+              {isActive && (
+                <span
+                  onClick={() => handleRemoveFilter("organizationid")}
                   className="pointer"
                 >
                   ❌

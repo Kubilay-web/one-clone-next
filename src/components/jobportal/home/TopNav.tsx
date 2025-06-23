@@ -25,13 +25,13 @@ export default function TopNav() {
           Home
         </Link>
         <div className="d-flex align-items-center">
-          <Link className="nav-link" href="/companies">
+          <Link className="nav-link" href="/job-portal/companies">
             Companies
           </Link>
           <Link className="nav-link" href="/job-portal/candidates">
             Candidates
           </Link>
-          <Link className="nav-link" href="/jobs">
+          <Link className="nav-link" href="/job-portal/jobs">
             Search jobs
           </Link>
           <Link className="nav-link" href="/job-portal/pricing">

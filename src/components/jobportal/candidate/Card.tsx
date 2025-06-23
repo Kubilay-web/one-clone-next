@@ -28,7 +28,7 @@ export default function CandidateCard({ candidat }) {
       <div className="row">
         <div key={candidat.id} className="col-12 mb-4">
           <Link
-            href={`/candidate/${candidat.slug}`}
+            href={`/job-portal/candidate/${candidat.slug}`}
             style={{ textDecoration: "none" }}
           >
             <Card className="mb-4">

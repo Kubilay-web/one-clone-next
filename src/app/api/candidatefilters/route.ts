@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     }
     if (skill) {
       filters.skill_id = {
-        has: skill, // Prisma `String[]` filtrelemesi için `has` kullanılır
+        has: skill,
       };
     }
 

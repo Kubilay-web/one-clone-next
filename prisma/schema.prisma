@@ -1479,6 +1479,9 @@ model Candidate {
   Experience Experience[]
 
   JobEducation JobEducation[]
+
+
+  
 }
 
 
@@ -1601,6 +1604,12 @@ model Userplan {
   company              Company  @relation(fields: [company_id], references: [id])
   plan                 Plan     @relation(fields: [plan_id], references: [id])
 }
+
+
+
+
+
+
 
 
 
