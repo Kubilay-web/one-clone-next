@@ -1,4 +1,6 @@
+// app/api/candidate/my-jobs/route.ts
 import { NextResponse } from "next/server";
+
 import db from "@/lib/db"; // Prisma client
 import { validateRequest } from "@/auth";
 
@@ -9,15 +11,7 @@ export async function GET() {
   }
 
   try {
-    // Kullanıcıyı mail ile al
-    const users = await db.user.findUnique({
-      where: { email: user.email },
-    });
-    if (!users) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Candidate kaydı al
+    // Kullanıcının Candidate kaydını çek
     const candidate = await db.candidate.findUnique({
       where: { userId: user.id },
     });
@@ -28,15 +22,23 @@ export async function GET() {
       );
     }
 
-    // Başvurulan ve kaydedilen iş sayıları
-    const appliedjob = await db.applyjob.count({
+    // Başvurulan işler ve bookmarkları getir ve ilişkili job & company & country bilgileriyle populate et
+    const myJobs = await db.applyjob.findMany({
       where: { candidateId: candidate.id },
-    });
-    const jobbookmark = await db.jobbookmark.count({
-      where: { candidateId: candidate.id },
+      include: {
+        job: {
+          include: {
+            company: {
+              include: {
+                country: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    // Gerekli alanları kontrol et
+    // profileComplete hesaplaması
     const requiredFields = [
       "title",
       "full_name",
@@ -49,15 +51,13 @@ export async function GET() {
       "cityId",
       "stateId",
       "countryId",
-      // Gerekirse buraya dil, skill gibi alanlar eklenebilir
     ];
-
-    const profileComplete = requiredFields.every((field) => {
-      const v = candidate[field as keyof typeof candidate];
-      return v !== null && v !== "";
+    const profileComplete = requiredFields.every((key) => {
+      const val = (candidate as any)[key];
+      return val !== null && val !== "";
     });
 
-    return NextResponse.json({ profileComplete, jobbookmark, appliedjob });
+    return NextResponse.json({ profileComplete, data: myJobs });
   } catch (err: any) {
     console.error(err);
     return NextResponse.json({ error: err.message }, { status: 500 });

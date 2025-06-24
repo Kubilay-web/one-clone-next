@@ -1309,6 +1309,8 @@ model Jobs {
 
 
   Jobbookmark Jobbookmark[]
+
+  Applyjob Applyjob[]
 }
 
 
@@ -1486,6 +1488,8 @@ model Candidate {
   
 
   Jobbookmark Jobbookmark[]
+
+  Applyjob Applyjob[]
 }
 
 
@@ -1621,6 +1625,33 @@ model Jobbookmark {
 
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+}
+
+
+
+model Applyjob {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  candidate    Candidate @relation(fields: [candidateId], references: [id])
+  candidateId  String   
+  job          Jobs      @relation(fields: [jobId], references: [id])
+  jobId        String   
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+
+
+model Blog {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String   @db.String
+  slug        String   @db.String
+  description String   @db.String
+  image       String?  @db.String
+
+  createdAt   DateTime @default(now()) @map("createdAt")
+  updatedAt   DateTime @updatedAt @map("updatedAt")
+
+  @@map("blogs")
 }
 
 

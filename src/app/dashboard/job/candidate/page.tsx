@@ -3,42 +3,40 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useSession } from "@/app/(main)/SessionProvider";
 import Link from "next/link";
-import Head from "next/head";
+
 export default function Candidate() {
   const { user } = useSession();
   const [profileComplete, setProfileComplete] = useState(false);
-  const [applied, setApplied] = useState("");
-
-  const [saved, setSaved] = useState("");
-  const [jobs, setJobs] = useState([]);
+  const [applied, setApplied] = useState(0); // Başvurulan iş sayısı
+  const [saved, setSaved] = useState(0); // Kaydedilen iş sayısı
+  const [jobs, setJobs] = useState<any[]>([]); // İşlerin listesi
 
   useEffect(() => {
-    fetchJobs();
-    checkProfileCompletion();
+    checkProfileCompletion(); // Profilin tamamlanıp tamamlanmadığını kontrol et
+    fetchJobs(); // Başvuru yapılmış işlerin listesini al
   }, []);
 
+  // Profilin tamamlanıp tamamlanmadığını kontrol eden fonksiyon
   const checkProfileCompletion = async () => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/candidate/dash`,
-        {
-          method: "GET",
-        },
       );
-
       const data = await response.json();
 
       if (response.ok) {
-        console.log("xffffxx", data);
-        setProfileComplete(data.profileComplete);
-        setApplied(data.appliedjob);
-        setSaved(data.jobbookmark);
+        setProfileComplete(data.profileComplete); // Profil tamamlanmışsa, state'i güncelle
+        setApplied(data.appliedjob); // Başvurulan iş sayısını güncelle
+        setSaved(data.jobbookmark); // Kaydedilen iş sayısını güncelle
+      } else {
+        toast.error(data.error || "Failed to check profile completion");
       }
     } catch (error) {
       console.error("Error checking profile completion:", error);
     }
   };
 
+  // Başvuru yapılan işlerin listesini çekme fonksiyonu
   const fetchJobs = async () => {
     try {
       const response = await fetch(
@@ -46,13 +44,13 @@ export default function Candidate() {
       );
       const data = await response.json();
 
-      if (!response.ok) {
-        toast.error(data.err);
+      if (response.ok) {
+        setJobs(data.data || []);
+      } else {
+        toast.error(data.error || "Failed to fetch jobs");
       }
-
-      setJobs(data);
     } catch (err) {
-      console.log(err);
+      console.error("Error fetching jobs:", err);
     }
   };
 
@@ -71,10 +69,10 @@ export default function Candidate() {
             <p className="lead">Candidate Dashboard</p>
             <hr />
             {profileComplete ? (
-              <p>Profile is complete {user?.username}</p>
+              <p>Profile is complete, {user?.username}</p>
             ) : (
               <p>
-                Please complete your profile {user?.username}
+                Please complete your profile, {user?.username}
                 <Link
                   className="nav-link mt-2"
                   href="/dashboard/candidate/my-profile"
@@ -83,30 +81,32 @@ export default function Candidate() {
                 </Link>
               </p>
             )}
-            <hr /> <hr />
-            <div className="container">
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="card mb-4">
-                    <div className="card-body">
-                      <h5 className="card-title">Appllied Jobs</h5>
-                      <p className="card-text">{applied}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="card mb-4">
-                    <div className="card-body">
-                      <h5 className="card-title">saved jobs</h5>
-                      <p className="card-text">{saved}</p>
-                    </div>
-                  </div>
-                </div>
+            <hr />
+          </div>
+        </div>
+      </div>
+
+      <div className="container">
+        <div className="row">
+          <div className="col-md-6">
+            <div className="card mb-4">
+              <div className="card-body">
+                <h5 className="card-title">Applied Jobs</h5>
+                <p className="card-text">{applied} Jobs</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="card mb-4">
+              <div className="card-body">
+                <h5 className="card-title">Saved Jobs</h5>
+                <p className="card-text">{saved} Jobs</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <hr />
       <p className="text-center">Recent Applied Jobs</p>
       <div className="container">
@@ -116,132 +116,92 @@ export default function Candidate() {
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr>
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      Company
-                    </th>
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      salary
-                    </th>
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      date{" "}
-                    </th>
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      status
-                    </th>
-
-                    <th
-                      style={{
-                        padding: "12px 15px",
-                        backgroundColor: "#f2f2f2",
-                        fontWeight: "bold",
-                        textAlign: "left",
-                        borderBottom: "1px solid #ddd",
-                      }}
-                    >
-                      Actions
-                    </th>
+                    {["Company", "Salary", "Date", "Status", "Actions"].map(
+                      (head, i) => (
+                        <th
+                          key={i}
+                          style={{
+                            padding: "12px 15px",
+                            backgroundColor: "#f2f2f2",
+                            fontWeight: "bold",
+                            textAlign: "left",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          {head}
+                        </th>
+                      ),
+                    )}
                   </tr>
                 </thead>
                 <tbody>
-                  {jobs.map((job, index) => {
-                    const isActive = new Date(job.deadline) > new Date();
-                    return (
-                      <tr key={index} style={{ cursor: "pointer" }}>
-                        <td
-                          style={{
-                            padding: "12px 15px",
-                            borderBottom: "1px solid #ddd",
-                            textAlign: "left",
-                          }}
-                        >
-                          <img
-                            src={job.job_id.company_id.logo.secure_url}
+                  {jobs.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        style={{ textAlign: "center", padding: "20px" }}
+                      >
+                        No jobs applied yet.
+                      </td>
+                    </tr>
+                  ) : (
+                    jobs.map((jobEntry, index) => {
+                      const job = jobEntry.job;
+                      const company = job.company;
+                      const isActive = new Date(job.deadline) > new Date();
+
+                      return (
+                        <tr key={index} style={{ cursor: "pointer" }}>
+                          <td
                             style={{
-                              height: "50px",
-                              width: "50px",
-                              borderRadius: "50%",
+                              padding: "12px 15px",
+                              borderBottom: "1px solid #ddd",
+                              textAlign: "left",
                             }}
-                          />
-                          <br />
-
-                          {job.job_id.company_id.name}
-                        </td>
-
-                        <td
-                          style={{
-                            padding: "12px 15px",
-                            borderBottom: "1px solid #ddd",
-                            textAlign: "left",
-                          }}
-                        >
-                          ${" "}
-                          {job.job_id.salary_mode === "range"
-                            ? `${job.job_id.min_salary} - ${job.job_id.max_salary}`
-                            : job.job_id.custom_salary}
-                        </td>
-
-                        <td
-                          style={{
-                            padding: "1px 10px",
-                            borderBottom: "1px solid #ddd",
-                            textAlign: "left",
-                          }}
-                        >
-                          {new Date(job.createdAt).toLocaleDateString()}
-                        </td>
-
-                        <td
-                          style={{
-                            padding: "12px 15px",
-                            borderBottom: "1px solid #ddd",
-                            textAlign: "left",
-                          }}
-                        >
-                          {job.job_id.status === "pending" ? (
-                            <span
+                          >
+                            <img
+                              src={company.logoSecureUrl}
+                              alt="logo"
                               style={{
-                                display: "inline-block",
-                                padding: "4px 8px",
-                                borderRadius: "4px",
-                                backgroundColor: "#ffc107",
-                                color: "#212529",
+                                height: "50px",
+                                width: "50px",
+                                borderRadius: "50%",
+                                marginBottom: "5px",
                               }}
-                            >
-                              pending
-                            </span>
-                          ) : (
+                            />
+                            <br />
+                            {company.name}
+                          </td>
+
+                          <td
+                            style={{
+                              padding: "12px 15px",
+                              borderBottom: "1px solid #ddd",
+                              textAlign: "left",
+                            }}
+                          >
+                            {job.salary_mode === "range"
+                              ? `$${job.min_salary} - $${job.max_salary}`
+                              : `$${job.custom_salary}`}
+                          </td>
+
+                          <td
+                            style={{
+                              padding: "12px 15px",
+                              borderBottom: "1px solid #ddd",
+                              textAlign: "left",
+                            }}
+                          >
+                            {new Date(jobEntry.createdAt).toLocaleDateString()}
+                          </td>
+
+                          <td
+                            style={{
+                              padding: "12px 15px",
+                              borderBottom: "1px solid #ddd",
+                              textAlign: "left",
+                            }}
+                          >
                             <span
                               style={{
                                 display: "inline-block",
@@ -255,32 +215,32 @@ export default function Candidate() {
                             >
                               {isActive ? "Active" : "Expired"}
                             </span>
-                          )}
-                        </td>
-                        <td
-                          style={{
-                            padding: "12px 15px",
-                            borderBottom: "1px solid #ddd",
-                            textAlign: "left",
-                          }}
-                        >
-                          <Link
+                          </td>
+
+                          <td
                             style={{
-                              marginRight: "8px",
-                              backgroundColor: "#007bff",
-                              color: "#fff",
-                              border: "none",
-                              padding: "8px 16px",
-                              borderRadius: "4px",
+                              padding: "12px 15px",
+                              borderBottom: "1px solid #ddd",
+                              textAlign: "left",
                             }}
-                            href={`/company/${job?.job_id?.company_id?.slug}`}
                           >
-                            View
-                          </Link>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                            <Link
+                              href={`/job-portal/company/${company.slug}`}
+                              style={{
+                                backgroundColor: "#007bff",
+                                color: "#fff",
+                                padding: "8px 16px",
+                                borderRadius: "4px",
+                                textDecoration: "none",
+                              }}
+                            >
+                              View
+                            </Link>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>

@@ -81,7 +81,7 @@ export default function Job({ searchParams }) {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: job.id }),
+          body: JSON.stringify({ id: job.id }), // Burada fazladan parantez vardı
         },
       );
       const data = await res.json();

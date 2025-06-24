@@ -28,9 +28,29 @@ export async function GET() {
       return NextResponse.json({ error: "Company not found" }, { status: 404 });
     }
 
-    // 3. Şirket profili tam mı kontrol et
-    const profileComplete = Object.values(company).every(
-      (val) => val !== null && val !== "",
+    const requiredFields = [
+      "name",
+      "slug",
+      "bio",
+      "vision",
+      "logoSecureUrl",
+      "bannerSecureUrl",
+      "industryTypeId",
+      "organizationTypeId",
+      "teamTypeId",
+      "email",
+      "phone",
+      "establishmentDate",
+      "website",
+      "address",
+      "cityId",
+      "stateId",
+      "countryId",
+      "mapLink",
+    ];
+
+    const profileComplete = requiredFields.every(
+      (field) => company[field] !== null && company[field] !== "",
     );
 
     // 4. Pending job sayısı

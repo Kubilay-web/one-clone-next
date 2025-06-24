@@ -11,7 +11,7 @@ const Home = () => {
   }, []);
 
   const fetchBlogs = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/blog`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/blog`);
     const data = await res.json();
     setBlogs(data);
   };
@@ -29,9 +29,9 @@ const Home = () => {
       <div className="row justify-content-center">
         {blogs &&
           blogs.map((blog) => (
-            <div className="col-lg-4 col-md-6 col-sm-12 mb-4" key={blog._id}>
+            <div className="col-lg-4 col-md-6 col-sm-12 mb-4" key={blog.id}>
               <Link
-                href={`/blog/${blog._id}`}
+                href={`/job-portal/blog/${blog.id}`}
                 style={{ textDecoration: "none" }}
               >
                 <div
