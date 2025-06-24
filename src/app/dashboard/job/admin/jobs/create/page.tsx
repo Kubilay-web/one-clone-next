@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import ReactQuillEditor from "react-quill-new";
+import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
 import { Select } from "antd";
 import { DatePicker } from "antd";
@@ -19,6 +19,10 @@ import { useSalarytypeStore } from "@/app/job-portal-store/salarytype";
 import { useTagStore } from "@/app/job-portal-store/tag";
 
 const { Option } = Select;
+
+const ReactQuillEditor = dynamic(() => import("react-quill-new"), {
+  ssr: false,
+});
 
 const ben = [
   "Job",
