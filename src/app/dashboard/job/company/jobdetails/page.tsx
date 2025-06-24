@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import ReactQuillEditor from "react-quill-new";
 import "react-quill/dist/quill.snow.css";
 import { Select, DatePicker } from "antd";
 import moment from "moment";
@@ -17,8 +16,13 @@ import { useJobexperienceStore } from "@/app/job-portal-store/jobexperiences";
 import { useSalarytypeStore } from "@/app/job-portal-store/salarytype";
 import { useTagStore } from "@/app/job-portal-store/tag";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 
 const { Option } = Select;
+
+const ReactQuillEditor = dynamic(() => import("react-quill-new"), {
+  ssr: false,
+});
 
 const benefitsList = [
   "Job",
