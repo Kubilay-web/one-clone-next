@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import moment from "moment";
 import toast from "react-hot-toast";
+import { ToastContainer } from "react-toastify";
 import { FaMapMarkerAlt, FaBookmark, FaRegBookmark } from "react-icons/fa";
 
 export default function JobsCard({ jobs }) {
@@ -21,12 +22,16 @@ export default function JobsCard({ jobs }) {
 
   const fetchSkills = async () => {
     try {
-      const res = await fetch(`${process.env.API}/api/searchjobs/skills`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/searchjobs/skills`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        },
+      );
       const data = await res.json();
+      console.log("skills---->", data);
       if (res.ok) setSkills(data);
     } catch (err) {
       console.error(err);
@@ -35,10 +40,14 @@ export default function JobsCard({ jobs }) {
 
   const fetchBookmarks = async () => {
     try {
-      const res = await fetch(`${process.env.API}/api/bookmark`, {
-        method: "GET",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/bookmark`,
+        {
+          method: "GET",
+        },
+      );
       const data = await res.json();
+      console.log("data--->", data);
       if (res.ok) setJobBookmark(data);
     } catch (err) {
       console.error(err);
@@ -47,11 +56,14 @@ export default function JobsCard({ jobs }) {
 
   const handleBookmark = async () => {
     try {
-      const res = await fetch(`${process.env.API}/api/candidate/bookmark`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: jobs?.id }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/candidate/bookmark`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ids: jobs?.id }),
+        },
+      );
       const data = await res.json();
       if (res.ok) {
         toast.success("Bookmarked");
@@ -64,11 +76,14 @@ export default function JobsCard({ jobs }) {
 
   const handleUnbookmark = async () => {
     try {
-      const res = await fetch(`${process.env.API}/api/candidate/unbookmark`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: jobs?.id }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/candidate/unbookmark`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ids: jobs?.id }),
+        },
+      );
       const data = await res.json();
       if (res.ok) {
         toast.success("Removed from bookmarks");
@@ -79,10 +94,10 @@ export default function JobsCard({ jobs }) {
     }
   };
 
-  const isBookmarked = jobBookmark?.some((item) => item?.job_id === jobs?.id);
+  const isBookmarked = jobBookmark?.some((item) => item?.jobId === jobs?.id);
 
   const handleClick = () => {
-    router.push(`/job/?slug=${jobs?.slug}`);
+    router.push(`/job-portal/job/?slug=${jobs?.slug}`);
   };
 
   return (
@@ -127,10 +142,10 @@ export default function JobsCard({ jobs }) {
 
         <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-500">
           <span>
-            <strong>Type:</strong> {jobs?.job_type_id?.name}
+            <strong>Type:</strong> {jobs?.job_type?.name}
           </span>
           <span>
-            <strong>Experience:</strong> {jobs?.jobexperienceid?.name}
+            <strong>Experience:</strong> {jobs?.job_experience?.name}
           </span>
           <span>
             <strong>Posted:</strong> {moment(jobs?.createdAt).fromNow()}
@@ -139,16 +154,14 @@ export default function JobsCard({ jobs }) {
 
         {/* Skills */}
         <div className="mt-3 flex flex-wrap gap-2">
-          {skills.flatMap((skillItem) =>
-            skillItem?.skill_id?.map((s) => (
-              <span
-                key={s?.id}
-                className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700"
-              >
-                {s?.name}
-              </span>
-            )),
-          )}
+          {skills.map((item) => (
+            <span
+              key={item?.skill?.id}
+              className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700"
+            >
+              {item?.skill?.name}
+            </span>
+          ))}
         </div>
 
         {/* Salary */}

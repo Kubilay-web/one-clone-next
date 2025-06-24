@@ -10,7 +10,6 @@ export default function Jobs({ searchParams }) {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // useEffect ile GET işlemi
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);

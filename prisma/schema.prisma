@@ -1307,6 +1307,8 @@ model Jobs {
   Jobskill Jobskill[]
 
 
+
+  Jobbookmark Jobbookmark[]
 }
 
 
@@ -1482,6 +1484,8 @@ model Candidate {
 
 
   
+
+  Jobbookmark Jobbookmark[]
 }
 
 
@@ -1604,6 +1608,21 @@ model Userplan {
   company              Company  @relation(fields: [company_id], references: [id])
   plan                 Plan     @relation(fields: [plan_id], references: [id])
 }
+
+
+
+model Jobbookmark {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  candidate    Candidate @relation(fields: [candidateId], references: [id])
+  candidateId  String    
+
+  job          Jobs      @relation(fields: [jobId], references: [id])
+  jobId        String    
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
 
 
 
