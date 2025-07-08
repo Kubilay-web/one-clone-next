@@ -601,3 +601,78 @@ export const StoreShippingSchema = z.object({
     .int()
     .default(31),
 });
+
+export const AskQuestionSchema = z.object({
+  title: z
+    .string()
+    .min(5, { message: "Title is required." })
+    .max(100, { message: "Title cannot exceed 100 characters." }),
+
+  content: z.string().min(1, { message: "Body is required." }),
+  tags: z
+    .array(
+      z
+        .string()
+        .min(1, { message: "Tag is required." })
+        .max(30, { message: "Tag cannot exceed 30 characters." }),
+    )
+    .min(1, { message: "At least one tag is required." })
+    .max(3, { message: "Cannot add more than 3 tags." }),
+});
+
+export const updateUserSchema = z.object({
+  displayName: requiredString.optional(),
+  bio: z.string().max(1000).optional(),
+  location: z.string().max(100).optional(),
+  avatarUrl: z.string().url("Invalid avatar URL").optional(),
+  portfolio: z.string().url("Invalid portfolio URL").optional(),
+  image: z.string().url("Invalid image URL").optional(),
+});
+
+export const PaginatedSearchParamsSchema = z.object({
+  page: z.number().int().positive().default(1),
+  pageSize: z.number().int().positive().default(10),
+  query: z.string().optional(),
+  filter: z.string().optional(),
+  sort: z.string().optional(),
+});
+
+export const GetTagQuestionsSchema = PaginatedSearchParamsSchema.extend({
+  tagId: z.string().min(1, { message: "Tag ID is Required." }),
+});
+
+export const IncrementViewsSchema = z.object({
+  questionId: z.string().min(1, { message: "Question ID is required" }),
+});
+
+export const AnswerSchema = z.object({
+  content: z
+    .string()
+    .min(100, { message: "Answer has to have more then 100 characters" }),
+});
+
+export const AnswerServerSchema = AnswerSchema.extend({
+  content: z.string().min(20, "Cevap en az 20 karakter olmalıdır."),
+  questionId: z.string().min(1, { message: "Question ID is required" }),
+});
+
+export const GetAnswersSchema = PaginatedSearchParamsSchema.extend({
+  questionId: z.string().min(1, { message: "Question ID is required" }),
+});
+
+export const CreateVoteSchema = z.object({
+  targetId: z.string().min(1, { message: "Target ID is required" }),
+  targetType: z.enum(["question", "answer"], {
+    message: "Invalid target type",
+  }),
+  voteType: z.enum(["upvote", "downvote"], { message: "Invalid vote type" }),
+});
+
+export const UpdateVoteCountSchema = CreateVoteSchema.extend({
+  change: z.number().int().min(-1).max(1),
+});
+
+export const HasVotedSchema = CreateVoteSchema.pick({
+  targetId: true,
+  targetType: true,
+});

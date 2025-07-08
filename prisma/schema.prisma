@@ -29,6 +29,13 @@ model User {
   googleId              String?        @unique
   avatarUrl             String?
   bio                   String?
+
+  image                String?       
+  location             String?        
+  portfolio            String?       
+  reputation           Int?           @default(0)  
+
+
   role                  Role           @default(USER)
   rolejob               RoleJob        @default(CANDIDATE)
   sessions              Session[]      @relation("UserSessions")
@@ -60,6 +67,11 @@ model User {
 
   Company Company[]
   Candidate Candidate[]
+  QuestionForum QuestionForum[]
+  AnswerForum AnswerForum[]
+  VoteForum VoteForum[]
+  CollectionForum CollectionForum[]
+  Interaction InteractionForum[]
 }
 
 
@@ -1653,6 +1665,144 @@ model Blog {
 
   @@map("blogs")
 }
+
+
+//StackOverflow Models
+
+
+model QuestionForum {
+  id            String             @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  content       String
+  views         Int                @default(0)
+  answers       Int                @default(0)
+  upvotes       Int                @default(0)
+  downvotes     Int                @default(0)
+
+  UserId        String?
+  user          User?              @relation(fields: [UserId], references: [id])
+
+  tagQuestions  TagQuestionForum[]
+
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  AnswerForum     AnswerForum[]
+  CollectionForum CollectionForum[]
+}
+
+
+
+model TagQuestionForum {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+
+  tagId       String        @db.ObjectId
+  tag         TagForum      @relation(fields: [tagId], references: [id])
+
+  questionId  String        @db.ObjectId
+  question    QuestionForum @relation(fields: [questionId], references: [id])
+
+  createdAt   DateTime      @default(now())
+}
+
+
+
+
+
+model AnswerForum {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  content     String
+
+  UserId    String          
+  user      User            @relation(fields: [UserId], references: [id])
+
+  questionId  String          @db.ObjectId
+  question    QuestionForum   @relation(fields: [questionId], references: [id])
+
+  upvotes     Int             @default(0)
+  downvotes   Int             @default(0)
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model TagForum {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  name        String           @unique
+  tagQuestions TagQuestionForum[]
+
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+
+model VoteForum {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId    String          
+  user      User            @relation(fields: [userId], references: [id])
+
+  actionId    String          @db.ObjectId
+  actionType  ActionType
+  voteType    VoteType
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+enum ActionType {
+  question
+  answer
+}
+
+enum VoteType {
+  upvote
+  downvote
+}
+
+model CollectionForum {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+
+  authorId    String         
+  author      User            @relation(fields: [authorId], references: [id])
+
+  questionId  String          @db.ObjectId
+  question    QuestionForum   @relation(fields: [questionId], references: [id])
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model InteractionForum {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId      String          
+  user        User            @relation(fields: [userId], references: [id])
+
+  action      String
+
+  actionId    String          @db.ObjectId
+  actionType  ActionTypeInteraction
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+enum ActionTypeInteraction {
+  question
+  answer
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
