@@ -1,54 +1,49 @@
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
-import { HasVotedSchema } from "@/lib/validation";
 import { validateRequest } from "@/auth";
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
   try {
-    const body = await req.json();
+    const { user } = await validateRequest();
+    const userId = user?.id;
 
-    const { targetId, targetType } = HasVotedSchema.parse(body);
-
-    const user = await validateRequest();
-
-    if (!user) {
+    if (!userId) {
       return NextResponse.json(
-        { success: false, data: { hasUpvoted: false, hasDownvoted: false } },
-        { status: 200 },
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
       );
     }
 
-    // Kullanıcının oy verip vermediğini kontrol et
+    const { searchParams } = new URL(req.url);
+    const targetId = searchParams.get("targetId");
+    const targetType = searchParams.get("targetType");
+
+    if (!targetId || !targetType) {
+      return NextResponse.json(
+        { success: false, error: "Missing parameters" },
+        { status: 400 },
+      );
+    }
+
     const vote = await db.voteForum.findFirst({
       where: {
-        userId: user.id,
+        userId,
         actionId: targetId,
         actionType: targetType,
       },
     });
 
-    if (!vote) {
-      return NextResponse.json(
-        { success: false, data: { hasUpvoted: false, hasDownvoted: false } },
-        { status: 200 },
-      );
-    }
-
-    // Oy tipi (upvote, downvote) ile ilgili sonucu döndür
-    return NextResponse.json(
-      {
-        success: true,
-        data: {
-          hasUpvoted: vote.voteType === "upvote",
-          hasDownvoted: vote.voteType === "downvote",
-        },
+    return NextResponse.json({
+      success: true,
+      data: {
+        hasUpvoted: vote?.voteType === "upvote",
+        hasDownvoted: vote?.voteType === "downvote",
       },
-      { status: 200 },
-    );
+    });
   } catch (error) {
-    console.error("Error in hasVoted:", error);
+    console.error("HasVoted error:", error);
     return NextResponse.json(
-      { error: "Failed to check vote status" },
+      { success: false, error: "Server error" },
       { status: 500 },
     );
   }

@@ -7,6 +7,7 @@ import { formatNumbers, getTimeStamp } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import AllAnswers from "@/components/stackoverflow/answers/AllAnswers";
 import Votes from "@/components/stackoverflow/votes/Votes";
+import SaveQuestion from "@/components/stackoverflow/questions/SaveQuestion";
 
 interface RouteParams {
   params: {
@@ -41,10 +42,29 @@ interface Answer {
   };
 }
 
-const QuestionDetails = async ({ params }: RouteParams) => {
-  const { id } = params;
+const fetchHasVoted = async (id: string) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/forumuser/vote/hasvoted?targetId=${id}&targetType=question`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
 
-  // View sayısını artır
+    const data = await response.json();
+    return data.success
+      ? data.data
+      : { hasUpvoted: false, hasDownvoted: false };
+  } catch (error) {
+    console.error("Error fetching vote status:", error);
+    return { hasUpvoted: false, hasDownvoted: false };
+  }
+};
+
+const incrementViews = async (id: string) => {
   try {
     const incRes = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/forumuser/question/${id}`,
@@ -60,9 +80,9 @@ const QuestionDetails = async ({ params }: RouteParams) => {
   } catch (e) {
     console.warn("View increment error:", e);
   }
+};
 
-  // Soru verisini çek
-  let question: Question | null = null;
+const fetchQuestion = async (id: string) => {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/forumuser/question/${id}`,
@@ -71,25 +91,13 @@ const QuestionDetails = async ({ params }: RouteParams) => {
 
     if (!res.ok) throw new Error("Failed to fetch question");
 
-    question = await res.json();
+    return await res.json();
   } catch (error) {
-    return redirect("/404");
+    return null;
   }
+};
 
-  if (!question) return redirect("/404");
-
-  // Cevapları çek
-  let answers: Answer[] = [];
-
-  let answersResult: {
-    answers: Answer[];
-    isNext: boolean;
-    totalAnswers: number;
-  } | null = null;
-
-  let areAnswersLoaded = false;
-  let answersError: string | null = null;
-
+const fetchAnswers = async (id: string) => {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/forumuser/answer/${id}?page=1&pageSize=10&filter=latest`,
@@ -98,11 +106,25 @@ const QuestionDetails = async ({ params }: RouteParams) => {
 
     if (!res.ok) throw new Error("Failed to fetch answers");
 
-    answersResult = await res.json();
-    areAnswersLoaded = true;
+    return await res.json();
   } catch (error) {
-    console.warn("Answers fetch error:", error);
-    answersError = error.message || "Unknown error";
+    return { answers: [], isNext: false, totalAnswers: 0 }; // Hata durumunda boş dizi döner
+  }
+};
+
+const QuestionDetails = async ({ params }: RouteParams) => {
+  const { id } = params;
+
+  // Verileri sunucudan al
+  const [hasVoted, question, answersResult] = await Promise.all([
+    fetchHasVoted(id),
+    fetchQuestion(id),
+    fetchAnswers(id),
+  ]);
+
+  if (!question) {
+    // Soru bulunamazsa 404 sayfasına yönlendir
+    return redirect("/404");
   }
 
   const {
@@ -115,13 +137,16 @@ const QuestionDetails = async ({ params }: RouteParams) => {
     user,
   } = question;
 
+  // Sayfa görüntülendiğinde view sayısını artır
+  await incrementViews(id);
+
   return (
     <>
       <div className="flex-start w-full flex-col">
         <div className="flex w-full flex-col-reverse justify-between">
           {user ? (
             <p className="paragraph-semibold text-dark300_light700">
-              by user: {user.username}
+              By User: {user.username}
             </p>
           ) : (
             <p className="paragraph-semibold text-dark300_light700 text-red-500">
@@ -132,10 +157,12 @@ const QuestionDetails = async ({ params }: RouteParams) => {
           <div className="flex justify-end">
             <Votes
               upvotes={question.upvotes}
-              hasupVoted={true}
               downvotes={question.downvotes}
-              hasdownVoted={false}
+              targetType="question"
+              targetId={id}
             />
+
+            <SaveQuestion questionId={question.id} hasSaved={hasSaved} />
           </div>
         </div>
 
@@ -178,10 +205,10 @@ const QuestionDetails = async ({ params }: RouteParams) => {
 
       <section className="my-5">
         <AllAnswers
-          data={answersResult?.answers ?? []} // answers dizisi veya boş dizi
-          success={areAnswersLoaded && !!answersResult} // hem başarılı hem data var mı kontrolü
-          error={answersError} // hata varsa geçir
-          totalAnswers={answersResult?.totalAnswers ?? 0} // toplam cevap sayısı
+          data={answersResult.answers}
+          success={true} // başarı durumu
+          error={null} // hata durumu
+          totalAnswers={answersResult.totalAnswers}
         />
       </section>
 

@@ -1,11 +1,19 @@
-import React from "react";
+import React, { Suspense } from "react";
 import UserAvatar from "../UserAvatar";
 import { getTimeStamp, getTimeStamps } from "@/lib/utils";
 import Link from "next/link";
 import ROUTES from "@/constants/routes";
 import Preview from "../editor/Preview";
+import Votes from "../votes/Votes";
 
-const AnswerCard = ({ id, user, content, createdAt }: Answer) => {
+const AnswerCard = ({
+  id,
+  user,
+  content,
+  createdAt,
+  upvotes,
+  downvotes,
+}: Answer & { upvotes: number; downvotes: number }) => {
   return (
     <article className="light-border border-b py-10">
       <span id={JSON.stringify(id)} className="hash-span" />
@@ -33,7 +41,16 @@ const AnswerCard = ({ id, user, content, createdAt }: Answer) => {
           </Link>
         </div>
 
-        <div className="flex justify-end">Votes</div>
+        <div className="flex justify-end">
+          <Suspense>
+            <Votes
+              targetType="answer"
+              upvotes={upvotes}
+              downvotes={downvotes}
+              targetId={id}
+            />
+          </Suspense>
+        </div>
       </div>
 
       <Preview content={content} />

@@ -1739,7 +1739,7 @@ model TagForum {
 model VoteForum {
   id          String          @id @default(auto()) @map("_id") @db.ObjectId
 
-  userId    String          
+  userId    String     @map("userId")       
   user      User            @relation(fields: [userId], references: [id])
 
   actionId    String          @db.ObjectId
@@ -1763,8 +1763,8 @@ enum VoteType {
 model CollectionForum {
   id          String          @id @default(auto()) @map("_id") @db.ObjectId
 
-  authorId    String         
-  author      User            @relation(fields: [authorId], references: [id])
+  userId    String         
+  user      User            @relation(fields: [userId], references: [id])
 
   questionId  String          @db.ObjectId
   question    QuestionForum   @relation(fields: [questionId], references: [id])

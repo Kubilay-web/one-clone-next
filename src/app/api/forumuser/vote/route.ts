@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
 import { CreateVoteSchema } from "@/lib/validation";
-import { VoteType, ActionType } from "@prisma/client";
 import { validateRequest } from "@/auth";
+
+const MAX_RETRIES = 5;
 
 export async function POST(req: Request) {
   try {
@@ -10,63 +11,132 @@ export async function POST(req: Request) {
     const userId = user?.id;
 
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
+      );
     }
 
     const body = await req.json();
     const { targetId, targetType, voteType } = CreateVoteSchema.parse(body);
 
-    const isUpvote = voteType === "upvote";
+    let retries = 0;
+    let responseMessage = "Vote processed."; // varsayılan
 
-    // Kullanıcının daha önce aynı hedefe oy verip vermediğini kontrol et
-    const existingVote = await db.voteForum.findFirst({
-      where: {
-        userId: user.id,
-        actionId: targetId,
-        actionType: targetType as ActionType,
-      },
-    });
+    while (true) {
+      try {
+        await db.$transaction(async (tx) => {
+          const existingVote = await tx.voteForum.findFirst({
+            where: {
+              userId,
+              actionId: targetId,
+              actionType: targetType,
+            },
+          });
 
-    if (existingVote) {
-      return NextResponse.json(
-        { error: "You have already voted on this item." },
-        { status: 400 },
-      );
+          const updateTarget =
+            targetType === "question" ? tx.questionForum : tx.answerForum;
+
+          if (existingVote) {
+            if (existingVote.voteType === voteType) {
+              // Geri çekme
+              await tx.voteForum.delete({
+                where: { id: existingVote.id },
+              });
+
+              await updateTarget.update({
+                where: { id: targetId },
+                data: {
+                  [voteType === "upvote" ? "upvotes" : "downvotes"]: {
+                    decrement: 1,
+                  },
+                },
+              });
+
+              responseMessage = "Vote removed.";
+              return;
+            }
+
+            // Oy değişikliği
+            await tx.voteForum.update({
+              where: { id: existingVote.id },
+              data: { voteType },
+            });
+
+            await updateTarget.update({
+              where: { id: targetId },
+              data: {
+                [existingVote.voteType === "upvote" ? "upvotes" : "downvotes"]:
+                  {
+                    decrement: 1,
+                  },
+              },
+            });
+
+            await updateTarget.update({
+              where: { id: targetId },
+              data: {
+                [voteType === "upvote" ? "upvotes" : "downvotes"]: {
+                  increment: 1,
+                },
+              },
+            });
+
+            responseMessage = "Vote updated.";
+            return;
+          }
+
+          // İlk oy
+          await tx.voteForum.create({
+            data: {
+              userId,
+              actionId: targetId,
+              actionType: targetType,
+              voteType,
+            },
+          });
+
+          await updateTarget.update({
+            where: { id: targetId },
+            data: {
+              [voteType === "upvote" ? "upvotes" : "downvotes"]: {
+                increment: 1,
+              },
+            },
+          });
+
+          responseMessage = "Vote created.";
+        });
+
+        break;
+      } catch (error: any) {
+        if (
+          error.message?.includes("write conflict") ||
+          error.message?.includes("deadlock") ||
+          error.code === "P2034"
+        ) {
+          if (retries < MAX_RETRIES) {
+            retries++;
+            console.warn(
+              `Transaction conflict, retrying ${retries}/${MAX_RETRIES}...`,
+            );
+            await new Promise((res) => setTimeout(res, 100 * retries));
+            continue;
+          }
+        }
+        throw error;
+      }
     }
 
-    // Transaction ile oy kaydı ve hedef güncellemesi
-    await db.$transaction(async (tx) => {
-      await tx.voteForum.create({
-        data: {
-          userId: user.id,
-          actionId: targetId,
-          actionType: targetType as ActionType,
-          voteType: voteType as VoteType,
-        },
-      });
-
-      if (targetType === "question") {
-        await tx.questionForum.update({
-          where: { id: targetId },
-          data: {
-            upvotes: isUpvote ? { increment: 1 } : undefined,
-            downvotes: !isUpvote ? { increment: 1 } : undefined,
-          },
-        });
-      } else if (targetType === "answer") {
-        await tx.answerForum.update({
-          where: { id: targetId },
-          data: {
-            upvotes: isUpvote ? { increment: 1 } : undefined,
-            downvotes: !isUpvote ? { increment: 1 } : undefined,
-          },
-        });
-      }
-    });
-
-    return NextResponse.json({ message: "Vote successful" }, { status: 200 });
-  } catch (error) {
-    console.error("Vote error:", error);
-    return NextResponse.json({ error: "Vote failed" }, { status: 500 });
+    return NextResponse.json(
+      { success: true, message: responseMessage },
+      { status: 200 },
+    );
+  } catch (error: any) {
+    console.error("Vote error:", error.message);
+    return NextResponse.json(
+      { success: false, error: error.message || "Vote failed" },
+      { status: 500 },
+    );
   }
 }
