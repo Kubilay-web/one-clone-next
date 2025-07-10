@@ -2,8 +2,11 @@ import QuestionCard from "@/components/stackoverflow/cards/QuestionCard";
 import DataRenderer from "@/components/stackoverflow/DataRenderer";
 import HomeFilter from "@/components/stackoverflow/filters/HomeFilter";
 import LocalSearch from "@/components/stackoverflow/search/LocalSearch";
+import CommonFilter from "@/components/stackoverflow/filters/CommonFilter";
+import { HomePageFilters } from "@/constants/filter";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
+import Pagination from "@/components/stackoverflow/Pagination";
 import { EMPTY_QUESTION } from "@/constants/states";
 import Link from "next/link";
 import React from "react";
@@ -30,7 +33,6 @@ const Home = async ({ searchParams }: HomeProps) => {
   const query = searchParams.query || "";
   const filter = searchParams.filter || "";
 
-  // ✅ searchParams objesini URLSearchParams formatına çevir
   const queryParams = new URLSearchParams();
 
   if (query) queryParams.set("query", query);
@@ -38,7 +40,6 @@ const Home = async ({ searchParams }: HomeProps) => {
   queryParams.set("page", page.toString());
   queryParams.set("pageSize", pageSize.toString());
 
-  // ✅ API isteği
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/forumuser/question?${queryParams.toString()}`,
     { cache: "no-store" },
@@ -46,7 +47,7 @@ const Home = async ({ searchParams }: HomeProps) => {
 
   const result = await res.json();
   const { success, data, error } = result;
-  const { questions } = data || {};
+  const { questions, isNext } = data || {};
 
   return (
     <>
@@ -60,12 +61,17 @@ const Home = async ({ searchParams }: HomeProps) => {
         </Button>
       </section>
 
-      <section className="mt-11">
+      <section className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearch
           route="/forum"
           imgSrc="/assets/stackoverflow/icons/search.svg"
           placeholder="Search questions..."
           otherClasses="flex-1"
+        />
+
+        <CommonFilter
+          filters={HomePageFilters}
+          otherClasses="min-h-[56px] sm:min-w-[170px]"
         />
       </section>
 
@@ -84,6 +90,8 @@ const Home = async ({ searchParams }: HomeProps) => {
           </div>
         )}
       />
+
+      <Pagination page={page} isNext={isNext} />
     </>
   );
 };

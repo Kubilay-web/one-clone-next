@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AnswerForm from "@/components/stackoverflow/forms/AnswerForm";
 import TagCard from "@/components/stackoverflow/cards/TagCard";
 import Preview from "@/components/stackoverflow/editor/Preview";
@@ -41,6 +41,27 @@ interface Answer {
     avatarUrl?: string;
   };
 }
+
+// Yeni fonksiyon: kullanıcının soruyu kaydedip kaydetmediğini kontrol et
+const fetchHasSaved = async (id: string) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/forumuser/collection/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const data = await response.json();
+    return data.saved; // Kaydedilmişse true, kaydedilmemişse false döner
+  } catch (error) {
+    console.error("Error fetching saved status:", error);
+    return false;
+  }
+};
 
 const fetchHasVoted = async (id: string) => {
   try {
@@ -116,10 +137,11 @@ const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = params;
 
   // Verileri sunucudan al
-  const [hasVoted, question, answersResult] = await Promise.all([
+  const [hasVoted, question, answersResult, hasSaved] = await Promise.all([
     fetchHasVoted(id),
     fetchQuestion(id),
     fetchAnswers(id),
+    fetchHasSaved(id), // Yeni eklenen: Kaydedilen durumu al
   ]);
 
   if (!question) {
@@ -154,7 +176,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
             </p>
           )}
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-4">
             <Votes
               upvotes={question.upvotes}
               downvotes={question.downvotes}

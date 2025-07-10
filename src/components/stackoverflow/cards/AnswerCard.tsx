@@ -54,6 +54,15 @@ const AnswerCard = ({
       </div>
 
       <Preview content={content} />
+
+      {/* {showReadMore && (
+        <Link
+          href={`/forum/questions/${question}#answer-${id}`}
+          className="body-semibold text-primary-500 relative z-10 font-space-grotesk"
+        >
+          <p className="mt-1">Read more</p>
+        </Link>
+      )} */}
     </article>
   );
 };

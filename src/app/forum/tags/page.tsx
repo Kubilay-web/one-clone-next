@@ -1,8 +1,11 @@
 import TagCard from "@/components/stackoverflow/cards/TagCard";
 import DataRenderer from "@/components/stackoverflow/DataRenderer";
 import LocalSearch from "@/components/stackoverflow/search/LocalSearch";
+import CommonFilter from "@/components/stackoverflow/filters/CommonFilter";
+import { TagFilters } from "@/constants/filter";
 import ROUTES from "@/constants/routes";
 import { EMPTY_TAGS } from "@/constants/states";
+import Pagination from "@/components/stackoverflow/Pagination";
 
 const Tags = async ({ searchParams }: RouteParams) => {
   const { page, pageSize, query, filter } = searchParams;
@@ -17,6 +20,7 @@ const Tags = async ({ searchParams }: RouteParams) => {
   let success = false;
   let error = "";
   let tags = [];
+  let isNext = false;
 
   try {
     const res = await fetch(
@@ -34,6 +38,7 @@ const Tags = async ({ searchParams }: RouteParams) => {
     const result = await res.json();
     success = result.success;
     tags = result.data?.tags || [];
+    isNext = result.data?.isNext;
   } catch (err: any) {
     error = err.message;
   }
@@ -48,6 +53,11 @@ const Tags = async ({ searchParams }: RouteParams) => {
           imgSrc="/assets/stackoverflow/icons/search.svg"
           placeholder="Search Tags..."
           otherClasses="flex-1"
+        />
+
+        <CommonFilter
+          filters={TagFilters}
+          otherClasses="min-h-[56px] sm:min-w-[170px]"
         />
       </section>
 
@@ -64,6 +74,8 @@ const Tags = async ({ searchParams }: RouteParams) => {
           </div>
         )}
       />
+
+      <Pagination page={page} isNext={isNext} />
     </>
   );
 };

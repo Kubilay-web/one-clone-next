@@ -1,57 +1,102 @@
+// RightSidebar.tsx
+
 import ROUTES from "@/constants/routes";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import TagCard from "./cards/TagCard";
+import DataRenderer from "./DataRenderer";
 
-const hotQuestions = [
-  { _id: "1", title: "How to create a custom hook in react?" },
-  { _id: "2", title: "How to use React Query?" },
-  { _id: "3", title: "How to use Redux?" },
-  { _id: "4", title: "How to use React Router?" },
-  { _id: "5", title: "How to use Next Navigation?" },
-];
+interface Tag {
+  id: string;
+  name: string;
+  questions: number;
+}
 
-const popularTags = [
-  { _id: "1", name: "react", questions: 100 },
-  { _id: "2", name: "javascript", questions: 50 },
-  { _id: "3", name: "typescript", questions: 60 },
-  { _id: "4", name: "nextjs", questions: 80 },
-  { _id: "5", name: "react-query", questions: 20 },
-];
+const RightSidebar = async () => {
+  let hotQuestions: any[] = [];
+  let success = false;
+  let error = null;
 
-const RightSidebar = () => {
+  try {
+    // API'den veri çekme işlemi
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/forumuser/question/topquestion`,
+    );
+    const result = await response.json();
+
+    if (result.success) {
+      hotQuestions = result.data;
+      success = true;
+    } else {
+      error = result.message || "Failed to fetch questions";
+      success = false;
+    }
+  } catch (err: any) {
+    error = err.message || "Internal server error";
+    success = false;
+  }
+
+  // Fetch popular tags
+  const fetchTopTags = async (): Promise<Tag[]> => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/forumuser/tags/popular`,
+      );
+      const data = await response.json();
+      return data.success ? data.data : [];
+    } catch (err) {
+      console.error("Failed to fetch tags", err);
+      return [];
+    }
+  };
+
+  const topTags = await fetchTopTags();
+
   return (
     <section className="custom-scrollbar background-light900_dark200 light-border border-1 sticky right-0 top-0 flex h-screen w-[350px] flex-col gap-6 overflow-y-auto p-6 pt-36 shadow-light-300 dark:shadow-none max-xl:hidden">
       <div>
         <h3 className="h3-bold text-dark200_light_900">Top Questions</h3>
         <div className="mt-7 flex w-full flex-col gap-[30px]">
-          {hotQuestions.map(({ _id, title }) => (
-            <Link
-              key={_id}
-              href={ROUTES.PROFILE(_id)}
-              className="flex cursor-pointer items-center justify-between gap-7"
-            >
-              <p className="body-medium text-dark500_light700">{title}</p>
-              <Image
-                src="/assets/stackoverflow/icons/chevron-right.svg"
-                alt="Chevron"
-                width={20}
-                height={20}
-                className="invert-colors"
-              />
-            </Link>
-          ))}
+          <DataRenderer
+            data={hotQuestions}
+            empty={{
+              title: "No Question Found",
+              message: "No question has been asked yet",
+            }}
+            success={success}
+            error={error}
+            render={(hotQuestions) => (
+              <div className="mt-7 flex w-full flex-col gap-[30px]">
+                {hotQuestions.map(({ id, title }) => (
+                  <Link
+                    key={id}
+                    href={ROUTES.QUESTION(id)}
+                    className="flex cursor-pointer items-center justify-between gap-7"
+                  >
+                    <p className="body-medium text-dark500_light700">{title}</p>
+                    <Image
+                      src="/assets/stackoverflow/icons/chevron-right.svg"
+                      alt="Chevron"
+                      width={20}
+                      height={20}
+                      className="invert-colors"
+                    />
+                  </Link>
+                ))}
+              </div>
+            )}
+          />
         </div>
       </div>
 
       <div className="mt-16">
         <h3 className="h3-bold text-dark200_light900">Popular Tags</h3>
         <div className="mt-7 flex flex-col gap-4">
-          {popularTags.map(({ _id, name, questions }) => (
+          {topTags.map(({ id, name, questions }) => (
             <TagCard
-              key={_id}
-              _id={_id}
+              key={id}
+              id={id}
               name={name}
               questions={questions}
               showCount

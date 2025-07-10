@@ -1,7 +1,7 @@
 import { Toaster } from "react-hot-toast";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "../globals.css"; // stackoverflow → app → globals.css
+import "../globals.css";
 import { redirect } from "next/navigation";
 import SessionProvider from "../(main)/SessionProvider";
 import { validateRequest } from "@/auth";

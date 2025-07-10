@@ -19,11 +19,9 @@ const NavLinks = ({
   return (
     <>
       {sidebarLinks.map((item) => {
-        const isActive =
-          (pathname.includes(item.route) && item.route.length > 1) ||
-          pathname === item.route;
+        const isActive = pathname === item.route;
 
-        if (item.route === "/profile") {
+        if (item.route === "/forum/profile") {
           if (userId) item.route = `${item.route}/${userId}`;
           else return null;
         }
