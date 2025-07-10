@@ -155,7 +155,7 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
                 />
               </FormControl>
               <FormDescription className="body-regular text-light-500 mt-2.5">
-                Be specific and imagine you're asking a question to another
+                Be specific and imagine you are asking a question to another
                 person.
               </FormDescription>
               <FormMessage />
@@ -179,7 +179,7 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
                 />
               </FormControl>
               <FormDescription className="body-regular text-light-500 mt-2.5">
-                Introduce the problem and expand on what you've put in the
+                Introduce the problem and expand on what you ve put in the
                 title.
               </FormDescription>
               <FormMessage />
