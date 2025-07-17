@@ -12,6 +12,7 @@ enum Role {
   USER
   ADMIN
   SELLER
+  WRITER
 }
 
 enum RoleJob {
@@ -33,6 +34,9 @@ model User {
   image                String?       
   location             String?        
   portfolio            String?       
+
+
+
   reputation           Int?           @default(0)  
 
 
@@ -72,6 +76,7 @@ model User {
   VoteForum VoteForum[]
   CollectionForum CollectionForum[]
   Interaction InteractionForum[]
+  Writer Writer[]
 }
 
 
@@ -1792,6 +1797,64 @@ enum ActionTypeInteraction {
   question
   answer
 }
+
+
+// Newsportal models ---------------------------------------------------------
+
+
+model Writer {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  penName   String
+  category  String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  createdAt DateTime @default(now())
+
+  Image Image[]
+}
+
+
+
+
+model News {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  writerId    String   
+  writerName  String
+  title       String
+  slug        String
+  image       String
+  category    String
+  description String   @default("")
+  date        String
+  status      String   @default("pending")
+  count       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("news")
+}
+
+
+
+
+model Image {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  writerId  String  @db.ObjectId
+  url       String
+
+  writer    Writer   @relation(fields: [writerId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("images")
+}
+
+
+
+
+
+
 
 
 
