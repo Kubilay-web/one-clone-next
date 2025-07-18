@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Breadcrumb from "@/components/newsportal/Breadcrumb";
 import Category from "@/components/newsportal/Category";
 import PopularNews from "@/components/newsportal/news/PopularNews";
