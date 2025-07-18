@@ -2,25 +2,35 @@ import HeadLines from "@/components/newsportal/Headlines";
 import DetailsNews from "@/components/newsportal/news/DetailsNews";
 import DetailsNewsCol from "@/components/newsportal/news/DetailsNewsCol";
 import DetailsNewsRow from "@/components/newsportal/news/DetailsNewsRow";
-import NewsCard from "@/components/newsportal/news/item/NewsCard";
 import SimpleNewsCard from "@/components/newsportal/news/item/SimpleNewsCard";
 import LatestNews from "@/components/newsportal/news/LatestNews";
 import PopularNews from "@/components/newsportal/news/PopularNews";
 import RecentNews from "@/components/newsportal/news/RecentNews";
 import Title from "@/components/newsportal/Title";
 
-const Home = async () => {
-  const news_data = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/news/all`,
-    {
-      next: {
-        revalidate: 5,
+// Asenkron veri çekme fonksiyonu
+async function fetchNewsData() {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/news/all`,
+      {
+        cache: "no-store", // Bu sayfa her zaman sunucudan veri çeker
       },
-    },
-  );
+    );
+    if (!res.ok) {
+      throw new Error("Failed to fetch news data");
+    }
+    const data = await res.json();
+    return data.news;
+  } catch (error) {
+    console.error(error);
+    return {}; // Hata durumunda boş bir veri döndür
+  }
+}
 
-  let news = await news_data?.json();
-  news = news.news;
+const Home = async () => {
+  // Asenkron veri çekme
+  const news = await fetchNewsData();
 
   return (
     <div>
@@ -37,7 +47,7 @@ const Home = async () => {
                 <div className="flex w-full flex-col gap-y-[14px] pl-0 lg:pl-2">
                   <Title title="Technology" />
                   <div className="grid grid-cols-1 gap-[14px] sm:grid-cols-2">
-                    {news["Technology"].map((item, i) => {
+                    {news["Technology"]?.map((item, i) => {
                       if (i < 4) {
                         return <SimpleNewsCard item={item} key={i} />;
                       }
@@ -49,7 +59,7 @@ const Home = async () => {
 
             <PopularNews type="Popular News" />
 
-            {/* first Section  */}
+            {/* first Section */}
             <div className="w-full">
               <div className="flex flex-wrap">
                 <div className="w-full lg:w-8/12">
@@ -71,7 +81,7 @@ const Home = async () => {
               </div>
             </div>
 
-            {/* 2nd Section  */}
+            {/* 2nd Section */}
             <div className="w-full">
               <div className="flex flex-wrap">
                 <div className="w-full lg:w-4/12">
@@ -100,7 +110,7 @@ const Home = async () => {
               </div>
             </div>
 
-            {/* 3nd Section  */}
+            {/* 3rd Section */}
             <div className="w-full">
               <div className="flex flex-wrap">
                 <div className="w-full lg:w-8/12">
