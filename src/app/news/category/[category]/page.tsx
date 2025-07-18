@@ -37,6 +37,7 @@ const CategoryNews = async ({ params }) => {
                     news.length > 0 &&
                     news.map((item, i) => (
                       <SimpleDetailsNewCard
+                        key={i}
                         news={item}
                         type="details_news"
                         height={200}
