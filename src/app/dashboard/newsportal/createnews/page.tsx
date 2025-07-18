@@ -3,15 +3,19 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { FaImages } from "react-icons/fa6";
-import JoditEditor from "jodit-react";
 import Gallery from "@/components/newsportal/Gallery";
 import axios from "axios";
 import toast from "react-hot-toast";
+import dynamic from "next/dynamic";
 
 const CreateNews = () => {
   const [loader, setLoader] = useState(false);
   const [show, setShow] = useState(false);
   const [images, setImages] = useState([]);
+
+  const JoditEditor = dynamic(() => import("jodit-react"), {
+    ssr: false, // Sunucu tarafında render edilmesini engeller
+  });
 
   const editor = useRef(null);
   const [title, setTitle] = useState("");
@@ -107,7 +111,7 @@ const CreateNews = () => {
         throw new Error("API did not return image array");
       }
 
-      setImages((prev = []) => [...prev, ...data.images]); // 🛡️ prev varsa kullan, yoksa []
+      setImages((prev = []) => [...prev, ...data.images]);
       toast.success(data.message);
     } catch (error) {
       console.error(error);
