@@ -1,14 +1,35 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import SimpleNewsCard from "./item/SimpleNewsCard";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const LatestNews = () => {
+  const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(true); // Yükleme durumunu takip ediyoruz
+
+  const latest_news_get = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/news/latest`,
+      );
+      const data = await res.json();
+      console.log("...data", data);
+      setNews(data.latestNews);
+      setLoading(false); // Veri yüklendiğinde loading'i false yapıyoruz
+    } catch (error) {
+      console.log(error);
+      setLoading(false); // Hata durumunda da loading'i false yapıyoruz
+    }
+  };
+
+  useEffect(() => {
+    latest_news_get();
+  }, []);
+
   const responsive = {
     superLargeDesktop: {
-      // the naming can be any, depends on you.
       breakpoint: { max: 4000, min: 3000 },
       items: 1,
     },
@@ -52,6 +73,16 @@ const LatestNews = () => {
     );
   };
 
+  if (loading) {
+    // Yükleniyor animasyonu veya mesajı
+    return (
+      <div className="flex items-center justify-center">
+        <div className="spinner">Loading...</div>{" "}
+        {/* Burada bir spinner veya animasyon kullanabilirsiniz */}
+      </div>
+    );
+  }
+
   return (
     <div className="flex w-full flex-col-reverse gap-3 pr-0 lg:pr-2">
       <Carousel
@@ -63,7 +94,7 @@ const LatestNews = () => {
         infinite={true}
         transitionDuration={500}
       >
-        {[1, 2, 3, 4].map((item, i) => (
+        {news?.map((item, i) => (
           <SimpleNewsCard item={item} key={i} type="latest" />
         ))}
       </Carousel>

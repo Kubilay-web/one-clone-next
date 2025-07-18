@@ -1821,7 +1821,7 @@ model News {
   writerId    String   
   writerName  String
   title       String
-  slug        String
+  slug        String  @unique  
   image       String
   category    String
   description String   @default("")

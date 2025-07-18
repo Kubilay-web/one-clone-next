@@ -1,28 +1,61 @@
-import React from "react";
+import { validateRequest } from "@/auth";
+import React, { useContext, useState } from "react";
 import { FaImage } from "react-icons/fa";
 
-const Profile = () => {
+const Profile = async () => {
+  const { user } = await validateRequest();
+
   return (
     <div className="mt-5 grid w-full grid-cols-1 gap-2 lg:grid-cols-2">
       <div className="flex items-center rounded-lg bg-white p-6 shadow-md">
         <div className="flex-shrink-0">
-          <label
-            htmlFor="img"
-            className="flex h-[150px] w-[150px] cursor-pointer flex-col items-center justify-center rounded-full border-2 border-dashed border-gray-300 bg-gray-200 text-gray-600 transition duration-300 hover:bg-gray-200"
-          >
-            <FaImage className="text-4xl" />
-            <span className="mt-2">Select Image</span>
-          </label>
+          {user.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt="Profile"
+              className="h-[150px] w-[150px] rounded-full object-cover"
+            />
+          ) : (
+            <label
+              htmlFor="img"
+              className="flex h-[150px] w-[150px] cursor-pointer flex-col items-center justify-center rounded-full border-2 border-dashed border-gray-300 bg-gray-200 text-gray-600 transition duration-300 hover:bg-gray-200"
+            >
+              <FaImage className="text-4xl" />
+              <span className="mt-2">Select Image</span>
+            </label>
+          )}
           <input type="file" id="img" className="hidden" />
         </div>
 
         <div className="ml-6 flex flex-col space-y-2 text-gray-700">
-          <h3 className="text-xl font-bold">Kazi Ariyan</h3>
-          <p className="text-sm">
-            Email: <span className="text-gray-600">ariyan@gmail.com</span>
-          </p>
-          <p className="text-sm">
-            Category: <span className="text-gray-600">Education</span>
+          <label htmlFor="name" className="text-md font-medium text-gray-600">
+            Name:{" "}
+          </label>
+          <input
+            type="text"
+            value={user.username}
+            // onChange={(e) => setName(e.target.value)}
+            className="text-xl font-semibold"
+            placeholder="Name"
+          />
+
+          <label htmlFor="email" className="text-md font-medium text-gray-600">
+            Email:{" "}
+          </label>
+          <input
+            type="email"
+            value={user.email}
+            // onChange={(e) => setEmail(e.target.value)}
+            className="text-xl font-semibold"
+            placeholder="Email"
+          />
+
+          <p className="text-xl font-bold text-gray-600">
+            Role:{" "}
+            <span className="text-xl font-bold text-gray-600">
+              {" "}
+              {user?.role}
+            </span>
           </p>
         </div>
       </div>

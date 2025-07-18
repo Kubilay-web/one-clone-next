@@ -1,29 +1,17 @@
 import Breadcrumb from "@/components/newsportal/Breadcrumb";
 import Category from "@/components/newsportal/Category";
-import SimpleDetailsNewCard from "@/components/newsportal/news/item/SimpleDetailsNewCard";
 import PopularNews from "@/components/newsportal/news/PopularNews";
 import RecentNews from "@/components/newsportal/news/RecentNews";
 import Search from "@/components/newsportal/news/Search";
+import SearchNews from "@/components/newsportal/news/SearchNews";
 import React from "react";
 
-const CategoryNews = async ({ params }) => {
-  const { category } = params;
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/news/category/${category}`,
-    {
-      next: {
-        revalidate: 1,
-      },
-    },
-  );
-
-  const { news } = await res.json();
-
+const page = () => {
   return (
     <div>
       <div className="bg-white py-4 shadow-sm">
         <div className="w-full px-4 md:px-8">
-          <Breadcrumb one={category} />
+          <Breadcrumb one="search" />
         </div>
       </div>
 
@@ -32,17 +20,7 @@ const CategoryNews = async ({ params }) => {
           <div className="flex flex-wrap">
             <div className="w-full xl:w-8/12">
               <div className="w-full pr-0 xl:pr-4">
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-                  {news &&
-                    news.length > 0 &&
-                    news.map((item, i) => (
-                      <SimpleDetailsNewCard
-                        news={item}
-                        type="details_news"
-                        height={200}
-                      />
-                    ))}
-                </div>
+                <SearchNews />
               </div>
             </div>
 
@@ -68,4 +46,4 @@ const CategoryNews = async ({ params }) => {
   );
 };
 
-export default CategoryNews;
+export default page;

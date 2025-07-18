@@ -1,9 +1,8 @@
-"use client";
-
 import Image from "next/image";
 import React from "react";
+import UserButton from "@/components/UserButton";
 
-const Header = () => {
+const Header = async () => {
   return (
     <div className="fixed top-4 z-50 w-[calc(100vw-250px)] pl-4">
       <div className="flex h-[70px] w-full items-center justify-between rounded bg-[#f1f1fb] p-4">
@@ -15,17 +14,7 @@ const Header = () => {
 
         <div className="mr-4">
           <div className="flex gap-x-2">
-            <div className="flex flex-col items-end justify-center">
-              <span className="font-bold">Kazi Ariyan</span>
-              <span className="font-semibold">Admin</span>
-            </div>
-            <Image
-              className="h-10 w-10 rounded-full border-2 border-blue-500"
-              src="/assets/news-portal/assets/profile.png" // public klasörüne göre
-              alt="Profile"
-              width={40}
-              height={40}
-            />
+            <UserButton />
           </div>
         </div>
       </div>

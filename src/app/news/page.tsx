@@ -6,13 +6,26 @@ import NewsCard from "@/components/newsportal/news/item/NewsCard";
 import SimpleNewsCard from "@/components/newsportal/news/item/SimpleNewsCard";
 import LatestNews from "@/components/newsportal/news/LatestNews";
 import PopularNews from "@/components/newsportal/news/PopularNews";
+import RecentNews from "@/components/newsportal/news/RecentNews";
 import Title from "@/components/newsportal/Title";
 
-export default function Home() {
+const Home = async () => {
+  const news_data = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/news/all`,
+    {
+      next: {
+        revalidate: 5,
+      },
+    },
+  );
+
+  let news = await news_data?.json();
+  news = news.news;
+
   return (
     <div>
       <main>
-        <HeadLines />
+        <HeadLines news={news} />
         <div className="bg-slate-100">
           <div className="px-4 py-8 md:px-8">
             <div className="flex flex-wrap">
@@ -24,9 +37,11 @@ export default function Home() {
                 <div className="flex w-full flex-col gap-y-[14px] pl-0 lg:pl-2">
                   <Title title="Technology" />
                   <div className="grid grid-cols-1 gap-[14px] sm:grid-cols-2">
-                    {[1, 2, 3, 4].map((item, i) => (
-                      <SimpleNewsCard item={item} key={i} />
-                    ))}
+                    {news["Technology"].map((item, i) => {
+                      if (i < 4) {
+                        return <SimpleNewsCard item={item} key={i} />;
+                      }
+                    })}
                   </div>
                 </div>
               </div>
@@ -38,12 +53,20 @@ export default function Home() {
             <div className="w-full">
               <div className="flex flex-wrap">
                 <div className="w-full lg:w-8/12">
-                  <DetailsNewsRow category="Sports" type="details_news" />
-                  <DetailsNews category="Health" />
+                  <DetailsNewsRow
+                    category="Sports"
+                    type="details_news"
+                    news={news["Sports"]}
+                  />
+
+                  <DetailsNews category="Health" news={news["Health"]} />
                 </div>
 
                 <div className="w-full lg:w-4/12">
-                  <DetailsNewsCol category="Education" />
+                  <DetailsNewsCol
+                    news={news["Education"]}
+                    category="Education"
+                  />
                 </div>
               </div>
             </div>
@@ -53,14 +76,25 @@ export default function Home() {
               <div className="flex flex-wrap">
                 <div className="w-full lg:w-4/12">
                   <div className="pl-3">
-                    <DetailsNewsCol category="Politics" />
+                    <DetailsNewsCol
+                      category="Business"
+                      news={news["Business"]}
+                    />
                   </div>
                 </div>
 
                 <div className="w-full lg:w-8/12">
                   <div className="pl-3">
-                    <DetailsNewsRow category="Travel" type="details_news" />
-                    <DetailsNews category="International" />
+                    <DetailsNewsRow
+                      category="Travel"
+                      type="details_news"
+                      news={news["Travel"]}
+                    />
+
+                    <DetailsNews
+                      category="International"
+                      news={news["International"]}
+                    />
                   </div>
                 </div>
               </div>
@@ -70,17 +104,16 @@ export default function Home() {
             <div className="w-full">
               <div className="flex flex-wrap">
                 <div className="w-full lg:w-8/12">
-                  <DetailsNewsRow category="Technology" type="details_news" />
+                  <DetailsNewsRow
+                    category="Technology"
+                    news={news["Technology"]}
+                    type="details_news"
+                  />
                 </div>
 
                 <div className="w-full lg:w-4/12">
                   <div className="pl-3">
-                    <Title title="Recent News" />
-                    <div className="mt-2 grid grid-cols-1 gap-y-[8px]">
-                      {[1, 2, 3, 4].map((item, i) => (
-                        <NewsCard item={item} key={i} />
-                      ))}
-                    </div>
+                    <RecentNews />
                   </div>
                 </div>
               </div>
@@ -90,4 +123,6 @@ export default function Home() {
       </main>
     </div>
   );
-}
+};
+
+export default Home;

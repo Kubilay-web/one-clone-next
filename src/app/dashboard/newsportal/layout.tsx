@@ -1,18 +1,32 @@
-import { validateRequest } from "@/auth";
-import { redirect } from "next/navigation";
-import SessionProvider from "@/app/(main)/SessionProvider";
+"use client";
+
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { Toaster } from "react-hot-toast";
+import { UserInfo } from "@/queries/user";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // İstemci tarafında kullanmak için useRouter'ı import et
 
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { user } = await validateRequest();
+export default function Layout({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter(); // useRouter'ı buraya alıyoruz
 
-  if (!user) redirect("/login");
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await UserInfo();
+      setUser(userData);
+    };
+
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    if (user?.role === "WRITER") {
+      router.push("/dashboard/newsportal/writer");
+    } else if (user?.role === "ADMIN") {
+      router.push("/dashboard/newsportal");
+    }
+  }, [user, router]); // user veya router değiştiğinde yönlendirme yap
 
   return (
     <div className="min-w-screen min-h-screen bg-slate-400">

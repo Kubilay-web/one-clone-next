@@ -1,39 +1,32 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoMdList } from "react-icons/io";
 import { IoMdCloseCircle } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
 
 const Header_Category = () => {
+  const [categories, set_categories] = useState([]);
+
+  const get_categories = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/news/category/all`,
+      );
+      const data = await res.json();
+      set_categories(data.categories);
+      // console.log(data)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    get_categories();
+  }, []);
+
   const path = usePathname();
-  const data = [
-    {
-      id: 1,
-      name: "Sports",
-    },
-    {
-      id: 2,
-      name: "Travel",
-    },
-    {
-      id: 3,
-      name: "Education",
-    },
-    {
-      id: 4,
-      name: "National",
-    },
-    {
-      id: 5,
-      name: "Politice",
-    },
-    {
-      id: 6,
-      name: "Technology",
-    },
-  ];
 
   const [cate_show, set_cate_show] = useState(false);
   const [show, setShow] = useState(false);
@@ -58,16 +51,17 @@ const Header_Category = () => {
               Home{" "}
             </Link>
 
-            {data.map((c, i) => (
-              <Link
-                key={i}
-                className={`px-6 py-[13px] font-medium ${path === c.name ? "bg-[#00000026]" : ""} `}
-                href={"/"}
-              >
-                {" "}
-                {c.name}{" "}
-              </Link>
-            ))}
+            {categories.length > 0 &&
+              categories.map((c, i) => (
+                <Link
+                  key={i}
+                  className={`px-6 py-[13px] font-medium ${path === c.category ? "bg-[#00000026]" : ""} `}
+                  href={`/news/category/${c.category}`}
+                >
+                  {" "}
+                  {c.category}{" "}
+                </Link>
+              ))}
           </div>
 
           <div className="h-full w-[50px]">
@@ -110,16 +104,17 @@ const Header_Category = () => {
             Home{" "}
           </Link>
 
-          {data.map((c, i) => (
-            <Link
-              key={i}
-              className={`px-4 py-[5px] font-medium ${path === c.name ? "bg-[#00000026]" : ""} `}
-              href={"/"}
-            >
-              {" "}
-              {c.name}{" "}
-            </Link>
-          ))}
+          {categories.length > 0 &&
+            categories.map((c, i) => (
+              <Link
+                key={i}
+                className={`px-4 py-[5px] font-medium ${path === c.category ? "bg-[#00000026]" : ""} `}
+                href={`/news/category/${c.category}`}
+              >
+                {" "}
+                {c.category}{" "}
+              </Link>
+            ))}
         </div>
       )}
     </div>

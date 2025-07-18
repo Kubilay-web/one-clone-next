@@ -1,7 +1,18 @@
 import Link from "next/link";
 import React from "react";
 
-const Category = ({ titleStyle }) => {
+const Category = async ({ titleStyle }) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/news/category/all`,
+    {
+      next: {
+        revalidate: 5,
+      },
+    },
+  );
+
+  const { categories } = await res.json();
+
   return (
     <div className="flex w-full flex-col gap-y-[14px]">
       <div
@@ -13,11 +24,16 @@ const Category = ({ titleStyle }) => {
       <div
         className={`flex flex-col items-start justify-start gap-y-3 text-sm ${titleStyle} pt-1`}
       >
-        {[1, 2, 3, 4, 5, 6].map((item, i) => (
-          <li className="list-none font-semibold" key={i}>
-            <Link href={`/`}> Category (5)</Link>
-          </li>
-        ))}
+        {categories &&
+          categories.length > 0 &&
+          categories.map((item, i) => (
+            <li className="list-none font-semibold" key={i}>
+              <Link href={`/news/category/${item.category}`}>
+                {" "}
+                {item.category} ({item.count})
+              </Link>
+            </li>
+          ))}
       </div>
     </div>
   );

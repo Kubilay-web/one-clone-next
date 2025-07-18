@@ -24,7 +24,7 @@ export async function PUT(
       );
     }
 
-    const user = await validateRequest();
+    const { user } = await validateRequest();
     if (!user || user?.role !== "ADMIN") {
       return NextResponse.json(
         { message: "You cannot access this API" },

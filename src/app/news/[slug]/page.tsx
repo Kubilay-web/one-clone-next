@@ -1,17 +1,31 @@
 import Breadcrumb from "@/components/newsportal/Breadcrumb";
 import Category from "@/components/newsportal/Category";
 import SimpleDetailsNewCard from "@/components/newsportal/news/item/SimpleDetailsNewCard";
-import PopularNews from "@/components/newsportal/news/PopularNews";
 import RecentNews from "@/components/newsportal/news/RecentNews";
 import Search from "@/components/newsportal/news/Search";
+import HtmlParser from "react-html-parser";
 import React from "react";
+import RelatedNews from "@/components/newsportal/news/RelatedNews";
 
-const page = () => {
+const Details = async ({ params }) => {
+  const { slug } = params;
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/news/details/${slug}`,
+    {
+      next: {
+        revalidate: 1,
+      },
+    },
+  );
+
+  const { news, relatedNews } = await res.json();
+
   return (
     <div>
       <div className="bg-white py-4 shadow-sm">
         <div className="w-full px-4 md:px-8">
-          <Breadcrumb one="Sports" two={"What puzzles reveal about the "} />
+          <Breadcrumb one={news?.category} two={news?.title} />
         </div>
       </div>
 
@@ -21,54 +35,19 @@ const page = () => {
             <div className="w-full xl:w-8/12">
               <div className="w-full pr-0 xl:pr-4">
                 <div className="flex flex-col gap-y-5 bg-white">
-                  <img
-                    src={
-                      "https://res.cloudinary.com/dbxtifnah/image/upload/v1727045972/news_images/ve2sbmjp9kttqgvz7ip8.webp"
-                    }
-                    alt=""
-                  />
+                  <img src={news?.image} alt="" />
                   <div className="flex flex-col gap-y-4 px-6 pb-6">
                     <h3 className="text-xl font-medium uppercase text-red-700">
-                      Category Name
+                      {news?.category}
                     </h3>
                     <h2 className="text-3xl font-bold text-gray-700">
-                      What puzzles reveal about the depths of our own
+                      {news?.title}
                     </h2>
                     <div className="flex gap-x-2 text-xs font-normal text-slate-600">
-                      <span className="font-bold">24-09-2024</span>
-                      <span className="font-bold">By Ariyan</span>
+                      <span className="font-bold">{news?.date}</span>
+                      <span className="font-bold">By {news?.writerName}</span>
                     </div>
-                    <p>
-                      An 88-year-old man who is the world’s longest-serving
-                      death row inmate has been acquitted by a Japanese court,
-                      after it found that evidence used against him was
-                      fabricated. Iwao Hakamada, who was on death row for almost
-                      half a century, was found guilty in 1968 of killing his
-                      boss, the man’s wife and their two teenage children. He
-                      was recently granted a retrial amid suspicions that
-                      investigators may have planted evidence that led to his
-                      conviction for quadruple murder. The 46 years spent on
-                      death row has taken a heavy toll on Hakamada's mental
-                      health, though, meaning he was unfit to attend the hearing
-                      where his acquittal was finally handed down. Hakamada's
-                      case is one of Japan's longest and most famous legal
-                      sagas, and has attracted widespread public interest, with
-                      some 500 people lining up for seats in the courtroom in
-                      Shizuoka on Thursday. As the verdict was handed down,
-                      Hakamada’s supporters outside the court cheered “banzai" -
-                      a Japanese exclamation that means "hurray". Hakamada, who
-                      was exempted from all hearings due to his deteriorated
-                      mental state, has been living under the care of his
-                      91-year-old sister Hideko since 2014, when he was freed
-                      from jail and granted a retrial. She fought for decades to
-                      clear his name and said it was sweet to hear the words
-                      "not guilty" in court. "When I heard that, I was so moved
-                      and happy, I couldn't stop crying," she told reporters.
-                      Her brother has previously said his battle for justice was
-                      like "fighting a bout every day". "Once you think you
-                      can't win, there is no path to victory," he told AFP news
-                      agency in 2018.
-                    </p>
+                    <p>{HtmlParser(news?.description)}</p>
                   </div>
                 </div>
               </div>
@@ -88,7 +67,7 @@ const page = () => {
           </div>
 
           <div className="pt-8">
-            <PopularNews />
+            <RelatedNews news={relatedNews} type="Related News" />
           </div>
         </div>
       </div>
@@ -96,4 +75,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Details;

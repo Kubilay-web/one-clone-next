@@ -65,10 +65,10 @@ const Sidebar = ({ user }) => {
               active={pathname === "/dashboard/newsportal/writer"}
             />
             <SidebarItem
-              href="/dashboard/newsportal/news/create"
+              href="/dashboard/newsportal/createnews"
               icon={<IoMdAdd />}
               label="Add News"
-              active={pathname === "/dashboard/newsportal/news/create"}
+              active={pathname === "/dashboard/newsportal/createnews"}
             />
           </>
         )}

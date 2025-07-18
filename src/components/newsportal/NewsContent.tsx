@@ -169,7 +169,7 @@ const NewsContent = () => {
                   </td>
                   <td className="px-6 py-4">{n.date}</td>
 
-                  {user.role === "ADMIN" ? (
+                  {user?.role === "ADMIN" ? (
                     <td className="px-6 py-4">
                       {n.status === "pending" && (
                         <span
