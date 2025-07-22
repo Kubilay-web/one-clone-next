@@ -7,11 +7,24 @@ import Image from "next/image";
 import Link from "next/link";
 import MainSwiper from "../shared/swiper";
 import Countdown from "../shared/countdown";
-export default function AnimatedDeals({
-  products,
-}: {
-  products: SimpleProduct[];
-}) {
+import { useEffect, useState } from "react";
+export default function AnimatedDeals() {
+  const [products, setProducts] = useState<SimpleProduct[]>([]);
+  // ürünleri client-side API'den çek
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api/featured-products");
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error("Ürünleri çekerken hata oluştu:", err);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
     <div className="relative w-full overflow-hidden rounded-md bg-[#ed3835]">
       <span className="absolute top-[53%] inline-block w-full text-center text-4xl font-semibold text-white outline-none">

@@ -1270,3 +1270,50 @@ const incrementProductViews = async (productId: string) => {
     });
   }
 };
+
+// ---------------------------
+
+// lib/queries/getFeaturedProducts.ts
+
+import { SimpleProduct } from "@/lib/types";
+
+export const getFeaturedProducts = async (): Promise<SimpleProduct[]> => {
+  const products = await db.product.findMany({
+    take: 5,
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      variants: {
+        include: {
+          sizes: true, // MongoDB ile uyumlu: direkt `orderBy` kullanamıyoruz
+        },
+      },
+    },
+  });
+
+  const simplified: SimpleProduct[] = [];
+
+  for (const product of products) {
+    for (const variant of product.variants) {
+      // En ucuz size'ı manuel olarak bul (MongoDB ile uyumlu)
+      const cheapestSize = variant.sizes.reduce(
+        (min, curr) => (curr.price < min.price ? curr : min),
+        variant.sizes[0],
+      );
+
+      simplified.push({
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        brand: product.brand,
+        rating: product.rating,
+        price: cheapestSize?.price ?? 0,
+        image: variant.variantImage ?? "/placeholder.webp",
+        variantSlug: variant.slug,
+      });
+    }
+  }
+
+  return simplified;
+};

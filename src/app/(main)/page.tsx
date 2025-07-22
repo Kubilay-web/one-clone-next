@@ -24,11 +24,6 @@ export default async function HomePage() {
       { property: "offer", value: "sdfsdfsdf", type: "full" },
     ]);
 
-  console.log("products_featured--->", products_sdfsdfsdf);
-
-  const categories = await getHomeFeaturedCategories();
-  console.log("categories--->", categories);
-
   return (
     <>
       <Header />

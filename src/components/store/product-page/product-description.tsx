@@ -8,6 +8,9 @@ export default function ProductDescription({
 }) {
   const sanitizedDescription1 = DOMPurify.sanitize(text[0]);
   const sanitizedDescription2 = DOMPurify.sanitize(text[1]);
+
+  console.log("Sanitized 1:", sanitizedDescription1);
+  console.log("Sanitized 2:", sanitizedDescription2);
   return (
     <div className="pt-6">
       {/* Title */}

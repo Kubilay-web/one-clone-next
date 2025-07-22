@@ -1,3 +1,5 @@
+"use client";
+
 import { SimpleProduct } from "@/lib/types";
 import Image from "next/image";
 import UserImg from "@/public/assets/images/default-user.avif";
@@ -6,13 +8,37 @@ import { Button } from "../../../ui/button";
 import MainSwiper from "../../../shared/swiper";
 import UserCardProducts from "./products";
 import { validateRequest } from "@/auth";
+import { useEffect, useState } from "react";
+import { UserInfo } from "@/queries/user";
 
-export default async function HomeUserCard({
-  products,
-}: {
-  products: SimpleProduct[];
-}) {
-  const { user } = await validateRequest();
+export default function HomeUserCard() {
+  const [products, setProducts] = useState<SimpleProduct[]>([]);
+  const [user, setUser] = useState<any>(null);
+
+  // ürünleri client-side API'den çek
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api/featured-products");
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error("Ürünleri çekerken hata oluştu:", err);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await UserInfo();
+      setUser(userData);
+    };
+
+    fetchUser();
+  }, []);
+
   const role = user?.role;
 
   return (

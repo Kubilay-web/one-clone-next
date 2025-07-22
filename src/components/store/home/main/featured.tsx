@@ -1,30 +1,38 @@
 "use client";
+
 import Link from "next/link";
 import MainSwiper from "../../shared/swiper";
 import { SimpleProduct } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 
-export default function Featured({ products }: { products: SimpleProduct[] }) {
+export default function Featured() {
   const is1170px = useMediaQuery({ query: "(min-width: 1170px)" });
   const is1700px = useMediaQuery({ query: "(min-width: 1700px)" });
 
-  // State to store the current width of the screen
   const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
+  const [products, setProducts] = useState<SimpleProduct[]>([]);
 
+  // ekran genişliğini dinle
   useEffect(() => {
-    // Function to handle resize event and update screen width
-    const handleResize = () => {
-      setScreenWidth(window.innerWidth);
-    };
-
-    // Add the resize event listener when the component mounts
+    const handleResize = () => setScreenWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-    // Cleanup the event listener when the component unmounts
-    return () => {
-      window.removeEventListener("resize", handleResize);
+  // ürünleri client-side API'den çek
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api/featured-products");
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error("Ürünleri çekerken hata oluştu:", err);
+      }
     };
+
+    fetchProducts();
   }, []);
 
   return (
@@ -58,27 +66,26 @@ export default function Featured({ products }: { products: SimpleProduct[] }) {
             </div>
           </div>
         </Link>
+
         {/* Product swiper */}
         <div
           className={is1700px ? "ml-10" : ""}
           style={{
             width: !is1170px
-              ? `${screenWidth - 300}px` // Less than 1170px
+              ? `${screenWidth - 300}px`
               : is1700px
-                ? "750px" // More than 1700px
-                : `calc(500px + 5vw)`, // Between 1170-1700px
+                ? "750px"
+                : `calc(500px + 5vw)`,
           }}
         >
-          {/*
-            
-            1170-1700===>
-            */}
-          <MainSwiper
-            products={products}
-            type="simple"
-            slidesPerView={1}
-            spaceBetween={-10}
-          />
+          {products.length > 0 && (
+            <MainSwiper
+              products={products}
+              type="simple"
+              slidesPerView={1}
+              spaceBetween={-10}
+            />
+          )}
         </div>
       </div>
     </div>

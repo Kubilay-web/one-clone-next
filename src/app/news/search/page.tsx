@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 import Breadcrumb from "@/components/newsportal/Breadcrumb";
 import Category from "@/components/newsportal/Category";
 import PopularNews from "@/components/newsportal/news/PopularNews";
@@ -7,6 +5,8 @@ import RecentNews from "@/components/newsportal/news/RecentNews";
 import Search from "@/components/newsportal/news/Search";
 import SearchNews from "@/components/newsportal/news/SearchNews";
 import React from "react";
+
+export const dynamic = "force-dynamic";
 
 const page = () => {
   return (
