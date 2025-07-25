@@ -138,7 +138,7 @@ const StoreDetails: FC<StoreDetailsProps> = ({ data }) => {
           <CardDescription>
             {data?.id
               ? `Update ${data?.name} store information.`
-              : " Lets create a store. You can edit store later from the store settings page."}
+              : "Let's create a store. You can edit the store later from the store settings page."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -148,12 +148,12 @@ const StoreDetails: FC<StoreDetailsProps> = ({ data }) => {
               className="space-y-4"
             >
               {/* Logo - Cover */}
-              <div className="relative mb-24 py-2">
+              <div className="grid gap-6 mb-24 py-2 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="logo"
                   render={({ field }) => (
-                    <FormItem className="absolute inset-x-96 -bottom-20 -left-48 z-10">
+                    <FormItem className="flex justify-center">
                       <FormControl>
                         <ImageUpload
                           type="profile"
@@ -177,7 +177,7 @@ const StoreDetails: FC<StoreDetailsProps> = ({ data }) => {
                   control={form.control}
                   name="cover"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex justify-center">
                       <FormControl>
                         <ImageUpload
                           type="cover"
@@ -198,6 +198,7 @@ const StoreDetails: FC<StoreDetailsProps> = ({ data }) => {
                   )}
                 />
               </div>
+
               {/* Name */}
               <FormField
                 disabled={isLoading}
@@ -213,6 +214,7 @@ const StoreDetails: FC<StoreDetailsProps> = ({ data }) => {
                   </FormItem>
                 )}
               />
+
               {/* Description */}
               <FormField
                 disabled={isLoading}
@@ -228,6 +230,7 @@ const StoreDetails: FC<StoreDetailsProps> = ({ data }) => {
                   </FormItem>
                 )}
               />
+
               {/* Email - Phone */}
               <div className="flex flex-col gap-6 md:flex-row">
                 <FormField
@@ -259,6 +262,7 @@ const StoreDetails: FC<StoreDetailsProps> = ({ data }) => {
                   )}
                 />
               </div>
+
               <FormField
                 disabled={isLoading}
                 control={form.control}
@@ -273,15 +277,16 @@ const StoreDetails: FC<StoreDetailsProps> = ({ data }) => {
                   </FormItem>
                 )}
               />
+
+              {/* Featured */}
               <FormField
                 control={form.control}
                 name="featured"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
-                        // @ts-ignore
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
@@ -294,12 +299,14 @@ const StoreDetails: FC<StoreDetailsProps> = ({ data }) => {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading}>
+
+              {/* Submit Button */}
+              <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
                 {isLoading
                   ? "loading..."
                   : data?.id
-                    ? "Save store information"
-                    : "Create store"}
+                  ? "Save store information"
+                  : "Create store"}
               </Button>
             </form>
           </Form>

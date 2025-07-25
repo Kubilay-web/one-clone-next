@@ -27,7 +27,7 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
   setColors,
 }) => {
   // Calculate the number of images
-  let imagesLength = images.length;
+  let imagesLength = images?.length;
 
   // Get the grid class name based on the number of images
   const GridClassName = getGridClassName(imagesLength);
@@ -37,7 +37,7 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
   useEffect(() => {
     const fecthColors = async () => {
       const palettes = await Promise.all(
-        images.map(async (img) => {
+        images?.map(async (img) => {
           try {
             const colors = await getDominantColors(img.url);
             return colors;
@@ -79,7 +79,7 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
             GridClassName,
           )}
         >
-          {images.map((img, i) => (
+          {images?.map((img, i) => (
             <div
               key={i}
               className={cn(

@@ -10,7 +10,8 @@ export default async function SellerNewProductVariantPage({
 }: {
   params: { storeUrl: string; productId: string };
 }) {
-  const categories = await getAllCategories();
+  const categories = await getAllCategories(params.storeUrl);
+  console.log("categpries--->",categories)
   const offerTags = await getAllOfferTags();
   const product = await getProductMainInfo(params.productId);
   if (!product) return null;
