@@ -105,7 +105,7 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
               id: question?.id,
               title: data.title,
               content: data.content,
-              tagsQuestions: data.tags,
+              tagNames: data.tags,
               UserId: question?.UserId || "",
             }),
           },

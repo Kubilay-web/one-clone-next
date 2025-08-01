@@ -23,7 +23,7 @@ export default function LeftSidebar() {
         {userId && <NavLinks userId={userId} />}
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 mt-5">
         {/* Kullanıcı oturumu açık mı? */}
         {userId ? (
           <Button

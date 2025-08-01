@@ -5,14 +5,14 @@ import { validateRequest } from "@/auth";
 
 export async function POST(req: Request) {
   try {
-    const { title, content, tagIds } = await req.json();
+    const { title, content, tagNames } = await req.json();
 
     const { user } = await validateRequest();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!title || !content || !Array.isArray(tagIds) || tagIds.length === 0) {
+    if (!title || !content || !Array.isArray(tagNames) || tagNames.length === 0) {
       return NextResponse.json(
         { error: "Eksik veya hatalı alanlar var" },
         { status: 400 },
@@ -21,24 +21,22 @@ export async function POST(req: Request) {
 
     // DB'de tag isimlerine göre mevcut tagları bul
     const existingTags = await db.tagForum.findMany({
-      where: { name: { in: tagIds } },
+      where: { name: { in: tagNames } },
       select: { id: true, name: true },
     });
 
-    // Eğer bazı tag isimleri DB’de yoksa, onları oluştur
+    // DB’de olmayan tag isimlerini filtrele
     const existingTagNames = existingTags.map((t) => t.name);
-    const newTagNames = tagIds.filter(
-      (name) => !existingTagNames.includes(name),
-    );
+    const newTagNames = tagNames.filter((name) => !existingTagNames.includes(name));
 
     // Yeni tagları oluştur
     const newTags = await Promise.all(
       newTagNames.map((name) => db.tagForum.create({ data: { name } })),
     );
 
-    // Tüm tag ObjectId'leri al (eski + yeni)
+    // Tüm tag objeleri (eski + yeni)
     const allTags = [...existingTags, ...newTags];
-    const tagObjectIds = allTags.map((t) => t.id);
+    const tagIds = allTags.map((t) => t.id);
 
     // Yeni soru oluştur
     const newQuestion = await db.questionForum.create({
@@ -49,19 +47,17 @@ export async function POST(req: Request) {
       },
     });
 
-    // TagQuestionForum ilişkilerini ekle
-    if (tagObjectIds.length > 0) {
-      const tagRelations = tagObjectIds.map((tagId) => ({
-        tagId,
-        questionId: newQuestion.id,
-      }));
-
+    // Tag ilişkilerini oluştur
+    if (tagIds.length > 0) {
       await db.tagQuestionForum.createMany({
-        data: tagRelations,
+        data: tagIds.map((tagId) => ({
+          tagId,
+          questionId: newQuestion.id,
+        })),
       });
     }
 
-    // Soruyu taglarla birlikte getir
+    // Güncellenmiş soruyu taglar ile birlikte getir
     const questionWithTags = await db.questionForum.findUnique({
       where: { id: newQuestion.id },
       include: {
