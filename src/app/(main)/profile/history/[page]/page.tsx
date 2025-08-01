@@ -12,7 +12,7 @@ export default function ProfileHistoryPage({
   const [products, setProducts] = useState<any>([]);
   const [page, setPage] = useState<number>(Number(params.page) || 1);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [laoding, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     // Fetch history from localStorage
@@ -46,7 +46,7 @@ export default function ProfileHistoryPage({
   return (
     <div className="bg-white px-6 py-4">
       <h1 className="mb-3 text-lg font-bold">Your product view history</h1>
-      {laoding ? (
+      {loading ? (
         <div>loading...</div>
       ) : products.length > 0 ? (
         <div className="pb-16">

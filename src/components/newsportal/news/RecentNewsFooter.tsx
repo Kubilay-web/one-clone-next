@@ -37,6 +37,8 @@ const RecentNewsFooter = async () => {
                         src={r.image}
                         alt="images"
                       />
+
+                
                       <div
                         className="invisible absolute left-0 top-0 block h-full w-full cursor-pointer bg-white opacity-5 transition-all duration-300 group-hover:visible"
                         href={"#"}

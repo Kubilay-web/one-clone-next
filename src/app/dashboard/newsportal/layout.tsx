@@ -5,28 +5,35 @@ import Header from "./Header";
 import { Toaster } from "react-hot-toast";
 import { UserInfo } from "@/queries/user";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // İstemci tarafında kullanmak için useRouter'ı import et
+import { useRouter } from "next/navigation"; // useRouter for client-side navigation
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null);
-  const router = useRouter(); // useRouter'ı buraya alıyoruz
+  console.log("user--z",user)
+  const router = useRouter(); // Router for navigation
 
   useEffect(() => {
+    // Fetch user data when the component mounts
     const fetchUser = async () => {
       const userData = await UserInfo();
       setUser(userData);
     };
 
     fetchUser();
-  }, []);
+  }, []); // Empty dependency array ensures this runs once on mount
 
   useEffect(() => {
+    // Redirect based on user role, but only after user data is set
     if (user?.role === "WRITER") {
       router.push("/dashboard/newsportal/writer");
     } else if (user?.role === "ADMIN") {
       router.push("/dashboard/newsportal");
     }
-  }, [user, router]); // user veya router değiştiğinde yönlendirme yap
+  }, [user, router]); // Re-run this when user changes
+
+  if (!user) {
+    return <div>Loading...</div>; // Show a loading state while user data is being fetched
+  }
 
   return (
     <div className="min-w-screen min-h-screen bg-slate-400">

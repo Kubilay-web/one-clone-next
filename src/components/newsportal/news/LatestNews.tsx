@@ -78,7 +78,6 @@ const LatestNews = () => {
     return (
       <div className="flex items-center justify-center">
         <div className="spinner">Loading...</div>{" "}
-        {/* Burada bir spinner veya animasyon kullanabilirsiniz */}
       </div>
     );
   }

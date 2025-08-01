@@ -27,32 +27,36 @@ export async function POST(req) {
     const formData = await req.formData();
     const file = formData.get("file");
 
+    // PDF dosya türü kontrolü
     if (!file || file.type !== "application/pdf") {
-      return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid file type. Please upload a PDF file." }, { status: 400 });
     }
 
     const bufferStream = streamFromWebReadable(file.stream());
 
+    // Cloudinary'e yükleme işlemi
     const uploadResult = await new Promise((resolve, reject) => {
       const stream = cloudinary.v2.uploader.upload_stream(
         {
-          resource_type: "raw",
+          resource_type: "raw",  // 'raw' tipi, PDF gibi dosyalar için uygun
           folder: "cv_files",
         },
         (error, result) => {
           if (error) return reject(error);
           resolve(result);
-        },
+        }
       );
 
-      bufferStream.pipe(stream);
+      bufferStream.pipe(stream); // Akışa veri gönderiliyor
     });
 
+    // Yükleme başarılı, sonucu döndürüyoruz
     return NextResponse.json({
       secure_url: uploadResult.secure_url,
       original_filename: uploadResult.original_filename,
       public_id: uploadResult.public_id,
     });
+
   } catch (error) {
     console.error("CV upload error:", error);
     return NextResponse.json({ error: "CV upload failed" }, { status: 500 });

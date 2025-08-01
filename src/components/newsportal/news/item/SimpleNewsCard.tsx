@@ -13,6 +13,7 @@ const SimpleNewsCard = ({ item, type }) => {
         </div>
       </div>
 
+     
       <div className="invisible absolute left-0 top-0 block h-full w-full cursor-pointer bg-white opacity-5 transition-all duration-300 group-hover:visible"></div>
       <div className="absolute bottom-4 left-5 flex flex-col items-start justify-start gap-y-2 font-semibold text-white">
         <div className="rounded-md bg-[#c80000] px-[6px] py-[2px] text-[13px]">

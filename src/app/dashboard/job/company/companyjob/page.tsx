@@ -70,7 +70,6 @@ export default function Company() {
   return (
     <main>
       <div className="container">
-        {JSON.stringify({ jobs }, null, 4)}
         <div className="row d-flex justify-content-center align-items-center h-auto">
           <div className="col bg-light p-5 shadow">
             <div style={{ overflowX: "auto" }}>
